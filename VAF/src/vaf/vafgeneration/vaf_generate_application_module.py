@@ -1,15 +1,16 @@
-"""Generator library for generating the complete VAF project"""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Generator library for generating the complete VAF project."""
 
 import shutil
 from pathlib import Path
 from typing import List
 
 from vaf import vafmodel
-from vaf.cli_core.common.exceptions import VafProjectGenerationError
+from vaf.core.common.exceptions import VafProjectGenerationError
 from vaf.vafpy import import_model
-from vaf.vafpy.model_runtime import model_runtime
-
-from .generation import is_silkit_used
+from vaf.vafpy.model_runtime import ModelRuntime
 
 # Utils
 from .vaf_application_module import generate_app_module_project_files
@@ -17,10 +18,12 @@ from .vaf_application_module import generate_app_module_project_files
 # Build system files generators
 from .vaf_cmake_common import generate as generate_cmake_common
 from .vaf_conan import generate as generate_conan_deps
-from .vaf_generate_common import get_ancestor_model, merge_after_regeneration
+from .vaf_core_library import generate as generate_core_library
+from .vaf_generate_common import format_files, get_ancestor_model, is_source_file, merge_after_regeneration
 
 # VAF generators
 from .vaf_interface import generate_module_interfaces as generate_interface
+from .vaf_persistency import generate as generate_persistency
 from .vaf_protobuf_serdes import generate as generate_protobuf_serdes
 from .vaf_std_data_types import generate as generate_vaf_std_data_types
 
@@ -52,16 +55,18 @@ def _print_info(header: str, content: str = "") -> None:
         print("\n".join([content, f"{columns * '-'}\n"]))
 
 
-def generate_application_module(  # pylint: disable=too-many-arguments, too-many-positional-arguments, too-many-branches
+def generate_application_module(  # pylint: disable=too-many-arguments, too-many-positional-arguments, too-many-branches, too-many-statements
     model_file: str,
     project_dir: str,
+    type_variant: str,
     execute_merge: bool = True,
     verbose_mode: bool = False,
 ) -> None:
     """Generates all app modules files & operations
     Args:
         model_file (str): Path to the VAF model JSON
-        project_dir (str): Path to the output directory
+        type_variant (str): Type variant of the generated data types
+        project_dir (Path): The directory of the project. Defaults to output_dir.
         execute_merge (bool): Flag to enable/disable automatic merge changes after regeneration
         verbose_mode (bool): Flag to enable verbose mode
     Raises:
@@ -71,10 +76,10 @@ def generate_application_module(  # pylint: disable=too-many-arguments, too-many
     list_merge_relevant_files: List[str] = []
 
     # clean model runtime before every run
-    model_runtime.reset()
-    # import json as model_runtime
+    ModelRuntime().reset()
+    # import json as ModelRuntime()
     import_model(model_file)
-    main_model = model_runtime.main_model
+    main_model = ModelRuntime().main_model
     path_output_dir = Path(project_dir)
     if len(main_model.ApplicationModules) != 1:
         raise ValueError(
@@ -100,15 +105,20 @@ def generate_application_module(  # pylint: disable=too-many-arguments, too-many
                     f'Folder "{(path_output_dir / subdir_name).absolute().as_posix()}" could not be removed due to {e}!'
                 ) from e
 
-    # This generator needs to run before calling get_paths()
     generate_conan_deps(main_model, path_output_dir, verbose_mode)
 
     _print_info("VAF GENERATE APP-MODULE: STEP 1", "Generating module interfaces files")
     generate_interface(main_model, path_output_dir, verbose_mode)
 
-    _print_info("VAF GENERATE APP-MODULE: STEP 2", f"Generating source files based on: {model_file}")
+    _print_info(
+        "VAF GENERATE APP-MODULE: STEP 2",
+        f"Generating source files based on: {model_file}",
+    )
     list_merge_relevant_files = generate_app_module_project_files(
-        main_model.ApplicationModules[0], path_output_dir, is_ancestor=False, verbose_mode=verbose_mode
+        main_model.ApplicationModules[0],
+        path_output_dir,
+        is_ancestor=False,
+        verbose_mode=verbose_mode,
     )
     print("SUCCESS: Source files generated!")
     # check for "ancestor" model.json (model.json~)
@@ -124,22 +134,41 @@ def generate_application_module(  # pylint: disable=too-many-arguments, too-many
             verbose_mode=verbose_mode,
         )
 
-    _print_info("VAF GENERATE APP-MODULE: STEP 3", "Generating datatypes using std generator")
-    generate_vaf_std_data_types(model_runtime, path_output_dir, verbose_mode)
+    _print_info("VAF GENERATE APP-MODULE: STEP 3", "Generating core support files")
+    generate_core_library(path_output_dir, type_variant, verbose_mode=verbose_mode)
 
-    if is_silkit_used(main_model):
-        generate_protobuf_serdes(model_runtime, path_output_dir, verbose_mode)
+    _print_info(
+        "VAF GENERATE APP-MODULE: STEP 4",
+        f"Generating datatypes using {type_variant} generator",
+    )
+    generate_vaf_std_data_types(path_output_dir, verbose_mode)
+    if main_model.is_silkit_used or main_model.is_persistency_used:
+        generate_protobuf_serdes(path_output_dir, verbose_mode)
+    if main_model.is_persistency_used:
+        generate_persistency(main_model, path_output_dir, verbose_mode)
 
     # must run as last generator
     # No files to merge when generating for app-modules
     _ = generate_cmake_common(
-        main_model, path_output_dir, generate_for_application_module=True, verbose_mode=verbose_mode
+        main_model,
+        path_output_dir,
+        generate_for_application_module=True,
+        verbose_mode=verbose_mode,
     )
     print("SUCCESS: Datatypes generated!")
 
+    format_files(
+        project_dir=project_dir,
+        list_files=[Path(project_dir) / f for f in list_merge_relevant_files if is_source_file(Path(project_dir) / f)],
+        verbose_mode=verbose_mode,
+    )
+
     # execute merge if list of user files are not empty
     if execute_merge and list_merge_relevant_files:
-        _print_info("VAF GENERATE APP-MODULE: STEP 4", "Merging existing source files with results from step 1")
+        _print_info(
+            "VAF GENERATE APP-MODULE: STEP 5",
+            "Merging existing source files with results from step 1",
+        )
         # solve conflicts for user files
         merge_after_regeneration(path_output_dir, list_merge_relevant_files, verbose_mode)
         _print_info("SUCCESS: MERGE EXECUTED!")

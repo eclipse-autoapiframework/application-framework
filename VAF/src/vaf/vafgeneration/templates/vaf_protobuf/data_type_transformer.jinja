@@ -39,7 +39,7 @@ void {{ type_ref.Name }}ProtoToVaf(const {{ type_ref.Name }} &in, ::{{ implicit_
 inline void {{ array.Name }}VafToProto(const ::{{ implicit_data_type_to_str(array.Name, namespace ) }} &in, {{ array.Name }} &out) {
   out.Clear();
   for (int i=0;i<in.size();i++) {
-{% if not is_data_type_base_type(array.TypeRef.Name, array.TypeRef.Namespace) and not is_data_type_cstdint_type(array.TypeRef.Name, array.TypeRef.Namespace)%}
+{% if not array.TypeRef.is_cpp_base_type %}
     ::protobuf::{{array.TypeRef.Namespace}}::{{array.TypeRef.Name}} element_out{};
     ::protobuf::{{array.TypeRef.Namespace}}::{{array.TypeRef.Name}}VafToProto(in[i], element_out);
     out.mutable_vaf_value_internal()->Add(std::move(element_out));
@@ -50,7 +50,7 @@ inline void {{ array.Name }}VafToProto(const ::{{ implicit_data_type_to_str(arra
 }
 inline void {{ array.Name }}ProtoToVaf(const {{ array.Name }} &in, ::{{ implicit_data_type_to_str(array.Name, namespace) }} &out) {
   for (int i=0;i<out.size();i++) {
-{% if not is_data_type_base_type(array.TypeRef.Name, array.TypeRef.Namespace) and not is_data_type_cstdint_type(array.TypeRef.Name, array.TypeRef.Namespace)%}
+{% if not array.TypeRef.is_cpp_base_type %}
     ::protobuf::{{array.TypeRef.Namespace}}::{{array.TypeRef.Name}}ProtoToVaf(in.vaf_value_internal()[i], out[i]);
 {% else %}
     out[i]=in.vaf_value_internal()[i];
@@ -62,7 +62,7 @@ inline void {{ array.Name }}ProtoToVaf(const {{ array.Name }} &in, ::{{ implicit
 inline void {{ vector.Name }}VafToProto(const ::{{ implicit_data_type_to_str(vector.Name, namespace ) }} &in, {{ vector.Name }} &out) {
   out.Clear();
   for (auto element_in :in) {
-{% if not is_data_type_base_type(vector.TypeRef.Name, vector.TypeRef.Namespace) and not is_data_type_cstdint_type(vector.TypeRef.Name, vector.TypeRef.Namespace)%}
+{% if not vector.TypeRef.is_cpp_base_type%}
     ::protobuf::{{vector.TypeRef.Namespace}}::{{vector.TypeRef.Name}} element_out{};
     ::protobuf::{{vector.TypeRef.Namespace}}::{{vector.TypeRef.Name}}VafToProto(element_in, element_out);
       out.mutable_vaf_value_internal()->Add(std::move(element_out));
@@ -74,7 +74,7 @@ inline void {{ vector.Name }}VafToProto(const ::{{ implicit_data_type_to_str(vec
 inline void {{ vector.Name }}ProtoToVaf(const {{ vector.Name }} &in, ::{{ implicit_data_type_to_str(vector.Name, namespace) }} &out) {
   out.clear();
   for (auto element_in :in.vaf_value_internal()) {
-{% if not is_data_type_base_type(vector.TypeRef.Name, vector.TypeRef.Namespace) and not is_data_type_cstdint_type(vector.TypeRef.Name, vector.TypeRef.Namespace)%}
+{% if not vector.TypeRef.is_cpp_base_type%}
     ::{{vector.TypeRef.Namespace}}::{{vector.TypeRef.Name}} element_out{};
     ::protobuf::{{vector.TypeRef.Namespace}}::{{vector.TypeRef.Name}}ProtoToVaf(element_in, element_out);
     out.push_back(std::move(element_out));
@@ -85,25 +85,25 @@ inline void {{ vector.Name }}ProtoToVaf(const {{ vector.Name }} &in, ::{{ implic
 }
 {% endfor %}
 {% for map_entry in namespace_data.get("Maps", {}).values() %}
-inline void {{ map_entry.Name }}EntryVafToProto(const {% if not is_data_type_base_type(map_entry.MapKeyTypeRef.Name, map_entry.MapKeyTypeRef.Namespace) %}::{% endif %}{{ implicit_data_type_to_str(map_entry.MapKeyTypeRef.Name, map_entry.MapKeyTypeRef.Namespace ) }} &in_key, {% if not is_data_type_base_type(map_entry.MapValueTypeRef.Name, map_entry.MapValueTypeRef.Namespace) %}::{% endif %}{{ implicit_data_type_to_str(map_entry.MapValueTypeRef.Name, map_entry.MapValueTypeRef.Namespace ) }} &in_value,  {{ map_entry.Name }}Entry &out) {
-{% if not is_data_type_base_type(map_entry.MapKeyTypeRef.Name, map_entry.MapKeyTypeRef.Namespace) and not is_data_type_cstdint_type(map_entry.MapKeyTypeRef.Name, map_entry.MapKeyTypeRef.Namespace)%}
+inline void {{ map_entry.Name }}EntryVafToProto(const {% if not map_entry.MapKeyTypeRef.is_base_type %}::{% endif %}{{ implicit_data_type_to_str(map_entry.MapKeyTypeRef.Name, map_entry.MapKeyTypeRef.Namespace ) }} &in_key, {% if not map_entry.MapValueTypeRef.is_base_type %}::{% endif %}{{ implicit_data_type_to_str(map_entry.MapValueTypeRef.Name, map_entry.MapValueTypeRef.Namespace ) }} &in_value,  {{ map_entry.Name }}Entry &out) {
+{% if not map_entry.MapKeyTypeRef.is_cpp_base_type%}
   ::protobuf::{{map_entry.MapKeyTypeRef.Namespace}}::{{map_entry.MapKeyTypeRef.Name}}VafToProto(in_key, *out.mutable_vaf_key_internal());
 {% else %}
   out.set_vaf_key_internal(in_key);
 {% endif %}
-{% if not is_data_type_base_type(map_entry.MapValueTypeRef.Name, map_entry.MapValueTypeRef.Namespace) and not is_data_type_cstdint_type(map_entry.MapValueTypeRef.Name, map_entry.MapValueTypeRef.Namespace)%}
+{% if not map_entry.MapValueTypeRef.is_cpp_base_type%}
   ::protobuf::{{map_entry.MapValueTypeRef.Namespace}}::{{map_entry.MapValueTypeRef.Name}}VafToProto(in_value, *out.mutable_vaf_value_internal());
 {% else %}
   out.set_vaf_value_internal(in_value);
 {% endif %}
 }
-inline void {{ map_entry.Name }}EntryProtoToVaf(const {{ map_entry.Name }}Entry &in, {% if not is_data_type_base_type(map_entry.MapKeyTypeRef.Name, map_entry.MapKeyTypeRef.Namespace) %}::{% endif %}{{ implicit_data_type_to_str(map_entry.MapKeyTypeRef.Name, map_entry.MapKeyTypeRef.Namespace ) }} &out_key, {% if not is_data_type_base_type(map_entry.MapValueTypeRef.Name, map_entry.MapValueTypeRef.Namespace) %}::{% endif %}{{ implicit_data_type_to_str(map_entry.MapValueTypeRef.Name, map_entry.MapValueTypeRef.Namespace ) }} &out_value) {
-{% if not is_data_type_base_type(map_entry.MapKeyTypeRef.Name, map_entry.MapKeyTypeRef.Namespace) and not is_data_type_cstdint_type(map_entry.MapKeyTypeRef.Name, map_entry.MapKeyTypeRef.Namespace)%}
+inline void {{ map_entry.Name }}EntryProtoToVaf(const {{ map_entry.Name }}Entry &in, {% if not map_entry.MapKeyTypeRef.is_base_type %}::{% endif %}{{ implicit_data_type_to_str(map_entry.MapKeyTypeRef.Name, map_entry.MapKeyTypeRef.Namespace ) }} &out_key, {% if not map_entry.MapValueTypeRef.is_base_type %}::{% endif %}{{ implicit_data_type_to_str(map_entry.MapValueTypeRef.Name, map_entry.MapValueTypeRef.Namespace ) }} &out_value) {
+{% if not map_entry.MapKeyTypeRef.is_cpp_base_type%}
   ::protobuf::{{map_entry.MapKeyTypeRef.Namespace}}::{{map_entry.MapKeyTypeRef.Name}}ProtoToVaf(in.vaf_key_internal(), out_key);
 {% else %}
   out_key = in.vaf_key_internal();
 {% endif %}
-{% if not is_data_type_base_type(map_entry.MapValueTypeRef.Name, map_entry.MapValueTypeRef.Namespace) and not is_data_type_cstdint_type(map_entry.MapValueTypeRef.Name, map_entry.MapValueTypeRef.Namespace)%}
+{% if not map_entry.MapValueTypeRef.is_cpp_base_type%}
   ::protobuf::{{map_entry.MapValueTypeRef.Namespace}}::{{map_entry.MapValueTypeRef.Name}}ProtoToVaf(in.vaf_value_internal(), out_value);
 {% else %}
   out_value = in.vaf_value_internal();
@@ -120,7 +120,7 @@ inline void {{ map_entry.Name }}VafToProto(const ::{{ implicit_data_type_to_str(
 inline void {{ map_entry.Name }}ProtoToVaf(const {{ map_entry.Name }} &in, ::{{ implicit_data_type_to_str(map_entry.Name, namespace) }} &out) {
   out.clear();
   for (auto in_entry: in.vaf_entry_internal()) {
-    std::pair<{% if not is_data_type_base_type(map_entry.MapKeyTypeRef.Name, map_entry.MapKeyTypeRef.Namespace) %}::{% endif %}{{ implicit_data_type_to_str(map_entry.MapKeyTypeRef.Name, map_entry.MapKeyTypeRef.Namespace ) }}, {% if not is_data_type_base_type(map_entry.MapValueTypeRef.Name, map_entry.MapValueTypeRef.Namespace) %}::{% endif %}{{ implicit_data_type_to_str(map_entry.MapValueTypeRef.Name, map_entry.MapValueTypeRef.Namespace ) }}> out_entry{};
+    std::pair<{% if not map_entry.MapKeyTypeRef.is_base_type %}::{% endif %}{{ implicit_data_type_to_str(map_entry.MapKeyTypeRef.Name, map_entry.MapKeyTypeRef.Namespace ) }}, {% if not map_entry.MapValueTypeRef.is_base_type %}::{% endif %}{{ implicit_data_type_to_str(map_entry.MapValueTypeRef.Name, map_entry.MapValueTypeRef.Namespace ) }}> out_entry{};
     {{ map_entry.Name }}EntryProtoToVaf(in_entry, out_entry.first, out_entry.second);
     out.insert(std::move(out_entry));
   }
@@ -145,16 +145,26 @@ inline void {{ enum.Name }}ProtoToVaf(const {{ enum.Name }} &in, ::{{ implicit_d
 {% for struct in namespace_data.get("Structs", {}).values() %}
 inline void {{ struct.Name }}VafToProto(const ::{{ implicit_data_type_to_str(struct.Name, namespace ) }} &in, {{ struct.Name }} &out) {
 {% for sub_element in struct.SubElements %}
-{% if not is_data_type_base_type(sub_element.TypeRef.Name, sub_element.TypeRef.Namespace) and not is_data_type_cstdint_type(sub_element.TypeRef.Name, sub_element.TypeRef.Namespace)%}
-  ::protobuf::{{sub_element.TypeRef.Namespace}}::{{sub_element.TypeRef.Name}}VafToProto(in.{{sub_element.Name}}, *out.mutable_{{sub_element.Name.lower()}}());
+{% if sub_element.IsOptional %}
+  if (in.{{ sub_element.Name }}.has_value()) {
+    {% if not sub_element.TypeRef.is_cpp_base_type%}
+    ::protobuf::{{sub_element.TypeRef.Namespace}}::{{sub_element.TypeRef.Name}}VafToProto(in.{{ sub_element.Name }}.value(), *out.mutable_{{sub_element.Name.lower()}}());
+    {% else %}
+    out.set_{{sub_element.Name.lower()}}(in.{{ sub_element.Name }}.value());
+    {% endif %}
+  }
 {% else %}
+  {% if not sub_element.TypeRef.is_cpp_base_type%}
+  ::protobuf::{{sub_element.TypeRef.Namespace}}::{{sub_element.TypeRef.Name}}VafToProto(in.{{sub_element.Name}}, *out.mutable_{{sub_element.Name.lower()}}());
+  {% else %}
   out.set_{{sub_element.Name.lower()}}(in.{{sub_element.Name}});
+  {% endif %}
 {% endif %}
-{% endfor%}
+{% endfor %}
 }
 inline void {{ struct.Name }}ProtoToVaf(const {{ struct.Name }} &in, ::{{ implicit_data_type_to_str(struct.Name, namespace) }} &out) {
 {% for sub_element in struct.SubElements %}
-{% if not is_data_type_base_type(sub_element.TypeRef.Name, sub_element.TypeRef.Namespace) and not is_data_type_cstdint_type(sub_element.TypeRef.Name, sub_element.TypeRef.Namespace)%}
+{% if not sub_element.TypeRef.is_cpp_base_type%}
   ::protobuf::{{sub_element.TypeRef.Namespace}}::{{sub_element.TypeRef.Name}}ProtoToVaf(in.{{sub_element.Name.lower()}}(), out.{{sub_element.Name}});
 {% else %}
   out.{{sub_element.Name}} = in.{{sub_element.Name.lower()}}();
@@ -164,14 +174,14 @@ inline void {{ struct.Name }}ProtoToVaf(const {{ struct.Name }} &in, ::{{ implic
 {% endfor %}
 {% for type_ref in namespace_data.get("TypeRefs", {}).values() %}
 inline void {{ type_ref.Name }}VafToProto(const ::{{ implicit_data_type_to_str(type_ref.Name, namespace ) }} &in, {{ type_ref.Name }} &out) {
-{% if not is_data_type_base_type(type_ref.TypeRef.Name, type_ref.TypeRef.Namespace) and not is_data_type_cstdint_type(type_ref.TypeRef.Name, type_ref.TypeRef.Namespace)%}
+{% if not type_ref.TypeRef.is_cpp_base_type%}
   {{type_ref.TypeRef.Namespace}}::{{type_ref.TypeRef.Name}}VafToProto(in, *out.mutable_vaf_value_internal());
 {% else %}
   out.set_vaf_value_internal(in);
 {% endif %}
 }
 inline void {{ type_ref.Name }}ProtoToVaf(const {{ type_ref.Name }} &in, ::{{ implicit_data_type_to_str(type_ref.Name, namespace) }} &out) {
-{% if not is_data_type_base_type(type_ref.TypeRef.Name, type_ref.TypeRef.Namespace) and not is_data_type_cstdint_type(type_ref.TypeRef.Name, type_ref.TypeRef.Namespace)%}
+{% if not type_ref.TypeRef.is_cpp_base_type%}
   {{type_ref.TypeRef.Namespace}}::{{type_ref.TypeRef.Name}}ProtoToVaf(in.vaf_value_internal(), out);
 {% else %}
   out = in.vaf_value_internal();

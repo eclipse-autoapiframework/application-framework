@@ -1,6 +1,7 @@
-"""
-Unit tests for ensuring that min and max values are correctly exported for elements with unit 'percent'.
-"""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Unit tests for ensuring that min and max values are correctly exported for elements with unit 'percent'."""
 
 import unittest
 from typing import Any
@@ -57,8 +58,16 @@ class TestExportMinMaxForPercent(unittest.TestCase):
 
         self.assertEqual(len(elements), len(expected_elements))
         for element in elements:
-            self.assertEqual(element.Min, expected_elements[element.Name]["min"], f"in subelement {element.Name}")
-            self.assertEqual(element.Max, expected_elements[element.Name]["max"], f"in subelement {element.Name}")
+            self.assertEqual(
+                element.Min,
+                expected_elements[element.Name]["min"],
+                f"in subelement {element.Name}",
+            )
+            self.assertEqual(
+                element.Max,
+                expected_elements[element.Name]["max"],
+                f"in subelement {element.Name}",
+            )
             expected_elements[element.Name]["passed"] = True
 
         for key, value in expected_elements.items():

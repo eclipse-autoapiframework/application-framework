@@ -1,0 +1,46 @@
+{% include "common/copyright.jinja" %}
+
+#ifndef VAF_INTERNAL_PROMISE_H_
+#define VAF_INTERNAL_PROMISE_H_
+
+#include <future>
+
+#include "vaf/future.h"
+
+namespace vaf {
+namespace internal {
+
+template <typename T>
+class Promise : protected std::promise<vaf::Result<T, vaf::Error>> {
+ public:
+  void SetError(const vaf::Error& error) {
+    std::promise<vaf::Result<T, vaf::Error>>::set_value(vaf::Result<T, vaf::Error>{error});
+  }
+  template <class U = T, std::enable_if_t<!std::is_void<U>::value, int> = 0>
+  void set_value(U value) {
+    std::promise<vaf::Result<T, vaf::Error>>::set_value(vaf::Result<U, vaf::Error>{value});
+  }
+  template <class U = T, std::enable_if_t<std::is_void<U>::value, int> = 0>
+  void set_value() {
+    std::promise<vaf::Result<T, vaf::Error>>::set_value(vaf::Result<U, vaf::Error>{});
+  }
+
+  vaf::Future<T> get_future() {
+    return std::move(vaf::Future<T>(std::promise<vaf::Result<T, vaf::Error>>::get_future()));
+  }
+};
+
+template <typename T>
+void SetVafErrorCodeToPromise(Promise<T>& promise, const vaf::Error& error) {
+  promise.SetError(error);
+}
+
+template <typename T>
+Future<T> CreateVafFutureFromVafPromise(Promise<T>& promise) {
+  return promise.get_future();
+}
+
+}  // namespace internal
+}  // namespace vaf
+
+#endif  // VAF_INTERNAL_PROMISE_H_

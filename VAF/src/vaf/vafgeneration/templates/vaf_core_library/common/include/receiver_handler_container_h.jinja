@@ -1,0 +1,27 @@
+{% include "common/copyright.jinja" %}
+
+{% if lib_type == "std" %}
+   {% set include_name = "INCLUDE_VAF_RECEIVER_HANDLER_CONTAINER_H_" %}
+{% endif %}
+#ifndef {{include_name}}
+#define {{include_name}}
+
+#include "vaf/container_types.h"
+
+namespace vaf {
+template <typename T>
+
+class ReceiverHandlerContainer {
+ public:
+  ReceiverHandlerContainer(vaf::String owner, T&& handler)
+    : owner_{std::move(owner)}, handler_{std::move(handler)}, is_active_{false} {
+  }
+
+  vaf::String owner_;
+  T handler_;
+  bool is_active_;
+};
+
+} // namespace vaf
+
+#endif // {{include_name}}

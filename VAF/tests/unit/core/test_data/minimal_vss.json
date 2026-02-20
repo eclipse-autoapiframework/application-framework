@@ -1,0 +1,7 @@
+{
+    "Vehicle": {
+        "children": { },
+        "description": "High-level vehicle data.",
+        "type": "branch"
+    }
+}

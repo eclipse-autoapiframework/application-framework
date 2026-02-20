@@ -12,15 +12,15 @@
 
 {% block content %}
 {% for de in interface.DataElements %}
-inline void {{ de.Name }}VafToProto(const {{ add_double_colon(de.TypeRef.Name, de.TypeRef.Namespace ) }}{{ implicit_data_type_to_str(de.TypeRef.Name, de.TypeRef.Namespace ) }} &in, {{ de.Name }} &out) {
-{% if not is_data_type_base_type(de.TypeRef.Name, de.TypeRef.Namespace) and not is_data_type_cstdint_type(de.TypeRef.Name, de.TypeRef.Namespace)%}
+inline void {{ de.Name }}VafToProto(const {{ add_datatype_double_colon(de.TypeRef) }}{{ implicit_data_type_to_str(de.TypeRef.Name, de.TypeRef.Namespace ) }} &in, {{ de.Name }} &out) {
+{% if not de.TypeRef.is_cpp_base_type%}
   protobuf::{{ implicit_data_type_to_str(de.TypeRef.Name, de.TypeRef.Namespace ) }}VafToProto(in,*out.mutable_vaf_value_internal());
 {% else %}
   out.set_vaf_value_internal(in);
 {% endif%}
 }
-inline void {{ de.Name }}ProtoToVaf(const {{ de.Name }} &in, {{ add_double_colon(de.TypeRef.Name, de.TypeRef.Namespace ) }}{{ implicit_data_type_to_str(de.TypeRef.Name, de.TypeRef.Namespace) }} &out) {
-{% if not is_data_type_base_type(de.TypeRef.Name, de.TypeRef.Namespace) and not is_data_type_cstdint_type(de.TypeRef.Name, de.TypeRef.Namespace)%}
+inline void {{ de.Name }}ProtoToVaf(const {{ de.Name }} &in, {{ add_datatype_double_colon(de.TypeRef) }}{{ implicit_data_type_to_str(de.TypeRef.Name, de.TypeRef.Namespace) }} &out) {
+{% if not de.TypeRef.is_cpp_base_type%}
   protobuf::{{ implicit_data_type_to_str(de.TypeRef.Name, de.TypeRef.Namespace ) }}ProtoToVaf(in.vaf_value_internal(),out);
 {% else %}
   out = in.vaf_value_internal();
@@ -28,10 +28,10 @@ inline void {{ de.Name }}ProtoToVaf(const {{ de.Name }} &in, {{ add_double_colon
 }
 {% endfor %}
 {% for op in interface.Operations %}
-{% if has_operation_out_or_inout_parameter(op) %}
+{% if op.has_any_parameter_out_inout %}
 inline void {{ op.Name }}OutVafToProto(const {{ add_double_colon(op.Name, out_parameter_type_namespace ) }}{{ out_parameter_type_namespace }}::{{ op.Name }}::Output &in, {{ op.Name }}_out &out) {
-{% for p in op.Parameters if not is_in_parameter(p) %}
-{% if not is_data_type_base_type(p.TypeRef.Name, p.TypeRef.Namespace) and not is_data_type_cstdint_type(p.TypeRef.Name, p.TypeRef.Namespace)%}
+{% for p in op.Parameters if not p.is_direction_in %}
+{% if not p.TypeRef.is_cpp_base_type%}
   protobuf::{{p.TypeRef.Namespace}}::{{p.TypeRef.Name}}VafToProto(in.{{ p.Name }},*out.mutable_{{ p.Name.lower() }}());
 {% else %}
   out.set_{{ p.Name.lower() }}(in.{{ p.Name }});
@@ -39,8 +39,8 @@ inline void {{ op.Name }}OutVafToProto(const {{ add_double_colon(op.Name, out_pa
 {% endfor %}
 }
 inline void {{ op.Name }}OutProtoToVaf(const {{ op.Name }}_out &in, {{ add_double_colon(op.Name, out_parameter_type_namespace ) }}{{ out_parameter_type_namespace }}::{{ op.Name }}::Output &out) {
-{% for p in op.Parameters if not is_in_parameter(p) %}
-{% if not is_data_type_base_type(p.TypeRef.Name, p.TypeRef.Namespace) and not is_data_type_cstdint_type(p.TypeRef.Name, p.TypeRef.Namespace)%}
+{% for p in op.Parameters if not p.is_direction_in %}
+{% if not p.TypeRef.is_cpp_base_type%}
   protobuf::{{p.TypeRef.Namespace}}::{{p.TypeRef.Name}}ProtoToVaf(in.{{ p.Name.lower() }}(),out.{{ p.Name }});
 {% else %}
   out.{{ p.Name }} = in.{{ p.Name.lower() }}();
@@ -48,10 +48,10 @@ inline void {{ op.Name }}OutProtoToVaf(const {{ op.Name }}_out &in, {{ add_doubl
 {% endfor %}
 }
 {% endif %}
-{% if has_operation_in_or_inout_parameter(op) %}
+{% if op.has_any_parameter_in_inout %}
 inline void {{ op.Name }}InVafToProto({{ get_operation_parameter_list_with_in(op) }}, {{ op.Name }}_in &out){
-{% for p in op.Parameters if not is_out_parameter(p) %}
-{% if not is_data_type_base_type(p.TypeRef.Name, p.TypeRef.Namespace) and not is_data_type_cstdint_type(p.TypeRef.Name, p.TypeRef.Namespace)%}
+{% for p in op.Parameters if not p.is_direction_out %}
+{% if not p.TypeRef.is_cpp_base_type%}
   protobuf::{{p.TypeRef.Namespace}}::{{p.TypeRef.Name}}VafToProto(in_{{ p.Name }},*out.mutable_{{ p.Name.lower() }}());
 {% else %}
   out.set_{{ p.Name.lower() }}(in_{{ p.Name }});
@@ -59,8 +59,8 @@ inline void {{ op.Name }}InVafToProto({{ get_operation_parameter_list_with_in(op
 {% endfor %}
 }
 inline void {{ op.Name }}InProtoToVaf(const {{ op.Name }}_in &in, {{ get_operation_parameter_list_with_out(op) }}) {
-{% for p in op.Parameters if not is_out_parameter(p) %}
-{% if not is_data_type_base_type(p.TypeRef.Name, p.TypeRef.Namespace) and not is_data_type_cstdint_type(p.TypeRef.Name, p.TypeRef.Namespace)%}
+{% for p in op.Parameters if not p.is_direction_out %}
+{% if not p.TypeRef.is_cpp_base_type%}
   protobuf::{{p.TypeRef.Namespace}}::{{p.TypeRef.Name}}ProtoToVaf(in.{{ p.Name.lower() }}(),out_{{ p.Name }});
 {% else %}
   out_{{ p.Name }} = in.{{ p.Name.lower() }}();

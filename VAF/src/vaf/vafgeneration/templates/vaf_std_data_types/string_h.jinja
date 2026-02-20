@@ -1,9 +1,9 @@
 {% extends "common/h_file_base.jinja" %}
 
 {% block includes %}
-#include <string>
+#include "vaf/container_types.h"
 {% endblock %}
 
 {% block content %}
-using {{ vaf_string.Name }} = std::string;
+using {{ vaf_string.Name }} = vaf::String;
 {% endblock %}

@@ -1,5 +1,8 @@
-"""Generator for CaC support
-Generates CaC Support for a model
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Generator for CaC support.
+Generates CaC Support for a model.
 """
 
 from pathlib import Path
@@ -8,21 +11,22 @@ from typing import Any, Dict, List, Optional
 from vaf import vafmodel
 from vaf.vafpy import import_model
 from vaf.vafpy.core import VafpyAbstractBase
-from vaf.vafpy.model_runtime import model_runtime
+from vaf.vafpy.model_runtime import ModelRuntime
 
-from ..cli_core.common.utils import ProjectType
+from ..core.common.utils import ProjectType
 from .generation import FileHelper, Generator
 
 
 def __consolidate_namespaces(
-    element_by_namespace: Dict[str, Dict[str, Dict[str, VafpyAbstractBase]]], generate_elements: List[str]
+    element_by_namespace: Dict[str, Dict[str, Dict[str, VafpyAbstractBase]]],
+    generate_elements: List[str],
 ) -> Dict[str, Any]:
     """Consolidate namespaces' data into common classes for CaC generation
     Args:
         element_by_namespace: dictionary that stores the model data by namespaces
         generate_elements: list of elements to be generated
     Returns:
-        dictionary that can be easily accessable by CaC generation
+        dictionary that can be easily accessible by CaC generation
     """
     result: Dict[str, Any] = {}
     # loop over namespace models
@@ -54,7 +58,7 @@ def __write_cac_support_file(file_base_name: str, output_dir: Path, **kwargs: An
     """Generates the CaC support file
 
     Args:
-        file_base_name (str): The base name of the generated file (e.g. SIL Kit -> silkit.py)
+        file_base_name (str): The base name of the generated file
         output_dir (Path): The output directory
     """
     generator = Generator()
@@ -75,7 +79,7 @@ def __read_model(input_dir: Path, model_file_name: str) -> None:
     # Read in model
     model_path: Path = input_dir / model_file_name
 
-    model_runtime.reset()
+    ModelRuntime().reset()
     import_model(str(model_path))
 
 
@@ -91,7 +95,7 @@ def generate(
     Args:
         input_dir (Path): The input directory
         model_file_name (str): The model file name inside the input directory
-        file_base_name (str): The base name of the generated file (e.g. SIL Kit -> silkit.py)
+        file_base_name (str): The base name of the generated file
         output_dir (Path): The output directory
         project_type (ProjectType): type of project that affects the jinja generation
     """
@@ -103,7 +107,7 @@ def generate(
         **{
             "template_path": "vaf_cac_support/platform.py.jinja",
             "cac_model": __consolidate_namespaces(
-                model_runtime.element_by_namespace,
+                ModelRuntime().element_by_namespace,
                 generate_elements=[
                     *(vafmodel.data_types if project_type == ProjectType.INTERFACE else []),
                     "Executables",
@@ -112,7 +116,7 @@ def generate(
                     "PlatformProviderModules",
                 ],
             ),
-            "model": model_runtime.main_model,
+            "model": ModelRuntime().main_model,
             "model_name": model_file_name,
             "data_types": vafmodel.data_types,
         },

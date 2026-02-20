@@ -1,8 +1,0 @@
-{
-  "version": "0.1.0",
-  "vaf-artifacts": {
-    "vaf-output": ".",
-    "vaf-init-model": "."
-  },
-  "project-type": "interface-project"
-}

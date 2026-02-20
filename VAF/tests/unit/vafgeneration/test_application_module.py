@@ -1,6 +1,7 @@
-"""
-Application module generator
-"""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Application module generator."""
 
 import filecmp
 import os
@@ -52,22 +53,26 @@ class TestIntegration:
 
         consumed_interfaces.append(
             vafmodel.ApplicationModuleConsumedInterface(
-                InstanceName="c_interface_instance_1", ModuleInterfaceRef=m.ModuleInterfaces[0]
+                InstanceName="c_interface_instance_1",
+                ModuleInterfaceRef=m.ModuleInterfaces[0],
             )
         )
         consumed_interfaces.append(
             vafmodel.ApplicationModuleConsumedInterface(
-                InstanceName="c_interface_instance_2", ModuleInterfaceRef=m.ModuleInterfaces[0]
+                InstanceName="c_interface_instance_2",
+                ModuleInterfaceRef=m.ModuleInterfaces[0],
             )
         )
         provided_interfaces.append(
             vafmodel.ApplicationModuleProvidedInterface(
-                InstanceName="p_interface_instance_1", ModuleInterfaceRef=m.ModuleInterfaces[0]
+                InstanceName="p_interface_instance_1",
+                ModuleInterfaceRef=m.ModuleInterfaces[0],
             )
         )
         provided_interfaces.append(
             vafmodel.ApplicationModuleProvidedInterface(
-                InstanceName="p_interface_instance_2", ModuleInterfaceRef=m.ModuleInterfaces[0]
+                InstanceName="p_interface_instance_2",
+                ModuleInterfaceRef=m.ModuleInterfaces[0],
             )
         )
 
@@ -81,6 +86,7 @@ class TestIntegration:
             Namespace="apps",
             ConsumedInterfaces=consumed_interfaces,
             ProvidedInterfaces=provided_interfaces,
+            PersistencyFiles=["MyFile1"],
             Tasks=tasks,
         )
 
@@ -139,7 +145,9 @@ class TestIntegration:
         )
 
     def __mock_app_modules_data(
-        self, mocked_model: mock.MagicMock, mocked_app_modules_data: List[Tuple[str, str]]
+        self,
+        mocked_model: mock.MagicMock,
+        mocked_app_modules_data: List[Tuple[str, str]],
     ) -> mock.MagicMock:
         mocked_app_modules = []
         for mocked_data in mocked_app_modules_data:

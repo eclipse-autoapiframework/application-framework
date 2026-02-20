@@ -1,16 +1,20 @@
 {% extends "common/cpp_file_base.jinja" %}
 
 {% block includes %}
-{%- for i in get_includes_of_platform_modules(communication_modules) %}
+#include "vaf/output_sync_stream.h"
+{% for i in get_includes_of_platform_modules(communication_modules) %}
 {{ i }}
 {% endfor %}
 {% for am in executable.ApplicationModules %}
 {{ get_include_of_application_module(am) }}
 {% endfor %}
 
-
+{% if executable.PersistencyModule is not none %}
+{% if executable.PersistencyModule.PersistencyLibrary %}
+#include "persistency/persistency.h"
+{% endif %}
+{% endif %}
 #include "vaf/result.h"
-
 {% endblock %}
 
 {% block content %}
@@ -21,9 +25,53 @@ ExecutableController::ExecutableController()
 
 void ExecutableController::DoInitialize() {
   executor_ = std::make_unique<vaf::Executor>(std::chrono::milliseconds{ {{time_str_to_milliseconds(executable.ExecutorPeriod) }} });
-
+{% if executable.PersistencyModule is not none %}
+  {% for per_file in executable.PersistencyModule.PersistencyFiles %}
+    {% if per_file.FilePath not in shared_per_path %}
+  auto Persistency_{{per_file.AppModuleName}}_{{per_file.FileName}} = std::make_shared<persistency::Persistency>();
+  ::vaf::Result<void> result_{{per_file.AppModuleName}}_{{per_file.FileName}} = Persistency_{{per_file.AppModuleName}}_{{per_file.FileName}}->Open("{{per_file.FilePath}}", {{per_file.Sync}});
+  if(!result_{{per_file.AppModuleName}}_{{per_file.FileName}}.HasValue()){
+    vaf::OutputSyncStream{} << "Could not open persistency kvs storage: {{per_file.FilePath}}." << std::endl;
+    ReportErrorOfModule(result_{{per_file.AppModuleName}}_{{per_file.FileName}}.Error(), "ExecutableController::DoInitialize", true);
+  }
+    {% endif %}
+  {% endfor %}
+  {% for file_path, sync in shared_per_path.items() %}
+  auto Persistency_SharedFile{{loop.index}} = std::make_shared<persistency::Persistency>();
+    ::vaf::Result<void> result{{loop.index}} = Persistency_SharedFile{{loop.index}}->Open("{{file_path}}", {{sync}});
+  if(!result{{loop.index}}.HasValue()){
+    vaf::OutputSyncStream{} << "Could not open persistency kvs storage: {{file_path}}." << std::endl;
+    ReportErrorOfModule(result{{loop.index}}.Error(), "ExecutableController::DoInitialize", true);
+  }
+  {% endfor %}
+  {% for per_file in executable.PersistencyModule.PersistencyFiles %}
+    {% if per_file.FilePath not in shared_per_path %}
+      {% for am in executable.ApplicationModules %}
+        {% if am.ApplicationModuleRef.PersistencyInitValues is not none %}
+          {% for iv in am.ApplicationModuleRef.PersistencyInitValues %}
+            {% if iv.FileName == per_file.FileName and per_file.AppModuleName == am.ApplicationModuleRef.Name %}
+  {{ derive_persistency_set_function("Persistency_"+ per_file.AppModuleName + "_" + per_file.FileName, iv) }}
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+    {% for file_path, sync in shared_per_path.items() %}
+      {% set outer_loop = loop %}
+      {% for am in executable.ApplicationModules %}
+        {% if am.ApplicationModuleRef.PersistencyInitValues is not none %}
+          {% for iv in am.ApplicationModuleRef.PersistencyInitValues %}
+            {% if iv.FileName == per_file.FileName and file_path == per_file.FilePath and per_file.AppModuleName == am.ApplicationModuleRef.Name %}
+  {{ derive_persistency_set_function("Persistency_SharedFile" + outer_loop.index|string, iv) }}
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+  {% endfor %}
+{% endif %}
 {% for m in communication_modules %}
-{% if not is_internal_communication_module(executable, m)%}
+{% if not executable.is_module_internal_communication(m)%}
 
   auto {{ m.Name }} = std::make_shared<{{ get_full_type_of_platform_module(m) }}>(
     *executor_,
@@ -32,12 +80,12 @@ void ExecutableController::DoInitialize() {
 {% endif %}
 {% endfor %}
 {%for m in communication_modules %}
-{% if is_internal_communication_module(executable, m)%}
+{% if executable.is_module_internal_communication(m)%}
 
   auto {{ m.Name }} = std::make_shared<{{ get_full_type_of_platform_module(m) }}>(
     *executor_,
     "{{ m.Name }}",
-    std::vector<std::string>{},
+    vaf::Vector<vaf::String>{},
     *this);
 {% endif%}
 {% endfor %}
@@ -45,10 +93,10 @@ void ExecutableController::DoInitialize() {
 
 {% set am_name = am.ApplicationModuleRef.Name %}
 {% set am_type = get_full_type_of_application_module(am) %}
-{% set execution_dependency, module_dependency = get_dependencies_of_application_module(executable, am) %}
+{% set execution_dependency, module_dependency = get_dependencies_of_application_module(executable, am, shared_per_path) %}
   auto {{ am_name }} = std::make_shared<{{ am_type }}>( {{ am_type }}::ConstructorToken{
     "{{ am_name }}",
-    std::vector<std::string>{
+    vaf::Vector<vaf::String>{
         {% for d in execution_dependency %}
       {"{{ d }}"}{% if not loop.last %},{% endif %}
 
@@ -89,5 +137,4 @@ void ExecutableController::DoStart() {
 void ExecutableController::DoShutdown() {
   ExecutableControllerBase::DoShutdown();
 }
-
 {% endblock %}

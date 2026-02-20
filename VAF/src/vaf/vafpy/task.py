@@ -1,4 +1,7 @@
-"""Abstraction layer for vafmodel.Task in Config as Code"""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Abstraction layer for vafmodel.Task in Config as Code."""
 
 from __future__ import annotations
 

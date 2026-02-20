@@ -1,18 +1,16 @@
-#[=======================================================================[
-  COPYRIGHT
-  -------------------------------------------------------------------------------------------------------------------
+##=======================================================================
+##  COPYRIGHT
+##  -------------------------------------------------------------------------------------------------------------------
+##  \verbatim
+##  Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+##  SPDX-License-Identifier: Apache-2.0
+##  \endverbatim
+##  -------------------------------------------------------------------------------------------------------------------
+##  FILE DESCRIPTION
+##  -------------------------------------------------------------------------------------------------------------------
+##        \file    CMakeLists.txt
+##=======================================================================
 
-  Copyright (c) 2025 by Vector Informatik GmbH. All rights reserved.
-
-                This software is copyright protected and proprietary to Vector Informatik GmbH.
-                Vector Informatik GmbH grants to you only those rights as set out in the license conditions.
-                All other rights remain with Vector Informatik GmbH.
-
-  -------------------------------------------------------------------------------------------------------------------
-  FILE DESCRIPTION
-  -------------------------------------------------------------------------------------------------------------------
-        \file    CMakeLists.txt
-#]=======================================================================]
 set(TARGET vaf_my_service_module)
 
 add_library(${TARGET} STATIC)
@@ -30,6 +28,29 @@ target_sources(${TARGET}
 
 target_link_libraries(${TARGET}
     PUBLIC
-        $<IF:$<TARGET_EXISTS:vafcpp::vaf_core>,vafcpp::vaf_core,vaf_core>
+        vaf_core
         vaf_module_interfaces
     )
+
+if(VAF_STAND_ALONE_BUILD)
+  # Install headers only if the include directory exists
+  if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include")
+      install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+              DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+  endif()
+
+  # Install the library
+  install(TARGETS ${TARGET}
+    EXPORT ${TARGET}Targets
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  )
+
+  # Export the target
+  install(EXPORT ${TARGET}Targets
+    FILE ${TARGET}Config.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${TARGET}
+  )
+endif()

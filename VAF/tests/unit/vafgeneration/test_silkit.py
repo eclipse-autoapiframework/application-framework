@@ -1,6 +1,7 @@
-"""
-silkit generator test
-"""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""SIL Kit generator test."""
 
 # pylint: disable=duplicate-code
 import copy
@@ -21,7 +22,7 @@ from vaf.vafgeneration import vaf_silkit
 class TestIntegration:
     """Basic generation test class"""
 
-    def test_basic_generation(self, tmp_path) -> None:
+    def test_basic_generation(self, tmp_path) -> None:  # pylint: disable=too-many-locals
         """Basic test for silkit generation"""
         m = vafmodel.MainModel()
 
@@ -63,15 +64,15 @@ class TestIntegration:
             )
         )
         lit1 = vafmodel.EnumLiteral(
-            Label="MyLit1",
+            Item="MyLit1",
             Value=0,
         )
         lit2 = vafmodel.EnumLiteral(
-            Label="MyLit2",
+            Item="MyLit2",
             Value=1,
         )
         lit3 = vafmodel.EnumLiteral(
-            Label="MyLit3",
+            Item="MyLit3",
             Value=4,
         )
         m.DataTypeDefinitions.Enums.append(
@@ -206,6 +207,22 @@ class TestIntegration:
                 Operations=operations,
             )
         )
+        amci = vafmodel.ApplicationModuleConsumedInterface(
+            ModuleInterfaceRef=m.ModuleInterfaces[0], InstanceName="ConsumedInstance"
+        )
+        ampi = vafmodel.ApplicationModuleProvidedInterface(
+            ModuleInterfaceRef=m.ModuleInterfaces[0], InstanceName="ProvidedInstance"
+        )
+
+        am = vafmodel.ApplicationModule(
+            Name="MyApplicationModule",
+            Namespace="test",
+            ConsumedInterfaces=[amci],
+            ProvidedInterfaces=[ampi],
+            PersistencyFiles=[],
+        )
+
+        m.ApplicationModules.append(am)
 
         m.PlatformProviderModules.append(
             vafmodel.PlatformModule(
@@ -214,15 +231,28 @@ class TestIntegration:
                 ModuleInterfaceRef=m.ModuleInterfaces[0],
                 OriginalEcoSystem=vafmodel.OriginalEcoSystemEnum.SILKIT,
                 ConnectionPointRef=vafmodel.SILKITConnectionPoint(
-                    Name="CPoint",
-                    ServiceInterfaceName="MyInterface",
-                    RegistryUri="silkit://localhost:8500",
+                    Name="CPoint", SilkitInstance="MyInterface", SilkitInstanceIsOptional=False
                 ),
             )
         )
 
         m.PlatformConsumerModules.append(copy.deepcopy(m.PlatformProviderModules[0]))
         m.PlatformConsumerModules[0].Name = "MyConsumerModule"
+
+        iitmm1 = vafmodel.InterfaceInstanceToModuleMapping(
+            InstanceName="ConsumedInstance", ModuleRef=m.PlatformConsumerModules[0]
+        )
+        iitmm2 = vafmodel.InterfaceInstanceToModuleMapping(
+            InstanceName="ProvidedInstance", ModuleRef=m.PlatformProviderModules[0]
+        )
+
+        eap = vafmodel.ExecutableApplicationModuleMapping(
+            ApplicationModuleRef=am, InterfaceInstanceToModuleMappings=[iitmm1, iitmm2], TaskMapping=[]
+        )
+
+        e = vafmodel.Executable(Name="MyExecutable", ExecutorPeriod="10ms", ApplicationModules=[eap])
+
+        m.Executables.append(e)
 
         vaf_silkit.generate(m, tmp_path)
 

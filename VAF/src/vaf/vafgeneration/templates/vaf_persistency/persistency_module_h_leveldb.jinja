@@ -1,0 +1,45 @@
+{% extends "common/h_file_base.jinja" %}
+
+{% block includes %}
+#include <memory>
+#include <utility>
+#include "vaf/container_types.h"
+#include "vaf/data_ptr.h"
+#include "vaf/result.h"
+#include "vaf/error_domain.h"
+#include "leveldb/db.h"
+#include "{{ interface_file.namespace }}/{{ to_snake_case(interface_file.name) }}.h"
+{% for namespace in namespaces %}
+#include "protobuf/{{ namespace.replace("::","/")}}/protobuf_transformer.h"
+{% endfor %}
+
+{% endblock %}
+
+{% block content %}
+class {{ module_name }} final : public ::{{ interface_file.namespace }}::{{ interface_file.name }} {
+ public:
+  explicit {{ module_name }}();
+  ~{{ module_name }}() noexcept override;
+  {{ module_name }}(const {{ module_name }}&) = delete;
+  {{ module_name }}({{ module_name }}&&) = delete;
+  {{ module_name }}& operator=(const {{ module_name }}&) = delete;
+  {{ module_name }}& operator=({{ module_name }}&&) = delete;
+
+  ::vaf::Result<void> Open(const vaf::String& filename, bool sync_on_write) noexcept;
+  ::vaf::Result<void> Set(const vaf::String& key, const vaf::String& value) noexcept;
+  ::vaf::Result<vaf::String> Get(const vaf::String& key) noexcept;
+
+{% for proto, basetype in proto_basetype_dict.items() %}
+  ::vaf::Result<{{basetype}}> Get_{{proto}}Value(const vaf::String& key) noexcept override;
+  ::vaf::Result<void> Set_{{proto}}Value(const vaf::String& key, const {{basetype}}& value) noexcept override;
+{% endfor %}
+{% for name in datatype_names %}
+  ::vaf::Result<{{"::" + name}}> Get_{{name.rsplit("::")[-1]}}Value(const vaf::String& key) noexcept override;
+  ::vaf::Result<void> Set_{{name.rsplit("::")[-1]}}Value(const vaf::String& key, const {{"::" + name}}& value) noexcept override;
+{% endfor %}
+ private:
+  leveldb::DB* db_{nullptr};
+  bool opened_{false};
+  bool sync_on_write_{false};
+};
+{% endblock %}

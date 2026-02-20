@@ -1,3 +1,6 @@
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 """Generator library for module interface generation."""
 
 # pylint: disable=duplicate-code
@@ -12,7 +15,11 @@ def _get_file_helper(data_type: vafmodel.DataType) -> FileHelper:
     return FileHelper(data_type.Name, data_type.Namespace)
 
 
-def generate_interfaces(interface: vafmodel.ModuleInterface, generator: Generator, verbose_mode: bool = False) -> None:
+def generate_interfaces(
+    interface: vafmodel.ModuleInterface,
+    generator: Generator,
+    verbose_mode: bool = False,
+) -> None:
     """Generates the module interfaces
 
     Args:
@@ -22,20 +29,18 @@ def generate_interfaces(interface: vafmodel.ModuleInterface, generator: Generato
     """
     include_files: list[str] = []
     for d in interface.DataElements:
-        include_files.append(get_data_type_include(d.TypeRef.Name, d.TypeRef.Namespace))
+        include_files.append(get_data_type_include(d.TypeRef))
 
     out_parameter_type_namespace: str = interface.Namespace
-    if interface.OperationOutputNamespace is not None:
-        out_parameter_type_namespace = interface.OperationOutputNamespace
 
     for o in interface.Operations:
         out_paramter_includes: list[str] = []
         out_parameters: list[vafmodel.Parameter] = []
         for p in o.Parameters:
             if p.Direction is not vafmodel.ParameterDirection.OUT:
-                include_files.append(get_data_type_include(p.TypeRef.Name, p.TypeRef.Namespace))
+                include_files.append(get_data_type_include(p.TypeRef))
             if p.Direction is not vafmodel.ParameterDirection.IN:
-                out_paramter_includes.append(get_data_type_include(p.TypeRef.Name, p.TypeRef.Namespace))
+                out_paramter_includes.append(get_data_type_include(p.TypeRef))
                 out_parameters.append(p)
 
         if len(out_parameters) > 0:
@@ -81,7 +86,9 @@ def generate_interfaces(interface: vafmodel.ModuleInterface, generator: Generato
 
 
 def generate_interfaces_mocks(
-    interface: vafmodel.ModuleInterface, generator: Generator, verbose_mode: bool = False
+    interface: vafmodel.ModuleInterface,
+    generator: Generator,
+    verbose_mode: bool = False,
 ) -> None:
     """Generates the module interfaces
 
@@ -91,18 +98,16 @@ def generate_interfaces_mocks(
         verbose_mode: flag to enable verbose_mode mode
     """
     out_parameter_type_namespace: str = interface.Namespace
-    if interface.OperationOutputNamespace is not None:
-        out_parameter_type_namespace = interface.OperationOutputNamespace
 
     include_files: list[str] = []
     for d in interface.DataElements:
-        include_files.append(get_data_type_include(d.TypeRef.Name, d.TypeRef.Namespace))
+        include_files.append(get_data_type_include(d.TypeRef))
 
     for o in interface.Operations:
         out_parameters: list[vafmodel.Parameter] = []
         for p in o.Parameters:
             if p.Direction is not vafmodel.ParameterDirection.OUT:
-                include_files.append(get_data_type_include(p.TypeRef.Name, p.TypeRef.Namespace))
+                include_files.append(get_data_type_include(p.TypeRef))
             if p.Direction is not vafmodel.ParameterDirection.IN:
                 out_parameters.append(p)
 
@@ -160,6 +165,7 @@ def generate_module_interfaces(model: vafmodel.MainModel, output_dir: Path, verb
     )
 
     libraries: list[str] = ["vaf_data_types"] if data_type_definition_not_empty else []
+    libraries.append("vaf_core")
 
     generator.generate_to_file(
         cmake_file,
@@ -174,7 +180,7 @@ def generate_module_interfaces(model: vafmodel.MainModel, output_dir: Path, verb
         include_path: Path = output_dir / "src-gen/libs/interfaces/include"
         include_path.mkdir(parents=False, exist_ok=True)
 
-    if len(model.ModuleInterfaces) > 0:
+    if model.has_module_interfaces or model.is_persistency_used:
         generator.set_base_directory(output_dir / "test-gen/mocks/interfaces")
         generator.generate_to_file(
             cmake_file,

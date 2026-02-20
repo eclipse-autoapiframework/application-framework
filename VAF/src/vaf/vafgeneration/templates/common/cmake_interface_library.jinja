@@ -20,3 +20,26 @@ target_link_libraries(${TARGET}
         {% endfor %}
     )
 {% endif %}
+
+if(VAF_STAND_ALONE_BUILD)
+  # Install headers only if the include directory exists
+  if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include")
+      install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+              DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+  endif()
+
+  # Install the library
+  install(TARGETS ${TARGET}
+    EXPORT ${TARGET}Targets
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  )
+
+  # Export the target
+  install(EXPORT ${TARGET}Targets
+    FILE ${TARGET}Config.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${TARGET}
+  )
+endif()

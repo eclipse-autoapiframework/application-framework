@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package protobuf.basetypes;
+
+message UInt64 {
+  uint64 vaf_value_internal = 1;
+}
+message UInt32 {
+  uint32 vaf_value_internal = 1;
+}
+message UInt16 {
+  uint32 vaf_value_internal = 1;
+}
+message UInt8 {
+  uint32 vaf_value_internal = 1;
+}
+message Int64 {
+  int64 vaf_value_internal = 1;
+}
+message Int32 {
+  int32 vaf_value_internal = 1;
+}
+message Int16 {
+  int32 vaf_value_internal = 1;
+}
+message Int8 {
+  int32 vaf_value_internal = 1;
+}
+message Bool {
+  bool vaf_value_internal = 1;
+}
+message Float {
+  float vaf_value_internal = 1;
+}
+message Double {
+  double vaf_value_internal = 1;
+}

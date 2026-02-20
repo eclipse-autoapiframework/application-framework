@@ -1,13 +1,16 @@
-
 {% extends "common/cpp_file_base.jinja" %}
 
 {% block content %}
 {{ app_module.Name }}Base::{{ app_module.Name }}Base(ConstructorToken&& token)
     : vaf::ControlInterface(token.name_, std::move(token.dependencies_), token.executable_controller_interface_, token.executor_),
-      executor_{vaf::ControlInterface::executor_}{% if (interfaces | length) > 0 %},{% endif %}
+      executor_{vaf::ControlInterface::executor_}{% if (interfaces | length) > 0 or (persistency_files | length) > 0 %},{% endif %}
 
       {% for i in interfaces %}
-      {{ i["instance"] }}_{std::move(token.{{ i["instance"] }}_)}{% if not loop.last %},{% endif %}
+      {{ i["instance"] }}_{std::move(token.{{ i["instance"] }}_)}{% if not loop.last or (persistency_files | length) > 0%},{% endif %}
+
+      {% endfor %}
+      {% for i in persistency_files %}
+      persistency_{{ i["instance"] }}_{std::move(token.persistency_{{ i["instance"] }}_)}{% if not loop.last %},{% endif %}
 
       {% endfor %}
   {

@@ -1,17 +1,18 @@
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 """Test of generation.py"""
 
 from pathlib import Path
 
 from vaf import vafmodel
-from vaf.cli_core.common.utils import to_camel_case, to_snake_case
+from vaf.core.common.utils import to_camel_case, to_snake_case
 from vaf.vafgeneration.generation import (
     FileHelper,
     data_type_to_str,
     get_data_type_include,
-    has_operation_out_or_inout_parameter,
     is_data_type_base_type,
     is_data_type_cstdint_type,
-    is_out_parameter,
     split_full_type,
 )
 
@@ -71,38 +72,43 @@ def test_file_helper() -> None:
     assert f.get_guard() == "ABC_DFG_FILE_H"
     assert f.get_include() == '#include "abc/dfg/file.h"'
     assert f.get_name() == "file"
-    assert f.get_namespace_start() == "namespace abc {\nnamespace dfg {\n"
+    assert f.get_namespace_start() == "namespace abc {\nnamespace dfg {"
 
     f2 = FileHelper("file", "MyNamespace")
     assert f2.get_file_path(Path.cwd(), ".cpp") == Path.cwd() / "src/mynamespace/file.cpp"
 
     f3 = FileHelper("file", "MyNamespace")
     assert f3.get_file_path(Path.cwd(), ".txt") == Path.cwd() / "mynamespace/file.txt"
-    assert f3.get_namespace_start() == "namespace MyNamespace {\n"
+    assert f3.get_namespace_start() == "namespace MyNamespace {"
 
 
 def test_get_data_type_include() -> None:
     """Test function get_data_type_include"""
-    assert get_data_type_include("T", "ABC") == '#include "abc/impl_type_t.h"'
-    assert get_data_type_include("T", "ABC::dfg") == '#include "abc/dfg/impl_type_t.h"'
+    assert get_data_type_include(vafmodel.DataType(Name="T", Namespace="ABC")) == '#include "abc/impl_type_t.h"'
+    assert (
+        get_data_type_include(vafmodel.DataType(Name="T", Namespace="ABC::dfg")) == '#include "abc/dfg/impl_type_t.h"'
+    )
 
-    assert get_data_type_include("uint8_t", "") == "#include <cstdint>"
-    assert get_data_type_include("uint16_t", "") == "#include <cstdint>"
-    assert get_data_type_include("uint32_t", "") == "#include <cstdint>"
-    assert get_data_type_include("uint64_t", "") == "#include <cstdint>"
-    assert get_data_type_include("int8_t", "") == "#include <cstdint>"
-    assert get_data_type_include("int16_t", "") == "#include <cstdint>"
-    assert get_data_type_include("int32_t", "") == "#include <cstdint>"
-    assert get_data_type_include("int64_t", "") == "#include <cstdint>"
-    assert get_data_type_include("int64_t", "std") == "#include <cstdint>"
+    assert get_data_type_include(vafmodel.DataType(Name="uint8_t", Namespace="")) == "#include <cstdint>"
+    assert get_data_type_include(vafmodel.DataType(Name="uint16_t", Namespace="")) == "#include <cstdint>"
+    assert get_data_type_include(vafmodel.DataType(Name="uint32_t", Namespace="")) == "#include <cstdint>"
+    assert get_data_type_include(vafmodel.DataType(Name="uint64_t", Namespace="")) == "#include <cstdint>"
+    assert get_data_type_include(vafmodel.DataType(Name="int8_t", Namespace="")) == "#include <cstdint>"
+    assert get_data_type_include(vafmodel.DataType(Name="int16_t", Namespace="")) == "#include <cstdint>"
+    assert get_data_type_include(vafmodel.DataType(Name="int32_t", Namespace="")) == "#include <cstdint>"
+    assert get_data_type_include(vafmodel.DataType(Name="int64_t", Namespace="")) == "#include <cstdint>"
+    assert get_data_type_include(vafmodel.DataType(Name="int64_t", Namespace="std")) == "#include <cstdint>"
 
-    assert get_data_type_include("int64_t", "not_std") == '#include "not_std/impl_type_int64_t.h"'
+    assert (
+        get_data_type_include(vafmodel.DataType(Name="int64_t", Namespace="not_std"))
+        == '#include "not_std/impl_type_int64_t.h"'
+    )
 
-    assert get_data_type_include("double", "") == ""
-    assert get_data_type_include("float", "") == ""
-    assert get_data_type_include("bool", "") == ""
+    assert get_data_type_include(vafmodel.DataType(Name="double", Namespace="")) == ""
+    assert get_data_type_include(vafmodel.DataType(Name="float", Namespace="")) == ""
+    assert get_data_type_include(vafmodel.DataType(Name="bool", Namespace="")) == ""
 
-    assert get_data_type_include("bool", "std") == ""
+    assert get_data_type_include(vafmodel.DataType(Name="bool", Namespace="std")) == ""
 
 
 def test_has_operation_out_or_inout_parameter() -> None:
@@ -116,7 +122,7 @@ def test_has_operation_out_or_inout_parameter() -> None:
         )
     )
 
-    assert has_operation_out_or_inout_parameter(vafmodel.Operation(Name="dummy", Parameters=parameters)) is False  # pylint: disable=line-too-long
+    assert not vafmodel.Operation(Name="dummy", Parameters=parameters).has_any_parameter_out_inout
 
     parameters.append(
         vafmodel.Parameter(
@@ -126,41 +132,26 @@ def test_has_operation_out_or_inout_parameter() -> None:
         )
     )
 
-    assert has_operation_out_or_inout_parameter(vafmodel.Operation(Name="dummy", Parameters=parameters)) is True  # pylint: disable=line-too-long
+    assert vafmodel.Operation(Name="dummy", Parameters=parameters).has_any_parameter_out_inout
 
 
 def test_is_out_parameter() -> None:
     """Tests function is_out_parameter"""
-    assert (
-        is_out_parameter(
-            vafmodel.Parameter(
-                Name="dummy",
-                TypeRef=vafmodel.DataType(Name="uint8_t", Namespace=""),
-                Direction=vafmodel.ParameterDirection.IN,
-            )
-        )
-        is False
-    )
-    assert (
-        is_out_parameter(
-            vafmodel.Parameter(
-                Name="dummy",
-                TypeRef=vafmodel.DataType(Name="uint8_t", Namespace=""),
-                Direction=vafmodel.ParameterDirection.INOUT,
-            )
-        )
-        is False
-    )
-    assert (
-        is_out_parameter(
-            vafmodel.Parameter(
-                Name="dummy",
-                TypeRef=vafmodel.DataType(Name="uint8_t", Namespace=""),
-                Direction=vafmodel.ParameterDirection.OUT,
-            )
-        )
-        is True
-    )
+    assert not vafmodel.Parameter(
+        Name="dummy",
+        TypeRef=vafmodel.DataType(Name="uint8_t", Namespace=""),
+        Direction=vafmodel.ParameterDirection.IN,
+    ).is_direction_out
+    assert not vafmodel.Parameter(
+        Name="dummy",
+        TypeRef=vafmodel.DataType(Name="uint8_t", Namespace=""),
+        Direction=vafmodel.ParameterDirection.INOUT,
+    ).is_direction_out
+    assert vafmodel.Parameter(
+        Name="dummy",
+        TypeRef=vafmodel.DataType(Name="uint8_t", Namespace=""),
+        Direction=vafmodel.ParameterDirection.OUT,
+    ).is_direction_out
 
 
 def test_split_full_type() -> None:

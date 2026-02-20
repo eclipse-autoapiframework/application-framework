@@ -1,4 +1,7 @@
-"""Generator for controller
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Generator for controller.
 Generates
     - executable_controller.h
     - executable_controller.cpp
@@ -6,19 +9,21 @@ Generates
     - user_controller.cpp
     - CMakeLists.txt
 """
+
 # pylint: disable=too-many-locals
+# mypy: disable-error-code="union-attr"
 
 from pathlib import Path
-from typing import List
+from typing import Any, List, Tuple
 
 from vaf import vafmodel
-from vaf.cli_core.common.utils import to_snake_case
+from vaf.core.common.utils import create_name_namespace_full_name, to_snake_case
 from vaf.vafgeneration.vaf_generate_common import get_ancestor_file_suffix
 
 from .generation import (
     FileHelper,
     Generator,
-    is_silkit_used,
+    implicit_data_type_to_str,
     time_str_to_nanoseconds,
 )
 
@@ -89,21 +94,6 @@ def get_includes_of_platform_modules(
     return includes
 
 
-def is_internal_communication_module(exe: vafmodel.Executable, sm: vafmodel.PlatformModule) -> bool:
-    """Returns True if platform module is internal communication module, otherwise False
-
-    Args:
-        exe (vafmodel.Executable): The executable
-        sm (vafmodel.PlatformModule): The platform module
-
-    Returns:
-        bool: True if internal communication module
-    """
-    if not _is_vsf_platform_module(exe, sm):
-        return False
-    return True
-
-
 def _get_provided_modules_of_application_module(
     eamm: vafmodel.ExecutableApplicationModuleMapping,
 ) -> list[vafmodel.PlatformModule]:
@@ -151,16 +141,130 @@ def _get_consumed_interface(
     raise ValueError(f"Error: could not find consumed interface of platform module {m.Namespace}::{m.Name}")
 
 
+def _derive_value_str_from_value(x: Any) -> str:
+    value: str
+    if type(x) is bool:  # pylint: disable=unidiomatic-typecheck
+        value = "true" if x is True else "false"
+    elif type(x) is str:  # pylint: disable=unidiomatic-typecheck
+        value = '"' + str(x) + '"'
+    else:
+        value = str(x)
+    return value
+
+
+def derive_persistency_set_function(file_name: str, iv: vafmodel.PersistencyInitValue) -> str:
+    """Derive how to call the persistency Set function
+
+    Args:
+        file_name (str): The persistency file name
+        iv (vafmodel.PersistencyInitValue): PersistencyInitValue
+
+    Returns:
+        str: The persistency Set call string
+    """
+    output: str = ""
+    name = iv.TypeRef.Name
+    namespace = iv.TypeRef.Namespace
+
+    basetype_dict = {}
+    basetype_dict["uint64_t"] = "UInt64"
+    basetype_dict["uint32_t"] = "UInt32"
+    basetype_dict["uint16_t"] = "UInt16"
+    basetype_dict["uint8_t"] = "UInt8"
+    basetype_dict["int64_t"] = "Int64"
+    basetype_dict["int32_t"] = "Int32"
+    basetype_dict["int16_t"] = "Int16"
+    basetype_dict["int8_t"] = "Int8"
+    basetype_dict["bool"] = "Bool"
+    basetype_dict["float"] = "Float"
+    basetype_dict["double"] = "Double"
+
+    if iv.TypeRef.is_cpp_base_type:
+        output = f"""auto {file_name}_{iv.Key}_result = {file_name}->Get_{basetype_dict[name]}Value("{iv.Key}");
+  if (!{file_name}_{iv.Key}_result.HasValue()) {{
+    vaf::OutputSyncStream{{}} << "{file_name}: Key-Value {iv.Key} NOT initialized, set init value." << std::endl;
+    ReportErrorOfModule({file_name}_{iv.Key}_result.Error(), "ExecutableController::DoInitialize", false);
+    {file_name}->Set_{basetype_dict[name]}Value("{iv.Key}", {_derive_value_str_from_value(iv.Value.InitValue)});
+  }}"""
+    else:
+        fullname = create_name_namespace_full_name(name, namespace)
+        if isinstance(iv.Value.InitValue, str):
+            init_value = '"' + str(iv.Value.InitValue) + '"'
+            fullname = "String"
+        else:
+            init_list = []
+            for x in iv.Value.InitValue:
+                init_list.append(_derive_value_str_from_value(x))
+            init_value = ",".join(init_list)
+        # pylint: disable=line-too-long
+        output = f"""auto {file_name}_{iv.Key}_result = {file_name}->Get_{fullname.rsplit("::", maxsplit=1)[-1]}Value("{iv.Key}");
+  if (!{file_name}_{iv.Key}_result.HasValue()) {{
+    vaf::OutputSyncStream{{}} << "{file_name}: Key-Value {iv.Key} NOT initialized, set init value." << std::endl;
+    ReportErrorOfModule({file_name}_{iv.Key}_result.Error(), "ExecutableController::DoInitialize", false);
+    {implicit_data_type_to_str(name, namespace)} {file_name}_{iv.Key}_value = {{ {init_value} }};
+    {file_name}->Set_{fullname.rsplit("::", maxsplit=1)[-1]}Value("{iv.Key}", {file_name}_{iv.Key}_value);
+  }}"""
+
+    return output
+
+
+def get_persistency_dependencies(
+    exe: vafmodel.Executable,
+    am: vafmodel.ExecutableApplicationModuleMapping,
+    shared_per_path: dict[str, str],
+) -> list[str]:
+    """Gets persistency dependencies of a application module by its mapping
+
+    Args:
+        exe (vafmodel.Executable): The executable the application module is mapped to
+        am (vafmodel.ExecutableApplicationModuleMapping): The application module mapping
+        shared_per_path (dict[str, str]): Shared persistency paths and sync option
+
+    Raises:
+        ValueError: If application module have persistency files but persistency library wasn't connected
+
+    Returns:
+        list[str]: The persistency dependencies
+    """
+    persistency_dependencies: list[str] = []
+    if exe.PersistencyModule is not None:
+        # Need to be added in same order as declared in app module constructor token
+        for app_per_file in am.ApplicationModuleRef.PersistencyFiles:
+            for per_file in exe.PersistencyModule.PersistencyFiles:
+                if per_file.AppModuleName == am.ApplicationModuleRef.Name and app_per_file == per_file.FileName:
+                    shared_path_keys = list(shared_per_path)
+                    if per_file.FilePath not in shared_path_keys:
+                        persistency_dependencies.append(
+                            "Persistency_" + per_file.AppModuleName + "_" + per_file.FileName
+                        )
+                    else:
+                        persistency_dependencies.append(
+                            "Persistency_" + "SharedFile" + str(1 + shared_path_keys.index(per_file.FilePath))
+                        )
+
+                    if not exe.PersistencyModule.PersistencyLibrary:
+                        raise ValueError(
+                            f"AppModule {am.ApplicationModuleRef.Namespace}::{am.ApplicationModuleRef.Name} has a"
+                            " persistency file but no key-value store is connected."
+                        )
+    return persistency_dependencies
+
+
 # pylint: disable=too-many-branches
 def get_dependencies_of_application_module(
     exe: vafmodel.Executable,
     am: vafmodel.ExecutableApplicationModuleMapping,
+    shared_per_path: dict[str, str],
 ) -> tuple[list[str], list[str]]:
     """Gets the execution and module dependencies of a application module by its mapping
 
     Args:
         exe (vafmodel.Executable): The executable the application module is mapped to
         am (vafmodel.ExecutableApplicationModuleMapping): The application module mapping
+        shared_per_path (dict[str, str]): Shared persistency paths and sync option
+
+    Raises:
+        ValueError: If application module have persistency files but persistency library wasn't connected
 
     Returns:
         tuple[list[str], list[str]]: The execution and module dependencies
@@ -168,12 +272,13 @@ def get_dependencies_of_application_module(
     execution_dependencies: list[str] = []
     module_dependencies_c: list[str] = []
     module_dependencies_p: list[str] = []
+    persistency_dependencies: list[str] = []
 
+    persistency_dependencies = get_persistency_dependencies(exe, am, shared_per_path)
     provided_modules = _get_provided_modules_of_application_module(am)
     for m in provided_modules:
         module_dependencies_p.append(m.Name)
-        if not _is_vsf_platform_module(exe, m):
-            execution_dependencies.append(m.Name)
+        execution_dependencies.append(m.Name)
 
     consumed_modules = _get_consumed_modules_of_application_module(am)
     for m in consumed_modules:
@@ -182,7 +287,10 @@ def get_dependencies_of_application_module(
         if not _get_consumed_interface(am, m).IsOptional:
             execution_dependencies.append(m.Name)
 
-    return (execution_dependencies, module_dependencies_c + module_dependencies_p)
+    return (
+        execution_dependencies,
+        module_dependencies_c + module_dependencies_p + persistency_dependencies,
+    )
 
 
 # pylint: enable=too-many-branches
@@ -225,10 +333,11 @@ def get_task_mapping(
 
 
 # Locals use seems reasonable. Generator could become an argument but not really a benefit there
-
-
 def generate(  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
-    model: vafmodel.MainModel, output_dir: Path, is_ancestor: bool = False, verbose_mode: bool = False
+    model: vafmodel.MainModel,
+    output_dir: Path,
+    is_ancestor: bool = False,
+    verbose_mode: bool = False,
 ) -> List[str]:
     """Generate the VAF controller
 
@@ -250,6 +359,16 @@ def generate(  # pylint: disable=too-many-locals, too-many-branches, too-many-st
         output_path = output_dir / "src-gen/executables"
         provided_modules: list[vafmodel.PlatformModule] = []
         consumed_modules: list[vafmodel.PlatformModule] = []
+
+        unique_per_path: list[str] = []
+        shared_per_path: dict[str, str] = {}
+        if e.PersistencyModule is not None:
+            for per_map in e.PersistencyModule.PersistencyFiles:
+                if per_map.FilePath not in unique_per_path:
+                    unique_per_path.append(per_map.FilePath)
+                else:
+                    if per_map.FilePath not in shared_per_path:
+                        shared_per_path.update({per_map.FilePath: per_map.Sync})
 
         for am in e.ApplicationModules:
             for mapping in am.InterfaceInstanceToModuleMappings:
@@ -276,7 +395,6 @@ def generate(  # pylint: disable=too-many-locals, too-many-branches, too-many-st
                     > 0
                 ):
                     provided_modules.append(mapping.ModuleRef)
-
                 else:
                     raise ValueError(
                         f"Mapped interface instance {mapping.InstanceName} not found in application module: "
@@ -285,24 +403,31 @@ def generate(  # pylint: disable=too-many-locals, too-many-branches, too-many-st
         folder_name = to_snake_case(e.Name)
         generator.set_base_directory(output_path / folder_name)
 
-        exe_controller_file = FileHelper("ExecutableController", "executable_controller")
+        exe_controller_file = None
         if not is_ancestor:
-            generator.generate_to_file(exe_controller_file, ".h", "vaf_controller/executable_controller_h.jinja")
+            exe_controller_file = FileHelper("ExecutableController", "executable_controller")
+            generator.generate_to_file(
+                exe_controller_file,
+                ".h",
+                "vaf_controller/executable_controller_h.jinja",
+            )
             generator.generate_to_file(
                 exe_controller_file,
                 ".cpp",
                 "vaf_controller/executable_controller_cpp.jinja",
                 get_full_type_of_application_module=get_full_type_of_application_module,
                 get_dependencies_of_application_module=get_dependencies_of_application_module,
+                get_persistency_dependencies=get_persistency_dependencies,
+                derive_persistency_set_function=derive_persistency_set_function,
                 get_includes_of_platform_modules=get_includes_of_platform_modules,
                 get_full_type_of_platform_module=get_full_type_of_platform_module,
-                is_internal_communication_module=is_internal_communication_module,
                 get_include_of_application_module=get_include_of_application_module,
                 get_task_mapping=get_task_mapping,
                 executable=e,
                 communication_modules=consumed_modules + provided_modules,
                 vafmodel=vafmodel,
                 isinstance=isinstance,
+                shared_per_path=shared_per_path,
                 verbose_mode=verbose_mode,
             )
 
@@ -340,32 +465,41 @@ def generate(  # pylint: disable=too-many-locals, too-many-branches, too-many-st
                 verbose_mode=verbose_mode,
             )
 
-        def __generate_platform_modules_library_list(modules: List[vafmodel.PlatformModule]) -> List[str]:
+        def __generate_platform_modules_library_list(
+            modules: List[vafmodel.PlatformModule],
+        ) -> Tuple[List[str], List[str]]:
             result = []
+            deployment_types: list[Any] = []
             for module in modules:
                 target_name_list = [
                     "vaf",
                     to_snake_case(module.Name),
                 ]
-                result.append("_".join(target_name_list))
-            return result
 
-        libraries = __generate_platform_modules_library_list(
-            consumed_modules
-        ) + __generate_platform_modules_library_list(provided_modules)
+                result.append("_".join(target_name_list))
+
+            return result, deployment_types
+
+        lib1, dep1 = __generate_platform_modules_library_list(consumed_modules)
+        lib2, dep2 = __generate_platform_modules_library_list(provided_modules)
+        libraries = lib1 + lib2
+        deployment_types = dep1 + dep2
 
         for a in e.ApplicationModules:
             libraries.append(to_snake_case(a.ApplicationModuleRef.Name))
-
+        if e.PersistencyModule is not None:
+            if e.PersistencyModule.PersistencyLibrary:
+                libraries.append("vaf_persistency")
         if not is_ancestor:
             generator.generate_to_file(
                 FileHelper("CMakeLists", "", True),
                 ".txt",
                 "vaf_controller/CMakeLists_txt.jinja",
+                model=model,
                 target_name=e.Name,
                 files=[exe_controller_file],
                 libraries=libraries,
-                uses_silkit=is_silkit_used(model),
+                unique_deployment_types=list(set(deployment_types)),
                 verbose_mode=verbose_mode,
             )
         output_path = output_dir / "src/executables"

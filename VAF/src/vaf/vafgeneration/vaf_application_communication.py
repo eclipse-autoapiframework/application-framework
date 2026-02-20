@@ -1,4 +1,7 @@
-"""Generator for application communication modules
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Generator for application communication modules.
 Generates
     - module.h
     - module.cpp
@@ -9,7 +12,7 @@ Generates
 from pathlib import Path
 
 from vaf import vafmodel
-from vaf.cli_core.common.utils import to_snake_case
+from vaf.core.common.utils import to_snake_case
 
 from .generation import FileHelper, Generator
 
@@ -60,7 +63,7 @@ def generate(model: vafmodel.MainModel, output_dir: Path, verbose_mode: bool = F
             )
 
             cmake = FileHelper("CMakeLists", "", True)
-            cmake_target_name = to_snake_case("Vaf" + sm.Name)
+            cmake_target_name = to_snake_case("vaf_" + sm.Name)
             generator.generate_to_file(
                 cmake,
                 ".txt",
@@ -68,7 +71,7 @@ def generate(model: vafmodel.MainModel, output_dir: Path, verbose_mode: bool = F
                 target_name=cmake_target_name,
                 files=[file],
                 libraries=[
-                    "$<IF:$<TARGET_EXISTS:vafcpp::vaf_core>,vafcpp::vaf_core,vaf_core>",
+                    "vaf_core",
                     "vaf_module_interfaces",
                 ],
                 verbose_mode=verbose_mode,
@@ -78,5 +81,9 @@ def generate(model: vafmodel.MainModel, output_dir: Path, verbose_mode: bool = F
     subdir_cmake = FileHelper("CMakeLists", "", True)
     module_dir_names = list(set(module_dir_names))
     generator.generate_to_file(
-        subdir_cmake, ".txt", "common/cmake_subdirs.jinja", subdirs=module_dir_names, verbose_mode=verbose_mode
+        subdir_cmake,
+        ".txt",
+        "common/cmake_subdirs.jinja",
+        subdirs=module_dir_names,
+        verbose_mode=verbose_mode,
     )

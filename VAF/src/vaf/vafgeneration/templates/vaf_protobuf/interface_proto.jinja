@@ -14,13 +14,13 @@ message {{ de.Name }} {
 {% endfor %}
 {% for op in interface.Operations %}
 message {{ op.Name }}_out {
-{% for p in op.Parameters if not is_in_parameter(p) %}
+{% for p in op.Parameters if not p.is_direction_in %}
 {% set data_type = data_type_to_proto_type(p.TypeRef) %}
   {{ data_type }} {{ p.Name }} = {{loop.index}};
 {% endfor %}
 }
 message {{ op.Name }}_in {
-{% for p in op.Parameters if not is_out_parameter(p) %}
+{% for p in op.Parameters if not p.is_direction_out %}
 {% set data_type = data_type_to_proto_type(p.TypeRef) %}
   {{ data_type }} {{ p.Name }} = {{loop.index}};
 {% endfor %}

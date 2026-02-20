@@ -1,4 +1,7 @@
-"""Common generator functionality"""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Common generator functionality."""
 
 import filecmp
 from pathlib import Path
@@ -7,7 +10,12 @@ from typing import Any
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 from vaf import vafmodel
-from vaf.cli_core.common.utils import to_camel_case, to_snake_case
+from vaf.core.common.constants import PersistencyLibrary
+from vaf.core.common.utils import (
+    create_name_namespace_full_name,
+    to_camel_case,
+    to_snake_case,
+)
 
 
 def data_type_to_str(data_type: vafmodel.DataType) -> str:
@@ -19,9 +27,15 @@ def data_type_to_str(data_type: vafmodel.DataType) -> str:
     Returns:
         str: DataType as string
     """
-    if is_data_type_cstdint_type(data_type.Name, data_type.Namespace):
-        return "std::" + data_type.Name
-    return data_type.Namespace.lower() + "::" + data_type.Name if data_type.Namespace != "" else data_type.Name
+    if data_type.is_cstdint_type:
+        result = "std::" + data_type.Name
+    else:
+        result = (
+            create_name_namespace_full_name(data_type.Name, data_type.Namespace.lower())
+            if data_type.Namespace != ""
+            else data_type.Name
+        )
+    return result
 
 
 def implicit_data_type_to_str(name: str, namespace: str) -> str:
@@ -34,10 +48,7 @@ def implicit_data_type_to_str(name: str, namespace: str) -> str:
     Returns:
         str: DataType as string
     """
-    data_type: vafmodel.DataType = vafmodel.DataType(Name=name, Namespace=namespace)
-    if is_data_type_cstdint_type(data_type.Name, data_type.Namespace):
-        return "std::" + data_type.Name
-    return data_type.Namespace.lower() + "::" + data_type.Name if data_type.Namespace != "" else data_type.Name
+    return data_type_to_str(vafmodel.DataType(Name=name, Namespace=namespace))
 
 
 def add_namespace_to_name(name: str, namespace: str) -> str:
@@ -225,7 +236,7 @@ class FileHelper:
         Returns:
             str: The include guard end
         """
-        return f"#endif // {self.get_guard()}\n"
+        return f"#endif // {self.get_guard()}"
 
     def get_namespace_start(self) -> str:
         """Get the namespace opening
@@ -233,7 +244,7 @@ class FileHelper:
         Returns:
             str: The namespace opening
         """
-        return "".join([f"namespace {ns} {{\n" for ns in self.namespaces])
+        return "\n".join(f"namespace {ns} {{" for ns in self.namespaces) if self.namespaces else ""
 
     def get_namespace_end(self) -> str:
         """Get the namespace closing
@@ -241,7 +252,7 @@ class FileHelper:
         Returns:
             str: The namespace closing
         """
-        return "".join([f"}} // namespace {ns}\n" for ns in reversed(self.namespaces)])
+        return "\n".join([f"}} // namespace {ns}" for ns in reversed(self.namespaces)])  # if self.namespaces else ""
 
     def get_full_type_name(self) -> str:
         """Gets the full type name (including namespace)
@@ -262,12 +273,7 @@ def is_data_type_base_type(name: str, namespace: str) -> bool:
     Returns:
         bool: True if the data type is a C++ base type, False otherwise
     """
-    base_types = ["float", "double", "bool"]
-    if len(namespace) == 0 or namespace == "std":
-        if name in base_types:
-            return True
-
-    return False
+    return vafmodel.DataType(Name=name, Namespace=namespace).is_base_type
 
 
 def is_data_type_cstdint_type(name: str, namespace: str) -> bool:
@@ -280,21 +286,7 @@ def is_data_type_cstdint_type(name: str, namespace: str) -> bool:
     Returns:
         bool: True if the data type is a C++ std int type, False otherwise
     """
-    cstdint_types = [
-        "uint8_t",
-        "uint16_t",
-        "uint32_t",
-        "uint64_t",
-        "int8_t",
-        "int16_t",
-        "int32_t",
-        "int64_t",
-    ]
-    if len(namespace) == 0 or namespace == "std":
-        if name in cstdint_types:
-            return True
-
-    return False
+    return vafmodel.DataType(Name=name, Namespace=namespace).is_cstdint_type
 
 
 def get_include(name: str, namespace: str) -> str:
@@ -310,75 +302,21 @@ def get_include(name: str, namespace: str) -> str:
     return FileHelper(name, namespace).get_include()
 
 
-def get_data_type_include(name: str, namespace: str) -> str:
+def get_data_type_include(datatype: vafmodel.DataType) -> str:
     """Gets the C++ include line to include a data type
 
     Args:
-        name (str): The name of the data type
-        namespace (str): The namespace of the data type
+        datatype: DataType from which the include has to be derived
 
     Returns:
         str: C++ code to include the data type
     """
-    if is_data_type_base_type(name, namespace):
-        return ""
-    if is_data_type_cstdint_type(name, namespace):
-        return "#include <cstdint>"
-    return FileHelper(name, namespace).get_datatype_include()
-
-
-def has_operation_out_or_inout_parameter(operation: vafmodel.Operation) -> bool:
-    """Checks if a operations has a out or inout parameter
-
-    Args:
-        operation (vafmodel.Operation): The operation
-
-    Returns:
-        bool: True if the operation has a out or inout parameter, False otherwise
-    """
-    return (
-        len(
-            [
-                p
-                for p in operation.Parameters
-                if p.Direction in (vafmodel.ParameterDirection.OUT, vafmodel.ParameterDirection.INOUT)
-            ]
-        )
-        > 0
-    )
-
-
-def has_operation_in_or_inout_parameter(operation: vafmodel.Operation) -> bool:
-    """Checks if a operations has a in or inout parameter
-
-    Args:
-        operation (vafmodel.Operation): The operation
-
-    Returns:
-        bool: True if the operation has a in or inout parameter, False otherwise
-    """
-    return (
-        len(
-            [
-                p
-                for p in operation.Parameters
-                if p.Direction in (vafmodel.ParameterDirection.IN, vafmodel.ParameterDirection.INOUT)
-            ]
-        )
-        > 0
-    )
-
-
-def is_in_parameter(p: vafmodel.Parameter) -> bool:
-    """Check is a parameter is a in parameter
-
-    Args:
-        p (vafmodel.Parameter): The parameter
-
-    Returns:
-        bool: True if the parameter is a in parameter, False otherwise
-    """
-    return p.Direction == vafmodel.ParameterDirection.IN
+    result = None
+    if datatype.is_base_type:
+        result = ""
+    elif datatype.is_cstdint_type:
+        result = "#include <cstdint>"
+    return result if result is not None else FileHelper(datatype.Name, datatype.Namespace).get_datatype_include()
 
 
 def operation_get_return_type(operation: vafmodel.Operation, interface: vafmodel.ModuleInterface) -> str:
@@ -399,8 +337,6 @@ def operation_get_return_type(operation: vafmodel.Operation, interface: vafmodel
 
     if len(out_parameters) > 0:
         out_parameter_type_namespace: str = interface.Namespace
-        if interface.OperationOutputNamespace is not None:
-            out_parameter_type_namespace = interface.OperationOutputNamespace
         return out_parameter_type_namespace + "::" + operation.Name + "::Output"
 
     return "void"
@@ -422,18 +358,6 @@ def has_exactly_one_output_parameter(operation: vafmodel.Operation) -> bool:
     if len(out_parameters) == 1:
         return True
     return False
-
-
-def is_out_parameter(p: vafmodel.Parameter) -> bool:
-    """Check is a parameter is a out parameter
-
-    Args:
-        p (vafmodel.Parameter): The parameter
-
-    Returns:
-        bool: True if the parameter is a out parameter, False otherwise
-    """
-    return p.Direction == vafmodel.ParameterDirection.OUT
 
 
 def split_full_type(full_type: str) -> tuple[str, str]:
@@ -460,6 +384,7 @@ class Generator:
             autoescape=select_autoescape(),
             trim_blocks=True,
             lstrip_blocks=True,
+            keep_trailing_newline=True,
         )
         self.base_directory = Path.cwd()
 
@@ -500,11 +425,7 @@ class Generator:
                 implicit_data_type_to_str=implicit_data_type_to_str,
                 add_namespace_to_name=add_namespace_to_name,
                 time_str_to_milliseconds=time_str_to_milliseconds,
-                has_operation_in_or_inout_parameter=has_operation_in_or_inout_parameter,
-                has_operation_out_or_inout_parameter=has_operation_out_or_inout_parameter,
                 operation_get_return_type=operation_get_return_type,
-                is_out_parameter=is_out_parameter,
-                is_in_parameter=is_in_parameter,
                 **kwargs,
             )
 
@@ -521,7 +442,12 @@ class Generator:
                 output_path.unlink()
 
     def generate_to_file(
-        self, file: FileHelper, postfix: str, template_path: str, check_to_overwrite: bool = False, **kwargs: Any
+        self,
+        file: FileHelper,
+        postfix: str,
+        template_path: str,
+        check_to_overwrite: bool = False,
+        **kwargs: Any,
     ) -> None:
         """Generates a template to file.
 
@@ -536,7 +462,12 @@ class Generator:
         self._generate_to_file_common(file, postfix, template_path, output_path, check_to_overwrite, **kwargs)
 
     def generate_to_simple_file(
-        self, file: FileHelper, postfix: str, template_path: str, check_to_overwrite: bool = False, **kwargs: Any
+        self,
+        file: FileHelper,
+        postfix: str,
+        template_path: str,
+        check_to_overwrite: bool = False,
+        **kwargs: Any,
     ) -> None:
         """Generates a template to file not nested in namespaces.
 
@@ -544,30 +475,21 @@ class Generator:
             file (FileHelper): The file to generate
             postfix (str): The file postfix
             template_path (str): The template file to use
-            check_to_overwrite (bool): if true and already present file exits it is aksed to overwrite or not
+            check_to_overwrite (bool): if true and already present file exits it is asked to overwrite or not
             **kwargs (Any): additional parameters to the render call
         """
         output_path = file.get_simple_file_path(self.base_directory, postfix)
         self._generate_to_file_common(file, postfix, template_path, output_path, check_to_overwrite, **kwargs)
 
 
-def is_silkit_used(model: vafmodel.MainModel) -> bool:
-    """Check if anybody is using silkit
+def get_used_persistency_libs(model: vafmodel.MainModel) -> set[PersistencyLibrary]:
+    """Returns a set of the used persistency libraries.
+    Note: Works for integration projects only
 
     Args:
         model (vafmodel.MainModel): The main model
 
     Returns:
-        bool: True if silkit is used
+        set[constants.PersistencyLibrary]: Set of persistency libraries
     """
-    use_silkit: bool = False
-    if (
-        len([m for m in model.PlatformProviderModules if m.OriginalEcoSystem == vafmodel.OriginalEcoSystemEnum.SILKIT])
-        > 0
-        or len(
-            [m for m in model.PlatformConsumerModules if m.OriginalEcoSystem == vafmodel.OriginalEcoSystemEnum.SILKIT]
-        )
-        > 0
-    ):
-        use_silkit = True
-    return use_silkit
+    return {exe.PersistencyModule.PersistencyLibrary for exe in model.Executables if exe.PersistencyModule}

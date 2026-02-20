@@ -1,0 +1,122 @@
+{% include "common/copyright.jinja" %}
+
+#include "vaf/executor.h"
+#include "vaf/output_sync_stream.h"
+
+namespace vaf {
+
+TaskHandle::TaskHandle(vaf::String name, uint64_t period, std::function<void(void)> task,
+                               const vaf::String& owner, const vaf::Vector<vaf::String>& run_after, uint64_t offset,
+                               std::chrono::nanoseconds budget)
+  : name_{std::move(name)},
+    period_{period},
+    task_{std::move(task)},
+    owner_{owner},
+    run_after_{run_after},
+    offset_{offset},
+    budget_{budget} {
+}
+
+const vaf::String& TaskHandle::Name() const { return name_; }
+bool TaskHandle::IsActive() const { return is_active_; }
+void TaskHandle::Execute() const { task_(); }
+uint64_t TaskHandle::Period() const { return period_; }
+void TaskHandle::Start() { is_active_ = true; }
+void TaskHandle::Stop() { is_active_ = false; }
+const vaf::String& TaskHandle::Owner() { return owner_; }
+const vaf::Vector<vaf::String>& TaskHandle::RunAfter() { return run_after_; }
+uint64_t TaskHandle::Offset() const { return offset_; }
+std::chrono::nanoseconds TaskHandle::Budget() const { return budget_; }
+
+Executor::Executor(std::chrono::milliseconds running_period)
+  : running_period_{running_period},
+{% if lib_type == "std" %}
+    logger_{vaf::CreateLogger("E", "Executor")},
+    {% set logwarn = "logger_.LogWarn()" %}
+{% else %}
+    {% set logwarn = "vaf::OutputSyncStream{}" %}
+    {% set warn_str = "Warning: "%}
+{% endif %}
+    thread_{[this](){ ExecutorThread(); }}
+{
+}
+
+Executor::~Executor() {
+  exit_requested_ = true;
+  thread_.join();
+}
+
+void Executor::ExecutorThread() {
+  uint64_t counter{0};
+  std::chrono::steady_clock::time_point next_run{std::chrono::steady_clock::now()};
+  while (!exit_requested_) {
+    next_run += running_period_;
+
+    for (std::shared_ptr<TaskHandle>& task: tasks_) {
+      if (task->IsActive()) {
+        if (counter >= task->Offset()) {
+          if (((counter - task->Offset()) % task->Period()) == 0) {
+            ExecuteTask(*task);
+          }
+        }
+      }
+    }
+
+#ifdef NDEBUG
+#else
+    if (std::chrono::steady_clock::now() > next_run) {
+      {{logwarn}} << "{{warn_str}}Executor could not execute all tasks in time.";
+    }
+#endif
+
+    ++counter;
+
+    std::this_thread::sleep_until(next_run);
+  }
+}
+
+void Executor::ExecuteTask(TaskHandle& task) {
+#ifdef NDEBUG
+  task.Execute();
+#else
+  std::chrono::nanoseconds budget = task.Budget();
+  if (budget.count() == 0) {
+    task.Execute();
+  } else {
+    auto start{std::chrono::high_resolution_clock::now()};
+    task.Execute();
+    auto end{std::chrono::high_resolution_clock::now()};
+    if ((end - start) > budget) {
+      {{logwarn}} << "{{warn_str}}Budget violation of task from " << task.Owner(){{".c_str()" if lib_type == "std" else ""}};
+    }
+  }
+
+#endif
+}
+
+ModuleExecutor::ModuleExecutor(Executor& executor, vaf::String name, vaf::Vector<vaf::String> dependencies)
+  : executor_{executor},
+    handles_{},
+    started_{false},
+    name_{std::move(name)},
+    dependencies_{std::move(dependencies)}
+{
+}
+
+void ModuleExecutor::Start() {
+  for (std::shared_ptr<TaskHandle>& handle: handles_) {
+    handle->Start();
+  }
+
+  started_ = true;
+}
+
+void ModuleExecutor::Stop() {
+  for (std::shared_ptr<TaskHandle>& handle: handles_) {
+    handle->Stop();
+  }
+
+  started_ = false;
+}
+
+} // namespace vaf

@@ -1,4 +1,7 @@
-"""Module containing the VSS data types"""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Module containing the VSS data types."""
 
 from abc import ABC, abstractmethod
 from types import NotImplementedType
@@ -17,7 +20,7 @@ type_translation: dict[str, vafmodel.DataType] = {
     "boolean": vafmodel.DataType(Name=vafmodel.BaseType.BOOL, Namespace=""),
     "float": vafmodel.DataType(Name=vafmodel.BaseType.FLOAT, Namespace=""),
     "double": vafmodel.DataType(Name=vafmodel.BaseType.DOUBLE, Namespace=""),
-    "string": vafmodel.DataType(Name="string", Namespace="vaf"),
+    "string": vafmodel.DataType(Name="String", Namespace="vaf"),
 }
 
 
@@ -69,7 +72,11 @@ class PrimitiveType(BaseType):
     """Primitive types used in the VSS catalog"""
 
     def __init__(
-        self, name: str, type_name: str, min_value: float | None = None, max_value: float | None = None
+        self,
+        name: str,
+        type_name: str,
+        min_value: float | None = None,
+        max_value: float | None = None,
     ) -> None:
         super().__init__(name, "", type_name)
         self.min_value = min_value
@@ -187,7 +194,11 @@ class VectorType(BaseType):
 
     def export(self) -> vafmodel.Vector:
         """Exports a dynamic vector to a VAF model vector"""
-        vec = vafmodel.Vector(Name=self.getTypeRefStr(), Namespace=self.namespace, TypeRef=type_translation[self.type])
+        vec = vafmodel.Vector(
+            Name=self.getTypeRefStr(),
+            Namespace=self.namespace,
+            TypeRef=type_translation[self.type],
+        )
         return vec
 
 
@@ -198,15 +209,15 @@ class EnumType(BaseType):
         super().__init__(name, namespace)
         self.literals: list[dict[str, int]] = []
 
-    def add_literal(self, label: str, value: int) -> None:
+    def add_literal(self, item: str, value: int) -> None:
         """
         Adds a literal to the enum.
 
         Args:
-            label (str): The label or name of the literal.
+            item (str): The item or name of the literal.
             value (int): The numeric value associated with the literal.
         """
-        self.literals.append({"label": label, "value": value})  # type: ignore
+        self.literals.append({"item": item, "value": value})  # type: ignore
 
     def export(self) -> vafmodel.VafEnum:
         """
@@ -225,7 +236,7 @@ class EnumType(BaseType):
             Namespace=self.namespace,
             BaseType=vafmodel.DataType(Name="uint8_t", Namespace=""),
             Literals=[
-                vafmodel.EnumLiteral(Label=lit["label"], Value=lit["value"])  # type: ignore
+                vafmodel.EnumLiteral(Item=lit["item"], Value=lit["value"])  # type: ignore
                 for lit in self.literals
             ],
         )

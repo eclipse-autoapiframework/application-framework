@@ -1,0 +1,113 @@
+{
+  "ModuleInterfaces": [
+    {
+      "Name": "DataExchangeInterface",
+      "Namespace": "demo::interfaces",
+      "DataElements": [
+        {
+          "Name": "MyValue",
+          "TypeRef": "uint32_t"
+        }
+      ]
+    }
+  ],
+  "ApplicationModules": [
+    {
+      "Name": "AppModule1",
+      "Namespace": "demo",
+      "ProvidedInterfaces": [
+        {
+          "InstanceName": "DataExchangeProvider",
+          "ModuleInterfaceRef": "demo::interfaces::DataExchangeInterface"
+        }
+      ],
+      "ConsumedInterfaces": [
+      ],
+      "PersistencyFiles": [],
+      "ImplementationProperties": {
+        "GenerateUnitTestStubs": true,
+        "InstallationPath": "app_module1"
+      },
+      "Tasks": [
+        {
+          "Name": "PeriodicTask",
+          "Period": "200ms"
+        }
+      ]
+    },
+    {
+      "Name": "AppModule2",
+      "Namespace": "demo",
+      "ProvidedInterfaces": [
+      ],
+      "ConsumedInterfaces": [
+        {
+          "InstanceName": "DataExchangeConsumer",
+          "ModuleInterfaceRef": "demo::interfaces::DataExchangeInterface"
+        }
+      ],
+      "PersistencyFiles": [],
+      "ImplementationProperties": {
+        "GenerateUnitTestStubs": true,
+        "InstallationPath": "demo/app_module2"
+      },
+      "Tasks": [
+        {
+          "Name": "PeriodicTask",
+          "Period": "200ms"
+        }
+      ]
+    }
+  ],
+  "PlatformConsumerModules": [
+  ],
+  "PlatformProviderModules": [
+  ],
+  "Executables": [
+    {
+      "Name": "DemoExecutable",
+      "ExecutorPeriod": "10ms",
+      "InternalCommunicationModules": [
+        {
+          "Name": "DataExchangeInterfaceModule",
+          "Namespace": "application_communication",
+          "ModuleInterfaceRef": "demo::interfaces::DataExchangeInterface"
+        }
+      ],
+      "ApplicationModules": [
+        {
+          "ApplicationModuleRef": "demo::AppModule1",
+          "InterfaceInstanceToModuleMappings": [
+            {
+              "InstanceName": "DataExchangeProvider",
+              "ModuleRef": "application_communication::DataExchangeInterfaceModule"
+            }
+          ],
+          "TaskMapping": [
+            {
+              "TaskName": "PeriodicTask",
+              "Offset": 0,
+              "Budget": "1ms"
+            }
+          ]
+        },
+        {
+          "ApplicationModuleRef": "demo::AppModule2",
+          "InterfaceInstanceToModuleMappings": [
+            {
+              "InstanceName": "DataExchangeConsumer",
+              "ModuleRef": "application_communication::DataExchangeInterfaceModule"
+            }
+          ],
+          "TaskMapping": [
+            {
+              "TaskName": "PeriodicTask",
+              "Offset": 1,
+              "Budget": "1ms"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

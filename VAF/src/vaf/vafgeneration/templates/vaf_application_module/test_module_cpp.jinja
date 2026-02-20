@@ -3,13 +3,15 @@
 #include <cstddef>
 #include <cstdint>
 #include <csignal>
-#include <iostream>
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 {% set includes = interfaces | map(attribute="include_mock") | unique %}
 {% for i in includes %}
 {{ i }}
 {% endfor %}
+{% if (persistency_files | length) > 0 %}
+#include "persistency/persistency_mock.h"
+{% endif%}
 {{ app_include }}
 
 {% block content %}
@@ -62,11 +64,22 @@ namespace vaf {
       {% for i in interfaces %}
       auto {{ i["instance"] }}Mock = std::make_shared<{{ i["type"] }}Mock>();
       {% endfor %}
+      {% if (persistency_files | length) > 0 %}
+      auto PersistencyMock = std::make_shared<persistency::PersistencyMock>();
+      {% endif %}
 
-      auto {{ app_module.Name }} = std::make_shared<{{ app_module.Namespace }}::{{ app_module.Name }}>({{ app_module.Namespace }}::{{ app_module.Name }} ::ConstructorToken{
+      auto {{ app_module.Name }} = std::make_shared<{{ app_module.Namespace }}::{{ app_module.Name }}>( {{ app_module.Namespace }}::{{ app_module.Name }} ::ConstructorToken{
         {% for i in interfaces %}
-        {{ i["instance"] }}Mock{% if not loop.last %},
-{% endif %}{% endfor %}});
+        {% if (persistency_files | length) > 0 %}
+        {{ i["instance"] }}Mock,
+        {% else %}
+        {{ i["instance"] }}Mock{% if not loop.last %},{% endif %}
+        {% endif %}
+        {% endfor %}
+        {% for i in persistency_files %}
+        PersistencyMock{% if not loop.last %},{% endif %}
+        {% endfor %}
+      });
     }
 } // namespace vaf
 {% endblock %}

@@ -11,18 +11,24 @@
 {% for i in includes %}
 {{ i }}
 {% endfor %}
+{% for include in persistency_includes%}
+{{include}}
+{% endfor%}
 {% endblock %}
 
 {% block content %}
 class {{ app_module.Name }}Base : public vaf::ControlInterface {
  public:
   struct ConstructorToken {
-    std::string name_;
-    std::vector<std::string> dependencies_;
+    vaf::String name_;
+    vaf::Vector<vaf::String> dependencies_;
     vaf::ExecutableControllerInterface& executable_controller_interface_;
     vaf::Executor& executor_;
     {% for i in interfaces %}
     std::shared_ptr<{{ i["type"] }}> {{ i["instance"] }}_;
+    {% endfor %}
+    {% for i in persistency_files %}
+    std::shared_ptr<{{ i["type"] }}> persistency_{{ i["instance"] }}_;
     {% endfor %}
     {% for r in app_module.Tasks %}
     uint64_t task_offset_{{ r.Name }}_;
@@ -48,6 +54,9 @@ class {{ app_module.Name }}Base : public vaf::ControlInterface {
   vaf::ModuleExecutor& executor_;
   {% for i in interfaces %}
   std::shared_ptr<{{ i["type"] }}> {{ i["instance"] }}_;
+  {% endfor %}
+  {% for i in persistency_files %}
+  std::shared_ptr<{{ i["type"] }}> persistency_{{ i["instance"] }}_;
   {% endfor %}
 };
 {% endblock %}

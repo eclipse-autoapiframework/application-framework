@@ -1,6 +1,7 @@
-"""
-VSS generator test
-"""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""VSS-related generator tests."""
 
 # pylint: disable=duplicate-code
 # pylint: disable=missing-param-doc
@@ -39,5 +40,11 @@ class TestIntegration:
         assert isinstance(module.Vss.Vehicle.Cabin.Seat.Row1.driver_side_if, ModuleInterface)
         assert inspect.isclass(module.Vss.Vehicle.Cabin.Seat.Row1.Driverside.Backrest)
         assert inspect.isclass(module.Vss.Vehicle.Cabin.Seat.Row2.Driverside.Backrest)
-        assert isinstance(module.Vss.Vehicle.Cabin.Seat.Row1.Driverside.Backrest.lumbar_if, ModuleInterface)
-        assert isinstance(module.Vss.Vehicle.Cabin.Seat.Row2.Driverside.Backrest.lumbar_if, ModuleInterface)
+        assert isinstance(
+            module.Vss.Vehicle.Cabin.Seat.Row1.Driverside.Backrest.lumbar_if,
+            ModuleInterface,
+        )
+        assert isinstance(
+            module.Vss.Vehicle.Cabin.Seat.Row2.Driverside.Backrest.lumbar_if,
+            ModuleInterface,
+        )

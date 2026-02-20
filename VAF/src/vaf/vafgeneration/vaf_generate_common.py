@@ -1,4 +1,7 @@
-"""Generator library for generating the complete VAF project"""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Generator library for generating the complete VAF project."""
 
 import shutil
 import subprocess
@@ -6,19 +9,12 @@ from pathlib import Path
 from typing import List
 
 from vaf import vafmodel
+from vaf.core.common.constants import SUFFIX
 
 # Utils
-from vaf.cli_core.common.utils import (
+from vaf.core.common.utils import (
     concat_str_to_path,
 )
-
-# suffix for ancestor of model.json
-from vaf.vafpy.runtime import old_json_suffix
-
-# suffix for old source file
-suffix_old_source = "~"
-ancestor_file_suffix = "~ancestor"
-new_file_suffix = ".new~"
 
 
 def __file_has_conflict(file_path: Path) -> bool:
@@ -41,9 +37,9 @@ def __get_ancestor_file_rel_path(real_file_rel_path: str | Path) -> str | Path:
         respective rel path of the ancestor
     """
     return (
-        concat_str_to_path(real_file_rel_path, ancestor_file_suffix)
+        concat_str_to_path(real_file_rel_path, SUFFIX["ancestor_file"])
         if isinstance(real_file_rel_path, Path)
-        else real_file_rel_path + ancestor_file_suffix
+        else real_file_rel_path + SUFFIX["ancestor_file"]
     )
 
 
@@ -55,9 +51,9 @@ def __get_newly_generated_file_path(real_file_rel_path: str | Path) -> str | Pat
         respective rel path of the newly generated file
     """
     return (
-        concat_str_to_path(real_file_rel_path, new_file_suffix)
+        concat_str_to_path(real_file_rel_path, SUFFIX["new_file"])
         if isinstance(real_file_rel_path, Path)
-        else real_file_rel_path + new_file_suffix
+        else real_file_rel_path + SUFFIX["new_file"]
     )
 
 
@@ -69,9 +65,9 @@ def __get_backup_file_path(real_file_rel_path: str | Path) -> str | Path:
         respective rel path of the backup file
     """
     return (
-        concat_str_to_path(real_file_rel_path, suffix_old_source)
+        concat_str_to_path(real_file_rel_path, SUFFIX["old_file"])
         if isinstance(real_file_rel_path, Path)
-        else real_file_rel_path + suffix_old_source
+        else real_file_rel_path + SUFFIX["old_file"]
     )
 
 
@@ -95,14 +91,14 @@ def __merge_files(
         "git",
         "merge-file",
         "-p",  # -p to send results to stdout
-        str(patched_file_path),
-        str(common_ancestor_file_path),
-        str(newly_generated_file),
+        newly_generated_file.as_posix(),
+        common_ancestor_file_path.as_posix(),
+        patched_file_path.as_posix(),
     ]
     # run the cmd
     merge = subprocess.run(args, capture_output=True, text=True, check=False)
 
-    old_file_path = concat_str_to_path(patched_file_path, suffix_old_source)
+    old_file_path = concat_str_to_path(patched_file_path, SUFFIX["old_file"])
 
     # check if merge results has conflicts
     msg_list = []
@@ -116,7 +112,7 @@ def __merge_files(
             if verbose_mode
             else []
         )
-    elif merge.returncode == 1:
+    elif merge.returncode >= 1:
         msg_list += [
             "\nMERGE WARNING:",
             f"    Merge of {newly_generated_file} with {patched_file_path} has conflicts!",
@@ -131,14 +127,85 @@ def __merge_files(
         else []
     )
 
-    if merge.returncode in (0, 1):
+    if verbose_mode:
+        print(f"Return code is {merge.returncode} File: {patched_file_path}")
+
+    if merge.returncode >= 0:
         print("\n".join(msg_list))
         # save merge results
         with open(patched_file_path, "w", encoding="utf-8") as out_file:
             out_file.write(merge.stdout)
     else:
         # Inform user if merge fails: Don't abort the whole workflow!
-        print(f"Auto file mechanism for file {patched_file_path} failed! Reason: {merge.stderr}")
+        print(f"Merge fails for file {patched_file_path}! Error code {merge.returncode} Reason: {merge.stderr}")
+
+
+# --- Helper Function ---
+def strip_suffix(name: str) -> str:
+    """
+    Remove any known suffix from a filename.
+    Args:
+        name: The filename to process.
+    Returns:
+        The filename with any recognized suffix removed.
+    """
+    # Sort suffixes by length (longest first) to avoid partial matches
+    for suffix in sorted(SUFFIX.values(), key=len, reverse=True):
+        if name.endswith(suffix):
+            return name[: -len(suffix)]
+    return name
+
+
+def is_source_file(file_path: Path) -> bool:
+    """
+    Helper function to identify the C++ source files.
+    Args:
+        file_path: Path object representing the file to check.
+    Returns:
+        True if the file is a recognized C++ source or header file (including variants),
+        False otherwise.
+    """
+    base_extensions = [".cpp", ".h", ".hpp", ".cc"]
+    base_name = strip_suffix(file_path.name)
+    return not file_path.name.startswith("CMake") and any(base_name.endswith(ext) for ext in base_extensions)
+
+
+def format_files(project_dir: str, list_files: List[Path], verbose_mode: bool = False) -> None:
+    """Function to format source files and their variants (~, .new~, ~ancestor) if the base file is in list_files.
+    Args:
+        project_dir: Path to the project directory
+        list_files: List of files to format
+        verbose_mode (bool): Flag to enable verbose mode
+    """
+    print("Clang-formatting the generated source files.")
+
+    # Normalize list_files to absolute paths
+    base_paths = {f.resolve() for f in list_files}
+
+    for file_path in Path(project_dir, "implementation").rglob("*"):
+        if file_path.is_file() and is_source_file(file_path.resolve()):
+            # Strip allowed suffixes to get base path
+            base_name = strip_suffix(file_path.name)
+            base_candidate = file_path.with_name(base_name).resolve()
+
+            # Check if base path is in list_files
+            if base_candidate in base_paths:
+                if verbose_mode:
+                    print(f"Formatting: {file_path}")
+                try:
+                    # Run clang-format
+                    subprocess.run(
+                        ["clang-format", "-i", str(file_path.resolve())],
+                        check=True,
+                        capture_output=True,
+                        text=True,
+                        cwd=str(project_dir),
+                    )
+                except subprocess.CalledProcessError as e:
+                    print(f"clang-format failed for {file_path}:")
+                    print("Exit code:", e.returncode)
+                    print("Output:", e.stdout)
+                    print("Error:", e.stderr)
 
 
 def merge_after_regeneration(out_dir: Path, list_of_user_files_rel_path: List[str], verbose_mode: bool = False) -> None:
@@ -174,7 +241,10 @@ def merge_after_regeneration(out_dir: Path, list_of_user_files_rel_path: List[st
                         shutil.copyfile(backup_file, current_file)
                 else:
                     # current file has no conflict, overwrite backup
-                    shutil.copyfile(out_dir / rel_path_to_file, __get_backup_file_path(out_dir / rel_path_to_file))
+                    shutil.copyfile(
+                        out_dir / rel_path_to_file,
+                        __get_backup_file_path(out_dir / rel_path_to_file),
+                    )
 
                 # perform three way merge
                 __merge_files(
@@ -212,7 +282,7 @@ def get_ancestor_file_suffix(is_ancestor: bool) -> str:
     Returns:
         file suffix if it's ancestor
     """
-    return ancestor_file_suffix if is_ancestor else ""
+    return SUFFIX["ancestor_file"] if is_ancestor else ""
 
 
 def get_ancestor_model(input_file: str) -> vafmodel.MainModel | None:
@@ -223,5 +293,5 @@ def get_ancestor_model(input_file: str) -> vafmodel.MainModel | None:
         Old vafmodel, if old model.json file exists
     """
     # check for "ancestor" model.json (model.json~)
-    ancestor_json = concat_str_to_path(Path(input_file), old_json_suffix)
+    ancestor_json = concat_str_to_path(Path(input_file), SUFFIX["old_file"])
     return vafmodel.load_json(ancestor_json) if ancestor_json.is_file() else None

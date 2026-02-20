@@ -1,17 +1,26 @@
-"""Abstraction layer for vafmodel.ModuleInterfaces in Config as Code"""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Abstraction layer for vafmodel.ModuleInterfaces in Config as Code."""
 
 from copy import deepcopy
 from typing import Any, List, Optional
 
-from typing_extensions import Self
+from pydantic import TypeAdapter
 
 from vaf import vafmodel
-from vaf.cli_core.common.utils import create_name_namespace_full_name
+from vaf.core.common.utils import create_name_namespace_full_name
 
-from .core import ModelError
-from .datatypes import VafpyAbstractDatatypeTyperef, VafpyDataTypeRef
-from .factory import VafpyAbstractElement
-from .model_runtime import model_runtime
+from .core import BaseTypesWrapper, ModelError, VafpyAbstractBase
+from .datatypes import (
+    Array,
+    String,
+    Struct,
+    VafpyFactoryWithTypeRef,
+    Vector,
+)
+from .factory import VafpyFactory
+from .model_runtime import ModelRuntime
 from .task import Task
 
 # pylint: disable = too-few-public-methods
@@ -19,38 +28,51 @@ from .task import Task
 # pylint: disable = super-init-not-called # DUE to decorators' use
 # pylint: disable = unused-argument # DUE to overload in decorator
 # pylint: disable = protected-access
+# pylint:disable=too-many-ancestors
 # mypy: disable-error-code="misc"
 
 ElementType = vafmodel.ApplicationModule | vafmodel.PlatformModule
 
 
-class ModuleInterface(vafmodel.ModuleInterface, VafpyAbstractElement):
-    """Represents a VAF module interface"""
+class VafpyModuleInterfaceFactory(VafpyFactory, VafpyAbstractBase):
+    """Factory class for ModuleInterface"""
 
     @classmethod
-    def _build_instance(cls, obj: Optional[Self] = None, **kwargs: Any) -> Optional[Self]:
-        """Method to build an vafpy module interface
+    def create(cls, constructor: type[vafmodel.VafBaseModel], obj: VafpyAbstractBase, **kwargs: Any) -> None:
+        """Method to build an vafpy module interfaces
         Args:
+            constructor: parent of object whose constructor will be used
             obj: object to be built
             kwargs: attributes of the object
         """
         # call parent's build
-        obj = super()._build_instance(obj, **kwargs)
-        assert obj is not None
+        super().create(constructor=constructor, obj=obj, **kwargs)
         # append element name to internal interfaces
-        model_runtime.internal_interfaces.append(obj.Name)
+        assert obj is not None
+        ModelRuntime().internal_interfaces.append(obj.Name)
 
-        return obj
 
-    def __init__(self, name: str, namespace: str, operation_output_namespace: Optional[str] = None) -> None:
-        self._build_instance(self, Name=name, Namespace=namespace, OperationOutputNamespace=operation_output_namespace)
+class ModuleInterface(vafmodel.ModuleInterface, VafpyAbstractBase):
+    """Represents a VAF module interface"""
 
-    def add_data_element(self, name: str, datatype: VafpyDataTypeRef) -> None:
+    def __init__(
+        self,
+        name: str,
+        namespace: str,
+    ) -> None:
+        VafpyModuleInterfaceFactory.create(
+            constructor=vafmodel.ModuleInterface,
+            obj=self,
+            Name=name,
+            Namespace=namespace,
+        )
+
+    def add_data_element(self, name: str, datatype: VafpyAbstractBase | BaseTypesWrapper) -> None:
         """Add a data element to the module interface
 
         Args:
             name (str): Unique name for the data element
-            datatype (VafpyDataTypeRef): VAF Datatype of the element
+            datatype (VafpyAbstractBase | BaseTypesWrapper): VAF Datatype of the element
 
         Raises:
             ModelError: If a data element with the same name already exists.
@@ -62,41 +84,41 @@ class ModuleInterface(vafmodel.ModuleInterface, VafpyAbstractElement):
         self.DataElements.append(
             vafmodel.DataElement(
                 Name=name,
-                TypeRef=datatype._get_type_ref(),
+                TypeRef=datatype.type_ref,
             )
         )
 
-        # borrow check typeref from VafpyAbstractDatatypeTyperef
-        VafpyAbstractDatatypeTyperef._check_typeref(datatype)
+        # borrow check typeref from vafpyAbstractDatatypeTyperef
+        VafpyFactoryWithTypeRef.check_typeref(datatype)
 
-        model_runtime.used_module_interfaces[create_name_namespace_full_name(self.Name, self.Namespace)].append(
+        ModelRuntime().used_module_interfaces[create_name_namespace_full_name(self.Name, self.Namespace)].append(
             create_name_namespace_full_name(datatype.Name, datatype.Namespace)
         )
 
     def add_operation(
         self,
         name: str,
-        in_parameter: dict[str, VafpyDataTypeRef] | None = None,
-        out_parameter: dict[str, VafpyDataTypeRef] | None = None,
-        inout_parameter: dict[str, VafpyDataTypeRef] | None = None,
+        in_parameter: dict[str, VafpyAbstractBase | BaseTypesWrapper] | None = None,
+        out_parameter: dict[str, VafpyAbstractBase | BaseTypesWrapper] | None = None,
+        inout_parameter: dict[str, VafpyAbstractBase | BaseTypesWrapper] | None = None,
     ) -> None:
         """
         Add an operation to the module interface.
 
         Args:
             name (str): Unique name for the operation.
-            in_parameter (dict[str, VafpyDataTypeRef], optional): Dictionary of input parameters.
+            in_parameter (dict[str, VafpyAbstractBase | BaseTypesWrapper], optional): Dictionary of input parameters.
             Defaults to None.
-            out_parameter (dict[str, VafpyDataTypeRef], optional): Dictionary of output parameters.
+            out_parameter (dict[str, VafpyAbstractBase | BaseTypesWrapper], optional): Dictionary of output parameters.
             Defaults to None.
-            inout_parameter (dict[str, VafpyDataTypeRef], optional): Dictionary of input/output
+            inout_parameter (dict[str, VafpyAbstractBase | BaseTypesWrapper], optional): Dictionary of input/output
             parameters. Defaults to None.
 
         Raises:
             ModelError: If an operation with the same name already exists.
         """
         # consolidate parameters
-        params: dict[vafmodel.ParameterDirection, dict[str, VafpyDataTypeRef]] = {
+        params: dict[vafmodel.ParameterDirection, dict[str, VafpyAbstractBase | BaseTypesWrapper]] = {
             vafmodel.ParameterDirection.IN: in_parameter if in_parameter is not None else {},
             vafmodel.ParameterDirection.OUT: out_parameter if out_parameter is not None else {},
             vafmodel.ParameterDirection.INOUT: inout_parameter if inout_parameter is not None else {},
@@ -111,15 +133,19 @@ class ModuleInterface(vafmodel.ModuleInterface, VafpyAbstractElement):
         for param_direction, param_dict in params.items():
             for param_name, datatype in param_dict.items():
                 function_parameters.append(
-                    vafmodel.Parameter(Name=param_name, TypeRef=datatype._get_type_ref(), Direction=param_direction)
+                    vafmodel.Parameter(
+                        Name=param_name,
+                        TypeRef=datatype.type_ref,
+                        Direction=param_direction,
+                    )
                 )
-                # borrow check typeref from VafpyAbstractDatatypeTyperef
-                VafpyAbstractDatatypeTyperef._check_typeref(datatype)
+                # borrow check typeref from vafpyAbstractDatatypeTyperef
+                VafpyFactoryWithTypeRef.check_typeref(datatype)
 
         self.Operations.append(vafmodel.Operation(Name=name, Parameters=function_parameters))
 
 
-class ApplicationModule(vafmodel.ApplicationModule, VafpyAbstractElement):
+class ApplicationModule(vafmodel.ApplicationModule, VafpyAbstractBase):
     """Represents a VAF application module"""
 
     # pylint: disable-next=too-many-positional-arguments,too-many-arguments
@@ -130,19 +156,26 @@ class ApplicationModule(vafmodel.ApplicationModule, VafpyAbstractElement):
         consumed_interfaces: Optional[List[vafmodel.ApplicationModuleConsumedInterface]] = None,
         provided_interfaces: Optional[List[vafmodel.ApplicationModuleProvidedInterface]] = None,
         tasks: Optional[List[vafmodel.ApplicationModuleTasks]] = None,
+        persistency_files: Optional[List[str]] = None,
     ) -> None:
-        self._build_instance(
-            self,
+        VafpyFactory.create(
+            constructor=vafmodel.ApplicationModule,
+            obj=self,
             Name=name,
             Namespace=namespace,
             ConsumedInterfaces=consumed_interfaces if consumed_interfaces is not None else [],
             ProvidedInterfaces=provided_interfaces if provided_interfaces is not None else [],
             ImplementationProperties=vafmodel.ImplementationProperty(GenerateUnitTestStubs=True),
             Tasks=tasks if tasks is not None else [],
+            PersistencyFiles=persistency_files if persistency_files is not None else [],
         )
 
     def __add_interface(
-        self, instance_name: str, interface: ModuleInterface, interface_type: str, is_optional: bool = False
+        self,
+        instance_name: str,
+        interface: ModuleInterface,
+        interface_type: str,
+        is_optional: bool = False,
     ) -> None:
         """Add a consumed interface to the AppModule
 
@@ -150,7 +183,7 @@ class ApplicationModule(vafmodel.ApplicationModule, VafpyAbstractElement):
             instance_name (str): Unique name for the interface instance
             interface (vafpy.ModuleInterface): The module interface to add
             interface_type (str): consumed/provided
-            is_optional (bool): Wheter the interface is mandatory for the AppModule to start
+            is_optional (bool): Whether the interface is mandatory for the AppModule to start
 
         Raises:
             ModelError: If a consumed interface with the same name already exists.
@@ -172,7 +205,7 @@ class ApplicationModule(vafmodel.ApplicationModule, VafpyAbstractElement):
                 **({"IsOptional": is_optional} if interface_type == "consumed" else {}),
             )
         )
-        model_runtime.add_used_module_interfaces(interface)
+        ModelRuntime().add_used_module_interfaces(interface)
 
     def add_consumed_interface(self, instance_name: str, interface: ModuleInterface, is_optional: bool = False) -> None:
         """Add a consumed interface to the AppModule
@@ -180,7 +213,7 @@ class ApplicationModule(vafmodel.ApplicationModule, VafpyAbstractElement):
         Args:
             instance_name (str): Unique name for the interface instance
             interface (vafpy.ModuleInterface): The module interface to add
-            is_optional (bool): Wheter the interface is mandatory for the AppModule to start
+            is_optional (bool): Whether the interface is mandatory for the AppModule to start
 
         Raises:
             ModelError: If a consumed interface with the same name already exists.
@@ -233,7 +266,7 @@ class ApplicationModule(vafmodel.ApplicationModule, VafpyAbstractElement):
             tasks (List[vafmodel.ApplicationModuleTasks | vafpy.Task]): Tasks to add
             run_after (List[vafmodel.ApplicationModuleTasks | vafpy.Task]): Tasks that should run before this one
             increment_preferred_offset (bool): Uses the preferred offset of the first task as base value and increments
-            it for every following task
+            it for every following task.
 
         Raises:
             ModelError: If a task with the same name already exists.
@@ -261,14 +294,133 @@ class ApplicationModule(vafmodel.ApplicationModule, VafpyAbstractElement):
             last_name = task_ref.Name
             task_names.append(task_ref.Name)
 
+    def add_persistency_file(self, file_name: str) -> None:
+        """Add a persistency file to the app module
+
+        Args:
+            file_name (str): Persistency file to add
+
+        Raises:
+            ModelError: If a persistency file with the same name already exists.
+        """
+        if file_name in self.PersistencyFiles:
+            raise ModelError(f"Duplicated persistency file {file_name} for AppModule {self.Namespace}::{self.Name}.")
+
+        self.PersistencyFiles.append(file_name)  # pylint:disable=no-member
+
+    def init_key_value_pair(
+        self, file_name: str, key: str, datatype: VafpyAbstractBase | BaseTypesWrapper, value: Any
+    ) -> None:
+        """Add a persistency key-value init pair
+
+        Args:
+            file_name (str): Persistency file intended
+            key (str): Key
+            datatype (str): Datatype of value
+            value (Any): Value
+
+        Raises:
+            ModelError: If a key for a persistency file with the same name already exists or type not in
+            DataTypeForSerialization
+        """
+        if self.PersistencyInitValues is None:
+            self.PersistencyInitValues = []
+        for item in self.PersistencyInitValues:
+            if file_name == item.FileName and key == item.Key:
+                raise ModelError(
+                    f"Duplicated key {key} for persistency file {file_name}for AppModule {self.Namespace}::{self.Name}."
+                )
+
+        # Special handling for vaf string type as its considered as base type
+        if "String" == datatype.Name and "vaf" == datatype.Namespace:
+            self.add_persistency_type(datatype)
+
+        if (
+            not vafmodel.DataType(Name=datatype.Name, Namespace=datatype.Namespace).is_base_type
+            and not vafmodel.DataType(Name=datatype.Name, Namespace=datatype.Namespace).is_cstdint_type
+            and not ("String" == datatype.Name and "vaf" == datatype.Namespace)
+        ):
+            if self.DataTypesForSerialization is not None:
+                dts = vafmodel.DataTypeForSerialization(
+                    TypeRef=vafmodel.DataTypeRef(
+                        Name=datatype.Name,
+                        Namespace=datatype.Namespace,
+                    )
+                )
+                if dts not in self.DataTypesForSerialization:
+                    raise ModelError(
+                        f"DataType {datatype.Name} for {key} must be added with add_persistency_type before use."
+                    )
+            else:
+                raise ModelError(
+                    f"DataType {datatype.Name} for {key} must be added with add_persistency_type before use."
+                )
+
+        data = {"Type": datatype.Name, "InitValue": value}
+        if isinstance(datatype, Array):
+            data = {"Type": "array", "InitValue": value}
+        elif isinstance(datatype, Vector):
+            data = {"Type": "array", "InitValue": value}
+        elif isinstance(datatype, Struct):
+            data = {"Type": "struct", "InitValue": value}
+        elif isinstance(datatype, String):
+            data = {"Type": "String", "InitValue": value}
+
+        typed_data = TypeAdapter(vafmodel.InitValueTypes).validate_python(data)  # type: vafmodel.InitValueTypes
+
+        self.PersistencyInitValues.append(  # pylint:disable=no-member
+            vafmodel.PersistencyInitValue(
+                FileName=file_name,
+                Key=key,
+                TypeRef=datatype.type_ref,
+                Value=typed_data,
+            )
+        )
+
+        # borrow check typeref from vafpyAbstractDatatypeTyperef
+        VafpyFactoryWithTypeRef.check_typeref(datatype)
+
+    def add_persistency_type(self, datatype: VafpyAbstractBase | BaseTypesWrapper) -> None:
+        """Add a peristency type for serialization
+
+        Args:
+            datatype (VafpyAbstractBase | BaseTypesWrapper): VAF Datatype
+
+        Raises:
+            ModelError: If a data type with the same name already exists.
+        """
+        dts = vafmodel.DataTypeForSerialization(
+            TypeRef=vafmodel.DataTypeRef(
+                Name=datatype.Name,
+                Namespace=datatype.Namespace,
+            )
+        )
+
+        if self.DataTypesForSerialization is not None:
+            if dts in self.DataTypesForSerialization:
+                raise ModelError(f"Duplicated datatype {datatype.Name} for AppModule {self.Namespace}::{self.Name}.")
+
+            self.DataTypesForSerialization.append(dts)
+        else:
+            self.DataTypesForSerialization = [dts]
+
+        # borrow check typeref from vafpyAbstractDatatypeTyperef
+        VafpyFactoryWithTypeRef.check_typeref(datatype)
+
 
 # pylint: disable = too-many-ancestors
-class PlatformConsumerModule(vafmodel.PlatformModule, VafpyAbstractElement):
+class PlatformConsumerModule(vafmodel.PlatformModule, VafpyAbstractBase):
     """Represents a VAF platform consumer module"""
 
     def __init__(self, name: str, namespace: str, module_interface: ModuleInterface) -> None:
-        self._build_instance(self, Name=name, Namespace=namespace, ModuleInterfaceRef=module_interface)
+        VafpyFactory.create(
+            constructor=vafmodel.PlatformModule,
+            obj=self,
+            Name=name,
+            Namespace=namespace,
+            ModuleInterfaceRef=module_interface,
+        )
 
 
-class PlatformProviderModule(PlatformConsumerModule):
+class PlatformProviderModule(PlatformConsumerModule, VafpyAbstractBase):
     """Represents a VAF platform provider module"""

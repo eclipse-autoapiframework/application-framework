@@ -1,0 +1,47 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.245.0/containers/cpp
+{
+    "name": "{{workspace_name}}",
+    "image": "vaf:latest",
+    "runArgs": [
+        "--network=host"
+    ],
+    "customizations": {
+        "vscode": {
+            // Set *default* container specific settings.json values on container create.
+            "settings": {
+                "[cpp]": {
+                    "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
+                },
+                "[python]": {
+                    "editor.defaultFormatter": "charliermarsh.ruff"
+                },
+                "editor.formatOnSave": true,
+                "json.format.keepLines": true,
+                "cmake.configureOnEdit": true,
+                "cmake.configureOnOpen": false,
+                "C_Cpp.intelliSenseEngine": "disabled",
+                "ruff.exclude": [
+                    ".pdm-build"
+                ],
+                "ruff.nativeServer": true,
+                "python.defaultInterpreterPath": "/home/eclipse/.local/share/uv/tools/vaf/bin/python3",
+                "python.terminal.activateEnvironment": false
+            },
+            // Add the IDs of extensions you want installed when the container is created.
+            "extensions": [
+                "vectorgroup.vaf",
+                "charliermarsh.ruff",
+                "llvm-vs-code-extensions.vscode-clangd",
+                "ms-python.python",
+                "ms-vscode.cmake-tools",
+                "ms-vscode.cpptools",
+                "yzhang.markdown-all-in-one"
+            ]
+        }
+    },
+    "capAdd": [
+        "NET_ADMIN",
+        "NET_RAW"
+    ]
+}

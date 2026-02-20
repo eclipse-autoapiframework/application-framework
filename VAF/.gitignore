@@ -84,3 +84,7 @@ __pypackages__
 
 ## MYPY
 .mypy_cache
+
+## VAF specific files
+.quoordinator
+**/*.json~

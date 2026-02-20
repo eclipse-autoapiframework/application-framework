@@ -1,0 +1,160 @@
+{
+  "version": "0.6.3",
+  "DataTypeDefinitions": {
+    "Strings": [
+      {
+        "Name": "string",
+        "Namespace": "vaf"
+      }
+    ],
+    "Arrays": [
+      {
+        "Name": "MyArray",
+        "Namespace": "demo",
+        "TypeRef": "uint8_t",
+        "Size": 4
+      },
+      {
+        "Name": "MyArray2",
+        "Namespace": "demo",
+        "TypeRef": "uint8_t",
+        "Size": 4
+      },
+      {
+        "Name": "MyArrayNotUsed",
+        "Namespace": "demo",
+        "TypeRef": "uint8_t",
+        "Size": 4
+      }
+    ],
+    "Structs": [
+      {
+        "Name": "MyStruct",
+        "Namespace": "demo",
+        "SubElements": [
+          {
+            "Name": "apa",
+            "TypeRef": "uint8_t"
+          },
+          {
+            "Name": "bepa",
+            "TypeRef": "vaf::string"
+          },
+          {
+            "Name": "cepa",
+            "TypeRef": "bool"
+          }
+        ]
+      }
+    ]
+  },
+  "ModuleInterfaces": [
+    {
+      "Name": "MyInterface",
+      "Namespace": "inter",
+      "DataElements": [
+        {
+          "Name": "a",
+          "TypeRef": "demo::MyArray"
+        },
+        {
+          "Name": "b",
+          "TypeRef": "demo::MyStruct"
+        },
+        {
+          "Name": "a",
+          "TypeRef": "demo::MyArrayNotUsed"
+        }
+      ]
+    }
+  ],
+  "ApplicationModules": [
+    {
+      "Name": "AM1",
+      "Namespace": "test",
+      "ConsumedInterfaces": [],
+      "ProvidedInterfaces": [],
+      "PersistencyFiles": [],
+      "PersistencyInitValues": [
+        {
+          "FileName": "shared_file",
+          "Key": "KeyUint32",
+          "TypeRef": "uint32_t",
+          "Value": {
+            "InitValue": 1,
+            "Type": "uint32_t"
+          }
+        },
+        {
+          "FileName": "shared_file",
+          "Key": "KeyStruct",
+          "TypeRef": "demo::MyStruct",
+          "Value": {
+            "InitValue": [
+              1,
+              "hej",
+              true
+            ],
+            "Type": "struct"
+          }
+        },
+        {
+          "FileName": "private_file",
+          "Key": "KeyArray",
+          "TypeRef": "demo::MyArray",
+          "Value": {
+            "InitValue": [
+              1,
+              2,
+              3
+            ],
+            "Type": "array"
+          }
+        },
+        {
+          "FileName": "third_file",
+          "Key": "KeyArray",
+          "TypeRef": "demo::MyArray",
+          "Value": {
+            "InitValue": [
+              3,
+              3,
+              3
+            ],
+            "Type": "array"
+          }
+        },
+        {
+          "FileName": "shared_file",
+          "Key": "KeyArray",
+          "TypeRef": "demo::MyArray",
+          "Value": {
+            "InitValue": [
+              255,
+              2,
+              255
+            ],
+            "Type": "array"
+          }
+        },
+        {
+          "FileName": "private_file",
+          "Key": "KeyUint32",
+          "TypeRef": "uint32_t",
+          "Value": {
+            "InitValue": 1,
+            "Type": "uint32_t"
+          }
+        }
+      ],
+      "DataTypesForSerialization": [
+        {
+        "TypeRef": "demo::MyArray2"
+        }
+      ],
+      "ImplementationProperties": {
+        "GenerateUnitTestStubs": true
+      }
+    }
+  ]
+}

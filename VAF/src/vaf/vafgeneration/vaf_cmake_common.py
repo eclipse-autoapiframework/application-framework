@@ -1,4 +1,7 @@
-"""Generator for shared cmake files
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Generator for shared CMake files.
 Generates
     - CMakeLists.txt
     - executables/CMakeLists.txt
@@ -10,12 +13,11 @@ from pathlib import Path
 from typing import List
 
 from vaf import vafmodel
-from vaf.cli_core.common.utils import to_snake_case
+from vaf.core.common.utils import to_snake_case
 
 from .generation import (
     FileHelper,
     Generator,
-    is_silkit_used,
 )
 from .vaf_generate_common import get_ancestor_file_suffix
 
@@ -24,14 +26,20 @@ def _generate_data_types_cmake(generator: Generator, output_dir: Path, verbose_m
     data_types_path = output_dir / "src-gen/libs/data_types"
     generator.set_base_directory(data_types_path)
     generator.generate_to_file(
-        FileHelper("CMakeLists", "", True), ".txt", "vaf_cmake_common/data_types_cmake.jinja", verbose_mode=verbose_mode
+        FileHelper("CMakeLists", "", True),
+        ".txt",
+        "vaf_cmake_common/data_types_cmake.jinja",
+        verbose_mode=verbose_mode,
     )
 
 
 def _generate_executables_cmake(
-    generator: Generator, model: vafmodel.MainModel, output_dir: Path, verbose_mode: bool = False
+    generator: Generator,
+    model: vafmodel.MainModel,
+    output_dir: Path,
+    verbose_mode: bool = False,
 ) -> None:
-    if len(model.Executables) > 0:
+    if model.has_executables:
         generator.set_base_directory(output_dir / "src-gen/executables")
         exe_subdirs: set[str] = set()
         for e in model.Executables:
@@ -67,10 +75,10 @@ def _generate_src_and_src_gen_cmake(
     merge_relevant_files: List[str] = []
 
     subdirs_src_gen.append("libs")
-    if len(model.Executables) > 0:
+    if model.has_executables:
         subdirs_src.append("executables")
         subdirs_src_gen.append("executables")
-    if len(model.ApplicationModules) > 0:
+    if model.has_app_modules:
         subdirs_src.append("application_modules")
 
     generator.set_base_directory(output_dir / "src-gen")
@@ -99,10 +107,13 @@ def _generate_src_and_src_gen_cmake(
 
 
 def _generate_test_cmake(
-    generator: Generator, model: vafmodel.MainModel, output_dir: Path, verbose_mode: bool = False
+    generator: Generator,
+    model: vafmodel.MainModel,
+    output_dir: Path,
+    verbose_mode: bool = False,
 ) -> None:
     subdirs_test: list[str] = []
-    if len(model.ModuleInterfaces) > 0:
+    if model.has_module_interfaces or model.is_persistency_used:
         subdirs_test.append("mocks")
 
     generator.set_base_directory(output_dir / "test-gen")
@@ -116,10 +127,13 @@ def _generate_test_cmake(
 
 
 def _generate_test_mocks_cmake(
-    generator: Generator, model: vafmodel.MainModel, output_dir: Path, verbose_mode: bool = False
+    generator: Generator,
+    model: vafmodel.MainModel,
+    output_dir: Path,
+    verbose_mode: bool = False,
 ) -> None:
     subdirs_test: list[str] = []
-    if len(model.ModuleInterfaces) > 0:
+    if model.has_module_interfaces or model.is_persistency_used:
         subdirs_test.append("interfaces")
 
     if len(subdirs_test) > 0:
@@ -145,12 +159,16 @@ def _generate_src_gen_libs_cmake(  # pylint: disable=too-many-branches
 ) -> None:  # pylint: disable=line-too-long
     libs_subdirs: list[str] = []
 
+    libs_subdirs.append("core_library")
+
     if does_data_type_definition_exist:
         libs_subdirs.append("data_types")
     libs_subdirs.append("interfaces")
-    if is_silkit_used(model):
+    if model.is_silkit_used or model.is_persistency_used:
         libs_subdirs.append("protobuf_serdes")
-    if len(model.ApplicationModules) > 0:
+    if model.is_persistency_used:
+        libs_subdirs.append("persistency")
+    if model.has_app_modules:
         libs_subdirs.append("application_modules_base")
     if not generate_for_application_module:
         for e in model.Executables:
@@ -158,7 +176,7 @@ def _generate_src_gen_libs_cmake(  # pylint: disable=too-many-branches
                 libs_subdirs.append("platform_vaf")
                 break
 
-        if is_silkit_used(model):
+        if model.is_silkit_used:
             libs_subdirs.append("platform_silkit")
 
     if len(libs_subdirs) > 0:
@@ -173,7 +191,11 @@ def _generate_src_gen_libs_cmake(  # pylint: disable=too-many-branches
 
 
 def _generate_src_executables_cmake(
-    generator: Generator, model: vafmodel.MainModel, output_dir: Path, is_ancestor: bool, verbose_mode: bool = False
+    generator: Generator,
+    model: vafmodel.MainModel,
+    output_dir: Path,
+    is_ancestor: bool,
+    verbose_mode: bool = False,
 ) -> List[str]:
     libs_subdirs: list[str] = []
     merge_relevant_files: List[str] = []
@@ -181,7 +203,7 @@ def _generate_src_executables_cmake(
     for e in model.Executables:
         libs_subdirs.append(to_snake_case(e.Name))
 
-    if len(model.Executables) > 0:
+    if model.has_executables:
         generator.set_base_directory(output_dir / "src/executables")
         generator.generate_to_file(
             FileHelper("CMakeLists", "", True),
@@ -193,6 +215,25 @@ def _generate_src_executables_cmake(
         )
         merge_relevant_files.append("src/executables/CMakeLists.txt")
     return merge_relevant_files
+
+
+def data_type_definitions_exist(model: vafmodel.MainModel) -> bool:
+    """Check if data type definitions exist in the model
+
+    Args:
+        model (vafmodel.MainModel): The model
+    Returns:
+        Bool value
+    """
+    return bool(
+        model.DataTypeDefinitions.Vectors
+        or model.DataTypeDefinitions.Arrays
+        or model.DataTypeDefinitions.Enums
+        or model.DataTypeDefinitions.Maps
+        or model.DataTypeDefinitions.Strings
+        or model.DataTypeDefinitions.Structs
+        or model.DataTypeDefinitions.TypeRefs
+    )
 
 
 def generate(
@@ -218,15 +259,6 @@ def generate(
 
     generator = Generator()
 
-    does_data_type_definition_exist: bool = bool(
-        model.DataTypeDefinitions.Arrays
-        or model.DataTypeDefinitions.Enums
-        or model.DataTypeDefinitions.Maps
-        or model.DataTypeDefinitions.Strings
-        or model.DataTypeDefinitions.Structs
-        or model.DataTypeDefinitions.TypeRefs
-    )
-
     list_merge_relevant_files += _generate_src_and_src_gen_cmake(
         generator,
         model,
@@ -240,7 +272,7 @@ def generate(
             generator,
             model,
             output_dir,
-            does_data_type_definition_exist,
+            data_type_definitions_exist(model),
             generate_for_application_module,
             verbose_mode=verbose_mode,
         )
@@ -252,7 +284,7 @@ def generate(
         _generate_test_cmake(generator, model, output_dir, verbose_mode=verbose_mode)
         _generate_test_mocks_cmake(generator, model, output_dir, verbose_mode=verbose_mode)
 
-    if does_data_type_definition_exist and not is_ancestor:
+    if data_type_definitions_exist(model) and not is_ancestor:
         _generate_data_types_cmake(generator, output_dir, verbose_mode=verbose_mode)
 
     return list_merge_relevant_files

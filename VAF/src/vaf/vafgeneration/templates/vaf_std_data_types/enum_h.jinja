@@ -4,7 +4,7 @@
 enum {{ vaf_enum.Name }} {
 
 {% for l in vaf_enum.Literals %}
-{{ l.Label }} = {{ l.Value}},
+{{ l.Item }} = {{ l.Value}},
 {% endfor %}
 
 };

@@ -7,7 +7,7 @@
         "context": ".."
     },
     "runArgs": [
-        "--sysctl=net.ipv6.conf.all.disable_ipv6=0"
+        "--network=host"
     ],
     "customizations": {
         "vscode": {
@@ -27,7 +27,10 @@
                 "ruff.exclude": [
                     ".pdm-build"
                 ],
-                "ruff.nativeServer": true
+                "ruff.nativeServer": true,
+                "python.defaultInterpreterPath": "/home/eclipse/.local/share/uv/tools/vaf/bin/python3",
+                "python.terminal.activateEnvironment": false,
+                "ruff.interpreter": ["/home/eclipse/.local/share/uv/tools/vaf/bin/python3"]
             },
             // Add the IDs of extensions you want installed when the container is created.
             "extensions": [
@@ -51,9 +54,9 @@
     // Adjust the user in the Dockerfile if you're changing it here. Otherwise the prebuilt conan packages are unavailable.
     // "remoteUser": "eclipse",
     "mounts": [
-        // Uncomment the line below to mount your SSH keys into the container.
+        // Mount your SSH keys into the container.
         "source=${localEnv:HOME}/.ssh,target=/home/eclipse/.ssh,type=bind,consistency=cached",
-        // Uncomment the line below to mount your local SSL certificates into the container.
+        // Mount your local SSL certificates into the container.
         "source=/etc/ssl/certs/ca-certificates.crt,target=/etc/ssl/certs/ca-certificates.crt,type=bind,consistency=cached",
         "source=vaf_bashhistory,target=/commandhistory,type=volume"
     ],

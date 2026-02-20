@@ -1,4 +1,7 @@
-"""Module containing the VSS model"""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Module containing the VSS model."""
 
 from collections import defaultdict
 from typing import Any
@@ -28,6 +31,7 @@ class VSS:
             self.namespace, self.name = full_name.rsplit("::", 1)
             self.namespace = self.namespace.lower()
             self.data_elements: list[vafmodel.DataElement] = []
+            self.operations: list[vafmodel.Operation] = []
 
             # Add DataElements for the child elements
             # The temporary DataElements are only used to create the TypeRef in the resulting json.
@@ -35,7 +39,10 @@ class VSS:
             for element_name, element in vss_branch["children"].items():
                 if "branch" == element["type"]:
                     # Complex types
-                    type_ref = vafmodel.DataType(Name=element_name, Namespace=f"{self.namespace}::{self.name}".lower())
+                    type_ref = vafmodel.DataType(
+                        Name=element_name,
+                        Namespace=f"{self.namespace}::{self.name}".lower(),
+                    )
                     self.data_elements.append(vafmodel.DataElement(Name=element_name, TypeRef=type_ref))
                     continue
 
@@ -67,11 +74,29 @@ class VSS:
                         # Add VSS ranges
                         self.data_elements.append(
                             vafmodel.DataElement(
-                                Name=element_name, TypeRef=type_ref, Min=element.get("min"), Max=element.get("max")
+                                Name=element_name,
+                                TypeRef=type_ref,
+                                Min=element.get("min"),
+                                Max=element.get("max"),
                             )
                         )
                     else:
                         self.data_elements.append(vafmodel.DataElement(Name=element_name, TypeRef=type_ref))
+
+                # VSS actuators shall have a setter callback
+                if "actuator" == element["type"]:
+                    self.operations.append(
+                        vafmodel.Operation(
+                            Name=element_name + "_Setter_Callback",
+                            Parameters=[
+                                vafmodel.Parameter(
+                                    Name="new_data",
+                                    TypeRef=type_ref,
+                                    Direction=vafmodel.ParameterDirection.IN,
+                                )
+                            ],
+                        )
+                    )
 
         def export(self) -> vafmodel.ModuleInterface:
             """Exports VSS ModuleInterface to VAF model ModuleInterface
@@ -80,7 +105,10 @@ class VSS:
                 vafmodel.ModuleInterface: ModuleInterface containing the VSS data
             """
             return vafmodel.ModuleInterface(
-                Name=self.name + "_If", Namespace=self.namespace, DataElements=self.data_elements
+                Name=self.name + "_If",
+                Namespace=self.namespace,
+                DataElements=self.data_elements,
+                Operations=self.operations,
             )
 
     def __init__(self, vss_json: dict[str, Any]) -> None:
@@ -116,8 +144,8 @@ class VSS:
             data_type_definitions.Structs += structs
             data_type_definitions.Enums += enums
 
-        # Add vaf::string
-        data_type_definitions.Strings = [vafmodel.String(Name="string", Namespace="vaf")]
+        # Add vaf::String
+        data_type_definitions.Strings = [vafmodel.String(Name="String", Namespace="vaf")]
 
         model.DataTypeDefinitions = data_type_definitions
 
@@ -192,7 +220,7 @@ class VSS:
         allowed_values = data_type["allowed"]
 
         for idx, literal in enumerate(allowed_values, start=1):
-            enum_type.add_literal(label=literal, value=idx)
+            enum_type.add_literal(item=literal, value=idx)
 
         self.datatypes_per_namespace[namespace_with_name.lower()].add(enum_type)
         return enum_type
@@ -201,7 +229,9 @@ class VSS:
         """Handles array creation."""
         primitive_type_name = data_type["datatype"][:-2]  # Remove "[]"
         subelement = vss_types.ArrayType(
-            name=subelement_name, type_name=primitive_type_name, array_size=data_type["arraysize"]
+            name=subelement_name,
+            type_name=primitive_type_name,
+            array_size=data_type["arraysize"],
         )
 
         self.datatypes_per_namespace["vss"].add(subelement)

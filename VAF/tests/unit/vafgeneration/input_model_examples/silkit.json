@@ -53,13 +53,11 @@
     "ConnectionPoints": [
       {
         "Name": "CPointServiceXConsumer",
-        "ServiceInterfaceName": "ServiceX",
-        "RegistryUri": "silkit://localhost:8500"
+        "SilkitInstance": "ServiceX"
       },
       {
         "Name": "CPointServiceYProvider",
-        "ServiceInterfaceName": "ServiceY",
-        "RegistryUri": "silkit://localhost:8500"
+        "SilkitInstance": "ServiceY"
       }
     ]
   }

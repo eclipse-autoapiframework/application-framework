@@ -2,11 +2,8 @@
  *  COPYRIGHT
  *  -------------------------------------------------------------------------------------------------------------------
  *  \verbatim
- *  Copyright (c) 2025 by Vector Informatik GmbH. All rights reserved.
- *
- *                This software is copyright protected and proprietary to Vector Informatik GmbH.
- *                Vector Informatik GmbH grants to you only those rights as set out in the license conditions.
- *                All other rights remain with Vector Informatik GmbH.
+ *  Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+ *  SPDX-License-Identifier: Apache-2.0
  *  \endverbatim
  *  -------------------------------------------------------------------------------------------------------------------
  *  FILE DESCRIPTION
@@ -20,9 +17,7 @@
 #define TEST_MY_PROVIDER_MODULE_H
 
 #include <memory>
-#include <string>
-#include <vector>
-
+#include "vaf/container_types.h"
 #include "vaf/controller_interface.h"
 #include "vaf/data_ptr.h"
 #include "vaf/executable_controller_interface.h"
@@ -40,7 +35,7 @@ namespace test {
 
 class MyProviderModule final : public test::MyInterfaceProvider, public vaf::ControlInterface {
  public:
-  explicit MyProviderModule(vaf::Executor& executor, std::string name, vaf::ExecutableControllerInterface& executable_controller_interface);
+  explicit MyProviderModule(vaf::Executor& executor, vaf::String name, vaf::ExecutableControllerInterface& executable_controller_interface);
   ~MyProviderModule() override = default;
 
   vaf::Result<void> Init() noexcept override;

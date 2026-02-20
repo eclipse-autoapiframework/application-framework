@@ -2,11 +2,8 @@
  *  COPYRIGHT
  *  -------------------------------------------------------------------------------------------------------------------
  *  \verbatim
- *  Copyright (c) 2025 by Vector Informatik GmbH. All rights reserved.
- *
- *                This software is copyright protected and proprietary to Vector Informatik GmbH.
- *                Vector Informatik GmbH grants to you only those rights as set out in the license conditions.
- *                All other rights remain with Vector Informatik GmbH.
+ *  Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+ *  SPDX-License-Identifier: Apache-2.0
  *  \endverbatim
  *  -------------------------------------------------------------------------------------------------------------------
  *  FILE DESCRIPTION
@@ -15,14 +12,15 @@
  *         \brief
  *
  *********************************************************************************************************************/
+
 #include <cstddef>
 #include <cstdint>
 #include <csignal>
-#include <iostream>
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 #include "test/my_interface_consumer_mock.h"
 #include "test/my_interface_provider_mock.h"
+#include "persistency/persistency_mock.h"
 #include "apps/my_application_module.h"
 
 // Put inside test to skip
@@ -75,11 +73,13 @@ namespace vaf {
       auto c_interface_instance_2Mock = std::make_shared<test::MyInterfaceConsumerMock>();
       auto p_interface_instance_1Mock = std::make_shared<test::MyInterfaceProviderMock>();
       auto p_interface_instance_2Mock = std::make_shared<test::MyInterfaceProviderMock>();
+      auto PersistencyMock = std::make_shared<persistency::PersistencyMock>();
 
-      auto MyApplicationModule = std::make_shared<apps::MyApplicationModule>(apps::MyApplicationModule ::ConstructorToken{
+      auto MyApplicationModule = std::make_shared<apps::MyApplicationModule>( apps::MyApplicationModule ::ConstructorToken{
         c_interface_instance_1Mock,
         c_interface_instance_2Mock,
         p_interface_instance_1Mock,
-        p_interface_instance_2Mock});
+        p_interface_instance_2Mock,
+        PersistencyMock      });
     }
 } // namespace vaf

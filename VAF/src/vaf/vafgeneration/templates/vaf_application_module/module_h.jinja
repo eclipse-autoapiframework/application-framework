@@ -9,6 +9,12 @@ class {{ app_module.Name }} : public {{ app_module.Name }}Base {
  public:
   {{ app_module.Name }}(ConstructorToken&& token);
 
+  //vaf::Result<void> Init() override;
+  //void Start() noexcept override;
+  //void Stop() noexcept override;
+  //void DeInit() noexcept override;
+  //void OnError(const vaf::Error& error) override;
+
   {% for r in app_module.Tasks %}
   void {{ r.Name }}() override;
   {% endfor %}

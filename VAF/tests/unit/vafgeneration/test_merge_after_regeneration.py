@@ -1,6 +1,7 @@
-"""
-Application module generator
-"""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Application module generator."""
 
 import filecmp
 
@@ -15,15 +16,16 @@ from pathlib import Path
 from shutil import copyfile
 from typing import Dict
 
-from vaf.cli_core.bootstrap import project_init_cmd
-from vaf.cli_core.common.utils import concat_str_to_path
-from vaf.cli_core.main import project_cmd
-from vaf.vafgeneration.vaf_generate_application_module import generate_application_module
+from vaf.core.common.constants import SUFFIX
+from vaf.core.common.utils import concat_str_to_path
+from vaf.core.objects import project_cmd, project_init_cmd
+from vaf.vafgeneration.vaf_generate_application_module import (
+    generate_application_module,
+)
 from vaf.vafgeneration.vaf_generate_common import (
     __file_has_conflict,
     __get_ancestor_file_rel_path,
     __get_newly_generated_file_path,
-    suffix_old_source,
 )
 
 
@@ -42,7 +44,7 @@ def get_ancestor_file_rel_path(*args, **kwargs):
 class TestRegenerationMerge:
     """Testing regeneration in app module project"""
 
-    ut_mock_data_path = Path(__file__).parent / "data/merge_strategy"
+    ut_mock_data_path = Path(__file__).parent / "merge_strategy"
     model_rel_out_path = "model/model.json"
     cpp_rel_path = "implementation/src/sensor_fusion.cpp"
     h_rel_path = "implementation/include/nsapplicationunit/nssensorfusion/sensor_fusion.h"
@@ -74,6 +76,7 @@ class TestRegenerationMerge:
         generate_application_module(
             str(out_path / "SensorFusion" / self.model_rel_out_path),
             str(out_path / "SensorFusion"),
+            "SILKIT",
             execute_merge=not disable_auto_merge,
         )
 
@@ -86,7 +89,10 @@ class TestRegenerationMerge:
             )
 
             # copy model_base.json
-            copyfile(self.ut_mock_data_path / "model_base.json", out_path / "SensorFusion" / self.model_rel_out_path)
+            copyfile(
+                self.ut_mock_data_path / "model_base.json",
+                out_path / "SensorFusion" / self.model_rel_out_path,
+            )
 
             # vaf project generate model base
             self._generate(out_path)
@@ -118,7 +124,7 @@ class TestRegenerationMerge:
                 )
 
     def test_simple_merge_regeneration(self, tmp_path) -> None:
-        """FTAF-262: Test merging files after regeneration in app module with simple model changes"""
+        """Test merging files after regeneration in app module with simple model changes"""
         self._prerun_test_merge_regeneration(tmp_path, cycle=1)
         copyfile(
             tmp_path / "SensorFusion" / self.model_rel_out_path,
@@ -151,11 +157,11 @@ class TestRegenerationMerge:
             workspace_path=tmp_path,
         )
         # assert CMakeLists
-        assert (tmp_path / "SensorFusion" / (self.cmake_rel_path + suffix_old_source)).is_file()
+        assert (tmp_path / "SensorFusion" / (self.cmake_rel_path + SUFFIX["old_file"])).is_file()
         assert not (tmp_path / "SensorFusion" / get_newly_generated_file_path(self.cmake_rel_path)).is_file()
 
     def test_complex_merge_regeneration(self, tmp_path) -> None:
-        """FTAF-262: Test merging files after regeneration in app module with complex model changes"""
+        """Test merging files after regeneration in app module with complex model changes"""
         self._prerun_test_merge_regeneration(tmp_path, cycle=1)
         # update model
         self._update_model_json(
@@ -185,7 +191,7 @@ class TestRegenerationMerge:
         )
 
     def test_merge_regeneration_without_model_change(self, tmp_path) -> None:
-        """FTAF-262: Test merging files after regeneration in app module without any model changes"""
+        """Test merging files after regeneration in app module without any model changes"""
         self._prerun_test_merge_regeneration(tmp_path, cycle=1)
         # regenerate
         self._generate(tmp_path)
@@ -205,7 +211,7 @@ class TestRegenerationMerge:
         )
 
     def test_two_cycle_merge_regeneration(self, tmp_path) -> None:
-        """FTAF-262: Test merging files after regeneration in app module in two cycles"""
+        """Test merging files after regeneration in app module in two cycles"""
         self._prerun_test_merge_regeneration(tmp_path, cycle=1)
         # update model
         self._update_model_json(
@@ -270,7 +276,7 @@ class TestRegenerationMerge:
         assert not (tmp_path / "SensorFusion" / get_ancestor_file_rel_path(self.ut_h_rel_path)).is_file()
 
     def test_not_overwrite_conflicted_file(self, tmp_path) -> None:
-        """FTAF-431: Test source files with conflict won't be overwritten"""
+        """Test source files with conflict won't be overwritten"""
         self._prerun_test_merge_regeneration(tmp_path, cycle=1)
         # update model
         self._update_model_json(
@@ -292,15 +298,17 @@ class TestRegenerationMerge:
 
         # assert no conflicts in backup files
         assert not file_has_conflict(
-            concat_str_to_path(tmp_path / "SensorFusion" / self.cpp_rel_path, suffix_old_source)
+            concat_str_to_path(tmp_path / "SensorFusion" / self.cpp_rel_path, SUFFIX["old_file"])
         )
-        assert not file_has_conflict(concat_str_to_path(tmp_path / "SensorFusion" / self.h_rel_path, suffix_old_source))
         assert not file_has_conflict(
-            concat_str_to_path(tmp_path / "SensorFusion" / self.ut_h_rel_path, suffix_old_source)
+            concat_str_to_path(tmp_path / "SensorFusion" / self.h_rel_path, SUFFIX["old_file"])
+        )
+        assert not file_has_conflict(
+            concat_str_to_path(tmp_path / "SensorFusion" / self.ut_h_rel_path, SUFFIX["old_file"])
         )
 
     def test_merge_removal(self, tmp_path) -> None:
-        """FTAF-453: Test merging files after regeneration in app module with removal in models"""
+        """Test merging files after regeneration in app module with removal in models"""
         self._prerun_test_merge_regeneration(tmp_path, cycle=1, edited_source=False)
         copyfile(
             tmp_path / "SensorFusion" / self.model_rel_out_path,
@@ -315,10 +323,11 @@ class TestRegenerationMerge:
         # regenerate
         self._generate(tmp_path)
 
-        # assert no conflicts in cpp
-        assert filecmp.cmp(
-            tmp_path / "SensorFusion" / self.cpp_rel_path,
-            self.ut_mock_data_path / "removal/sensor_fusion_goal.cpp",
+        # assert conflicts exist in cpp
+        assert self._compare_file_with_conflict(
+            gen_file_path=tmp_path / "SensorFusion" / self.cpp_rel_path,
+            goal_file_path=self.ut_mock_data_path / "removal/sensor_fusion_goal.cpp",
+            workspace_path=tmp_path,
         )
         # assert no conflicts in h
         assert filecmp.cmp(

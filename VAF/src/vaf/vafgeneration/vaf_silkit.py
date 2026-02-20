@@ -1,18 +1,18 @@
-"""Generator library for SILKIT communication modules."""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Generator library for SIL Kit communication modules."""
 # pylint: disable=duplicate-code
 
 from pathlib import Path
 
 from vaf import vafmodel
-from vaf.cli_core.common.utils import to_snake_case
+from vaf.core.common.utils import to_snake_case
 
 from .generation import (
     FileHelper,
     Generator,
     has_exactly_one_output_parameter,
-    is_data_type_base_type,
-    is_data_type_cstdint_type,
-    is_out_parameter,
 )
 
 
@@ -29,9 +29,7 @@ def get_data_type_definition_of_parameter(data_type: vafmodel.DataType, model: v
         str: type def as string
     """
     result = "NOT_FOUND"
-    if is_data_type_base_type(data_type.Name, data_type.Namespace) or is_data_type_cstdint_type(
-        data_type.Name, data_type.Namespace
-    ):
+    if data_type.is_cpp_base_type:
         match data_type.Name:
             case "uint8_t":
                 result = "uint32"
@@ -69,7 +67,7 @@ def _get_in_parameter_list_comma_separated(operation: vafmodel.Operation) -> str
     parameter_str = ""
     is_first = True
     for parameter in operation.Parameters:
-        if not is_out_parameter(parameter):
+        if not parameter.is_direction_out:
             if is_first:
                 parameter_str = parameter.Name
                 is_first = False
@@ -79,7 +77,10 @@ def _get_in_parameter_list_comma_separated(operation: vafmodel.Operation) -> str
 
 
 def _generate_provider_modules(
-    model: vafmodel.MainModel, output_path: Path, generator: Generator, verbose_mode: bool = False
+    model: vafmodel.MainModel,
+    output_path: Path,
+    generator: Generator,
+    verbose_mode: bool = False,
 ) -> None:
     subdirs: list[str] = []
 
@@ -91,8 +92,10 @@ def _generate_provider_modules(
             generator.set_base_directory(output_path / "platform_provider_modules" / to_snake_case(m.Name))
             interface_file = FileHelper(m.ModuleInterfaceRef.Name + "Provider", m.ModuleInterfaceRef.Namespace)
             module_file = FileHelper(m.Name, m.Namespace)
-            service_interface_name = m.ConnectionPointRef.ServiceInterfaceName
-            registry_uri = m.ConnectionPointRef.RegistryUri
+            silkit_instance = m.ConnectionPointRef.SilkitInstance
+            silkit_instance_is_optional = m.ConnectionPointRef.SilkitInstanceIsOptional
+            silkit_namespace = m.ConnectionPointRef.SilkitNamespace
+            silkit_namespace_is_optional = m.ConnectionPointRef.SilkitNamespaceIsOptional
 
             generator.generate_to_file(
                 module_file,
@@ -100,7 +103,6 @@ def _generate_provider_modules(
                 "vaf_silkit/provider_module_h.jinja",
                 module=m,
                 interface_file=interface_file,
-                service_interface_name=service_interface_name,
                 verbose_mode=verbose_mode,
             )
 
@@ -110,14 +112,16 @@ def _generate_provider_modules(
                 "vaf_silkit/provider_module_cpp.jinja",
                 module=m,
                 interface_file=interface_file,
-                service_interface_name=service_interface_name,
+                silkit_instance=silkit_instance,
+                silkit_instance_is_optional=silkit_instance_is_optional,
+                silkit_namespace=silkit_namespace,
+                silkit_namespace_is_optional=silkit_namespace_is_optional,
                 has_exactly_one_output_parameter=has_exactly_one_output_parameter,
                 get_data_type_definition_of_parameter=get_data_type_definition_of_parameter,
                 str=str,
                 model=model,
                 get_in_parameter_list_comma_separated=_get_in_parameter_list_comma_separated,
                 verbose_mode=verbose_mode,
-                registry_uri=registry_uri,
             )
 
             generator.generate_to_file(
@@ -127,7 +131,7 @@ def _generate_provider_modules(
                 target_name="vaf_" + to_snake_case(m.Name),
                 files=[module_file],
                 libraries=[
-                    "$<IF:$<TARGET_EXISTS:vafcpp::vaf_core>,vafcpp::vaf_core,vaf_core>",
+                    "vaf_core",
                     "vaf_module_interfaces",
                     "vaf_module_interfaces",
                     "SilKit::SilKit",
@@ -148,7 +152,10 @@ def _generate_provider_modules(
 
 
 def _generate_consumer_modules(
-    model: vafmodel.MainModel, output_path: Path, generator: Generator, verbose_mode: bool = False
+    model: vafmodel.MainModel,
+    output_path: Path,
+    generator: Generator,
+    verbose_mode: bool = False,
 ) -> None:
     subdirs: list[str] = []
 
@@ -162,8 +169,10 @@ def _generate_consumer_modules(
 
             interface_file = FileHelper(m.ModuleInterfaceRef.Name + "Consumer", m.ModuleInterfaceRef.Namespace)
             module_file = FileHelper(m.Name, m.Namespace)
-            service_interface_name = m.ConnectionPointRef.ServiceInterfaceName
-            registry_uri = m.ConnectionPointRef.RegistryUri
+            silkit_instance = m.ConnectionPointRef.SilkitInstance
+            silkit_instance_is_optional = m.ConnectionPointRef.SilkitInstanceIsOptional
+            silkit_namespace = m.ConnectionPointRef.SilkitNamespace
+            silkit_namespace_is_optional = m.ConnectionPointRef.SilkitNamespaceIsOptional
 
             generator.generate_to_file(
                 module_file,
@@ -171,7 +180,6 @@ def _generate_consumer_modules(
                 "vaf_silkit/consumer_module_h.jinja",
                 module=m,
                 interface_file=interface_file,
-                service_interface_name=service_interface_name,
                 verbose_mode=verbose_mode,
             )
 
@@ -180,14 +188,16 @@ def _generate_consumer_modules(
                 ".cpp",
                 "vaf_silkit/consumer_module_cpp.jinja",
                 module=m,
-                service_interface_name=service_interface_name,
+                silkit_instance=silkit_instance,
+                silkit_instance_is_optional=silkit_instance_is_optional,
+                silkit_namespace=silkit_namespace,
+                silkit_namespace_is_optional=silkit_namespace_is_optional,
                 has_exactly_one_output_parameter=has_exactly_one_output_parameter,
                 get_data_type_definition_of_parameter=get_data_type_definition_of_parameter,
                 str=str,
                 model=model,
                 get_in_parameter_list_comma_separated=_get_in_parameter_list_comma_separated,
                 verbose_mode=verbose_mode,
-                registry_uri=registry_uri,
             )
 
             generator.generate_to_file(
@@ -197,7 +207,7 @@ def _generate_consumer_modules(
                 target_name="vaf_" + to_snake_case(m.Name),
                 files=[module_file],
                 libraries=[
-                    "$<IF:$<TARGET_EXISTS:vafcpp::vaf_core>,vafcpp::vaf_core,vaf_core>",
+                    "vaf_core",
                     "vaf_module_interfaces",
                     "SilKit::SilKit",
                     "vaf_protobuf",
@@ -216,6 +226,7 @@ def _generate_consumer_modules(
     )
 
 
+# pylint: disable=too-many-locals
 def generate(model: vafmodel.MainModel, output_dir: Path, verbose_mode: bool = False) -> None:
     """Generates the middleware wrappers for silkit
 
@@ -223,6 +234,9 @@ def generate(model: vafmodel.MainModel, output_dir: Path, verbose_mode: bool = F
         model (vafmodel.MainModel): The main model
         output_dir (Path): The output path
         verbose_mode: flag to enable verbose_mode mode
+
+    Raises:
+        TypeError: If a platform module is modelled wrongly
     """
     output_path = output_dir / "src-gen/libs/platform_silkit"
     generator = Generator()
@@ -230,9 +244,9 @@ def generate(model: vafmodel.MainModel, output_dir: Path, verbose_mode: bool = F
     _generate_provider_modules(model, output_path, generator, verbose_mode)
 
     subdirs: list[str] = []
-    if len(model.PlatformConsumerModules) > 0:
+    if model.has_platform_consumers:
         subdirs.append("platform_consumer_modules")
-    if len(model.PlatformProviderModules) > 0:
+    if model.has_platform_providers:
         subdirs.append("platform_provider_modules")
     generator.set_base_directory(output_path)
     generator.generate_to_file(

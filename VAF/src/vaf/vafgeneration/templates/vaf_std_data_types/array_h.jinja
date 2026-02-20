@@ -3,7 +3,7 @@
 {% block includes %}
 #include <array>
 
-{{ get_data_type_include_from_type_ref(array.TypeRef) }}
+{{ get_data_type_include(array.TypeRef) }}
 {% endblock %}
 
 {% set ref_type = get_file_helper(array.TypeRef) %}

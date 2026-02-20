@@ -8,6 +8,9 @@
 {% for i in includes %}
 {{ i }}
 {% endfor %}
+{% for include in persistency_includes%}
+{{include}}
+{% endfor%}
 {% endblock %}
 
 {% block content %}
@@ -17,14 +20,17 @@ class {{ app_module.Name }}Base {
     {% for i in interfaces %}
     std::shared_ptr<{{ i["type"] }}> {{ i["instance"] }}_;
     {% endfor %}
+    {% for i in persistency_files %}
+    std::shared_ptr<{{ i["type"] }}> persistency_{{ i["instance"] }}_;
+    {% endfor %}
   };
 
   {{ app_module.Name }}Base(ConstructorToken&& token);
   virtual ~{{ app_module.Name }}Base() = default;
 
-  void ReportError(vaf::ErrorCode, std::string, bool) {}
+  void ReportError(const vaf::Error&, bool) {}
   virtual void OnError(const vaf::Error&) {}
-  std::string GetName() { return ""; }
+  vaf::String GetName() { return ""; }
 
   {%for r in app_module.Tasks %}
   virtual void {{ r.Name }}() = 0;
@@ -33,6 +39,9 @@ class {{ app_module.Name }}Base {
  protected:
   {% for i in interfaces %}
   std::shared_ptr<{{ i["type"] }}> {{ i["instance"] }}_;
+  {% endfor %}
+  {% for i in persistency_files %}
+  std::shared_ptr<{{ i["type"] }}> persistency_{{ i["instance"] }}_;
   {% endfor %}
 };
 {% endblock %}

@@ -1,0 +1,17 @@
+{
+"ApplicationModules": [
+    {
+      "Name": "AppModule1",
+      "Namespace": "demo",
+      "ConsumedInterfaces": [],
+      "ProvidedInterfaces": [],
+      "PersistencyFiles": [],
+      "Tasks": [
+        {
+          "Name": "PeriodicTask",
+          "Period": "200ms"
+        }
+      ]
+    }
+  ]
+}

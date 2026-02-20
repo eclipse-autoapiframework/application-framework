@@ -1,6 +1,7 @@
-"""
-example tests
-"""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Example tests."""
 
 from pathlib import Path
 
@@ -23,7 +24,9 @@ class TestIntegration:
         """Basic test for get_ecosystems function"""
         project_path = str(Path(__file__).parent.parent.parent.parent.parent)
 
-        test_dict = {"SILKIT": "VAF/tests/unit/vafgeneration/input_model_examples/silkit.json"}
+        test_dict = {
+            "SILKIT": "VAF/tests/unit/vafgeneration/input_model_examples/silkit.json",
+        }
 
         for ecosystem_name, ecosystem_mock_data in test_dict.items():
             main_model = vafmodel.load_json(f"{project_path}/{ecosystem_mock_data}")
@@ -52,7 +55,9 @@ class TestIntegration:
 
         for ecosystem_test_data in test_dict.values():
             vaf_generate_project.generate_integration_project(
-                f"{project_path}/{ecosystem_test_data['mock_data']}", str(tmp_path)
+                f"{project_path}/{ecosystem_test_data['mock_data']}",
+                str(tmp_path),
+                "std",
             )
 
             for i_must_not_exist in ecosystem_test_data["not_exist_list"]:

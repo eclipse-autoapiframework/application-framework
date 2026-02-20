@@ -1,0 +1,145 @@
+{% extends "common/cpp_file_base.jinja" %}
+
+{% block includes %}
+#include "vaf/error_domain.h"
+#include "protobuf_basetypes.pb.h"
+{% endblock %}
+
+{% block content %}
+{{ module_name }}::{{ module_name }}() {
+}
+
+{{ module_name }}::~{{ module_name }}() {
+  delete db_;
+}
+
+::vaf::Result<void> {{ module_name }}::Open(const vaf::String& filename, bool sync_on_write) noexcept {
+  vaf::Result<void> ret_value {
+    vaf::Result<void>::FromError(vaf::ErrorCode::kNotOk, "Error creating Instance Specifier for KVS")};
+
+  leveldb::Options options;
+  options.create_if_missing = true;
+
+  sync_on_write_ = sync_on_write;
+
+  leveldb::Status status = leveldb::DB::Open(options, filename.c_str(), &db_);
+  if (true == status.ok()) {
+    opened_ = true;
+    ret_value = vaf::Result<void>::FromValue();
+  } else {
+    ret_value = vaf::Result<void>::FromError(vaf::Error(vaf::ErrorCode::kUnknown,"Error creating Instance Specifier for KVS."));
+    logger_.LogWarn() <<  "Error creating Instance Specifier for KVS for {{ module_name }}.";
+  }
+  return ret_value;
+};
+
+::vaf::Result<void> {{ module_name }}::Set(const vaf::String& key, const vaf::String& value) noexcept{
+  vaf::Result<void> ret_value{vaf::Result<void>::FromError(vaf::ErrorCode::kNotOk, "Kvs not opened.")};
+  if (opened_) {
+    leveldb::WriteOptions write_options;
+    write_options.sync = sync_on_write_;
+    leveldb::Status status = db_->Put(write_options, key.c_str(), value.c_str());
+    if (true == status.ok()) {
+      ret_value = vaf::Result<void>::FromValue();
+    } else {
+      ret_value = vaf::Result<void>::FromError(vaf::Error(vaf::ErrorCode::kUnknown,"Kvs set failed ."));
+      logger_.LogWarn() <<  "Kvs set failed for {{ module_name }}.";
+    }
+  } else {
+    ret_value = vaf::Result<void>::FromError(vaf::Error(vaf::ErrorCode::kUnknown,"Kvs not opened."));
+    logger_.LogWarn() <<  "Kvs not opened for {{ module_name }}.";
+  }
+  return ret_value;
+};
+
+::vaf::Result<vaf::String> {{ module_name }}::Get(const vaf::String& key) noexcept{
+  vaf::Result<vaf::String> ret_value{
+    vaf::Result<vaf::String>::FromError(vaf::ErrorCode::kNotOk, "Kvs not opened.")};
+  if (opened_) {
+    leveldb::ReadOptions read_options;
+    std::string temp;
+    leveldb::Status status = db_->Get(read_options, key.c_str(), &temp);
+    if (true == status.ok()) {
+      vaf::String value(temp.c_str());
+      ret_value = vaf::Result<vaf::String>::FromValue(value);
+    } else {
+      ret_value = vaf::Result<vaf::String>::FromError(vaf::Error(vaf::ErrorCode::kUnknown,"Kvs get failed."));
+      logger_.LogWarn() <<  "Kvs get failed for {{ module_name }}.";
+    }
+  } else {
+    ret_value = vaf::Result<vaf::String>::FromError(vaf::Error(vaf::ErrorCode::kUnknown,"Kvs not opened."));
+    logger_.LogWarn() <<  "Kvs not opened for {{ module_name }}.";
+  }
+  return ret_value;
+};
+
+{% for proto, basetype in proto_basetype_dict.items() %}
+::vaf::Result<{{basetype}}> {{ module_name }}::Get_{{proto}}Value(const vaf::String& key) noexcept{
+  vaf::Result<{{basetype}}> ret_value{vaf::Result<{{basetype}}>::FromError(vaf::ErrorCode::kNotOk, "Get failed.")};
+
+  vaf::Result<vaf::String> result = Get(key);
+  if (result.HasValue()) {
+    protobuf::basetypes::{{proto}} deserialized;
+    if (!deserialized.ParseFromString(result.Value().c_str())) {
+      vaf::OutputSyncStream{std::cerr} << "ERROR: Unable to deserialize!\n";
+    }
+    ret_value = vaf::Result<{{basetype}}>::FromValue(deserialized.vaf_value_internal());
+  } else {
+    ret_value = vaf::Result<{{basetype}}>::FromError(vaf::Error(vaf::ErrorCode::kUnknown,"Kvs get failed."));
+    logger_.LogWarn() <<  "Get failed for {{ module_name }}.";
+  }
+
+  return ret_value;
+}
+
+::vaf::Result<void> {{ module_name }}::Set_{{proto}}Value(const vaf::String& key, const {{basetype}}& value) noexcept{
+  protobuf::basetypes::{{proto}} proto_message;
+  proto_message.set_vaf_value_internal(value);
+  size_t nbytes = proto_message.ByteSizeLong();
+  std::string temp;
+  if (nbytes) {
+    proto_message.SerializeToString(&temp);
+  }
+
+  vaf::String serialized(temp.c_str());
+  return Set(key, serialized);
+}
+{% endfor %}
+
+{% for name in datatype_names %}
+::vaf::Result<{{"::" + name}}> {{ module_name }}::Get_{{name.rsplit("::")[-1]}}Value(const vaf::String& key) noexcept{
+  vaf::Result<{{"::" + name}}> ret_value{vaf::Result<{{"::" + name}}>::FromError(vaf::ErrorCode::kNotOk, "Get failed.")};
+
+  vaf::Result<vaf::String> result = Get(key);
+  if (result.HasValue()) {
+    protobuf{{"::" + name}} deserialized;
+    if (!deserialized.ParseFromString(result.Value().c_str())) {
+      vaf::OutputSyncStream{std::cerr} << "ERROR: Unable to deserialize!\n";
+    }
+    {{"::" + name}} value;
+    protobuf{{"::" + name}}ProtoToVaf(deserialized, value);
+    ret_value = vaf::Result<{{"::" + name}}>::FromValue(value);
+  } else {
+    ret_value = vaf::Result<{{"::" + name}}>::FromError(vaf::Error(vaf::ErrorCode::kUnknown,"Kvs get failed."));
+    logger_.LogWarn() <<  "Get failed for {{ module_name }}.";
+  }
+
+  return ret_value;
+}
+
+::vaf::Result<void> {{ module_name }}::Set_{{name.rsplit("::")[-1]}}Value(const vaf::String& key,
+                                                            const {{"::" + name}}& value) noexcept{
+  protobuf{{"::" + name}} proto_message;
+  protobuf{{"::" + name}}VafToProto(value, proto_message);
+  size_t nbytes = proto_message.ByteSizeLong();
+  std::string temp;
+  if (nbytes) {
+    proto_message.SerializeToString(&temp);
+  }
+
+  vaf::String serialized(temp.c_str());
+  return Set(key, serialized);
+}
+{% endfor %}
+
+{% endblock %}

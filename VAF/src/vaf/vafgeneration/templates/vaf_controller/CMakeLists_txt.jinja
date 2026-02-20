@@ -51,7 +51,7 @@ target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE
     Threads::Threads
-    $<IF:$<TARGET_EXISTS:vafcpp::vaf_core>,vafcpp::vaf_core,vaf_core>
+    vaf_core
     {% for lib in libraries %}
     {{ lib }}
     {% endfor %}
@@ -62,7 +62,8 @@ target_link_libraries(
 # Define files to be installed
 install(TARGETS ${PROJECT_NAME} DESTINATION "opt/${PROJECT_NAME}/bin")
 
-{% if uses_silkit %}
+{% if model.is_silkit_used %}
 install(PROGRAMS "/usr/local/bin/sil-kit-registry" DESTINATION "opt/silkit/bin")
+
+file(GLOB PROTO_FILES "../../libs/protobuf_serdes/proto/*.proto")
 {% endif %}
-{# dummy comment for new line #}

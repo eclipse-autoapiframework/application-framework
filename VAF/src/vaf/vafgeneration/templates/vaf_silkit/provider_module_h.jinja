@@ -3,9 +3,7 @@
 
 {% block includes %}
 #include <memory>
-#include <string>
-#include <vector>
-
+#include "vaf/container_types.h"
 #include "vaf/controller_interface.h"
 #include "vaf/data_ptr.h"
 #include "vaf/executable_controller_interface.h"
@@ -23,7 +21,7 @@
 {% block content %}
 class {{ module.Name }} final : public {{ interface_file.get_full_type_name() }}, public vaf::ControlInterface {
  public:
-  explicit {{ module.Name }}(vaf::Executor& executor, std::string name, vaf::ExecutableControllerInterface& executable_controller_interface);
+  explicit {{ module.Name }}(vaf::Executor& executor, vaf::String name, vaf::ExecutableControllerInterface& executable_controller_interface);
   ~{{ module.Name }}() override = default;
 
   vaf::Result<void> Init() noexcept override;

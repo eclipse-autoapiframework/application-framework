@@ -1,0 +1,54 @@
+{
+  "version": "{{vaf_version}}",
+  "DataTypeDefinitions": {
+    "Vectors": [
+      {
+        "Name": "Costmap",
+        "Namespace": "localplanner::interfaces",
+        "TypeRef": "uint8_t"
+      }
+    ]
+  },
+  "ModuleInterfaces": [
+    {
+      "Name": "HvacControl",
+      "Namespace": "nsprototype::nsserviceinterface::nshvaccontrol",
+      "DataElements": [
+        {
+          "Name": "CompressorState",
+          "TypeRef": "uint8_t"
+        },
+        {
+          "Name": "ValvePosition",
+          "TypeRef": "uint8_t"
+        },
+        {
+          "Name": "FanSpeed",
+          "TypeRef": "uint8_t"
+        }
+      ],
+      "Operations": [
+        {
+          "Name": "ChangeTemperature",
+          "Parameters": [
+            {
+              "Name": "Value",
+              "TypeRef": "uint8_t",
+              "Direction": "IN"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "CostmapInterface",
+      "Namespace": "localplanner::costmap",
+      "DataElements": [
+        {
+          "Name": "costmap",
+          "TypeRef": "localplanner::interfaces::Costmap"
+        }
+      ]
+    }
+  ]
+}

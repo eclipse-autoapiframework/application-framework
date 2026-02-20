@@ -47,12 +47,14 @@ target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE
     Threads::Threads
-    $<IF:$<TARGET_EXISTS:vafcpp::vaf_core>,vafcpp::vaf_core,vaf_core>
+    vaf_core
     vaf_my_module3
     vaf_my_module4
     vaf_my_module1
     vaf_my_module2
-    my_app
+    my_app1
+    my_app2
+    vaf_persistency
     vaf_MyExecutable_user_controller
 )
 # cmake-format: on
@@ -61,3 +63,5 @@ target_link_libraries(
 install(TARGETS ${PROJECT_NAME} DESTINATION "opt/${PROJECT_NAME}/bin")
 
 install(PROGRAMS "/usr/local/bin/sil-kit-registry" DESTINATION "opt/silkit/bin")
+
+file(GLOB PROTO_FILES "../../libs/protobuf_serdes/proto/*.proto")

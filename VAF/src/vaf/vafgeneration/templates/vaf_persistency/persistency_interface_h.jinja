@@ -1,0 +1,27 @@
+{% extends "common/h_file_base.jinja" %}
+
+{% block includes %}
+#include "vaf/container_types.h"
+#include "vaf/data_ptr.h"
+#include "vaf/result.h"
+#include "vaf/error_domain.h"
+{% for include in includes%}
+{{include}}
+{% endfor%}
+{% endblock %}
+
+{% block content %}
+class {{ module_name }} {
+ public:
+  virtual ~{{ module_name }}() = default;
+
+{% for proto, basetype in proto_basetype_dict.items() %}
+  virtual ::vaf::Result<{{basetype}}> Get_{{proto}}Value(const vaf::String& key) = 0;
+  virtual ::vaf::Result<void> Set_{{proto}}Value(const vaf::String& key, const {{basetype}}& value) = 0;
+{% endfor %}
+{% for name in datatype_names %}
+  virtual ::vaf::Result<{{"::" + name}}> Get_{{name.rsplit("::")[-1]}}Value(const vaf::String& key) = 0;
+  virtual ::vaf::Result<void> Set_{{name.rsplit("::")[-1]}}Value(const vaf::String& key, const {{"::" + name}}& value) = 0;
+{% endfor %}
+};
+{% endblock %}

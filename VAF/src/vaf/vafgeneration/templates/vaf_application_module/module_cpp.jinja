@@ -65,6 +65,14 @@
       {% endfor %}
       {% endif %}
   {% endfor %}
+  {% if (persistency_files | length) > 0 %}
+
+  Persistency files
+  =================
+  {% for i in persistency_files %}
+  std::shared_ptr<{{ i["type"] }}> persistency_{{ i["instance"] }}_;
+  {% endfor %}
+  {% endif %}
 */
 
 /**********************************************************************************************************************
@@ -86,4 +94,17 @@ void {{ app_module.Name }}::{{ r.Name }}() {
 }
 
 {% endfor %}
+
+//vaf::Result<void> {{ app_module.Name }}::Init() {
+//  return vaf::Result<void>{};
+//}
+//void {{ app_module.Name }}::Start() {
+//  ReportOperational();
+//}
+//void {{ app_module.Name }}::Stop() {}
+//void {{ app_module.Name }}::DeInit() {}
+//void {{ app_module.Name }}::OnError(const vaf::Error& error) {
+//  static_cast<void>(error);
+//}
+
 {% endblock %}

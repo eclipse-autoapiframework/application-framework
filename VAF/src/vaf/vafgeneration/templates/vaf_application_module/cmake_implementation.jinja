@@ -2,6 +2,8 @@
 
 cmake_minimum_required(VERSION 3.21)
 
+project({{ target_name }} VERSION 1.0.0)
+
 find_package(Threads)
 find_package(GTest)
 
@@ -49,7 +51,7 @@ target_sources(${TARGET}
 target_link_libraries(${TARGET}
   PUBLIC
     Threads::Threads
-    $<IF:$<TARGET_EXISTS:vafcpp::vaf_core>,vafcpp::vaf_core,vaf_core>
+    vaf_core
     vaf_module_interfaces
 
     {% for lib in libraries %}
@@ -61,4 +63,42 @@ target_link_libraries(${TARGET}
 if(VAF_BUILD_TESTS)
   add_subdirectory(test)
 endif()
-{# dummy comment for new line at the end #}
+
+if(VAF_STAND_ALONE_BUILD)
+  # Install headers only if the include directory exists
+  if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include")
+      install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+              DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+  endif()
+
+  # Install target
+  install(TARGETS ${TARGET}
+      EXPORT ${TARGET}Targets
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+      INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  )
+
+  # Export targets
+  install(EXPORT ${TARGET}Targets
+      FILE ${TARGET}Targets.cmake
+
+      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${TARGET}
+  )
+
+  # Create and install config files
+  include(CMakePackageConfigHelpers)
+
+  write_basic_package_version_file(
+      "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}ConfigVersion.cmake"
+      VERSION ${PROJECT_VERSION}
+      COMPATIBILITY AnyNewerVersion
+  )
+
+  install(FILES
+      "${CMAKE_CURRENT_SOURCE_DIR}/cmake/${TARGET}Config.cmake"
+      "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}ConfigVersion.cmake"
+      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${TARGET}
+  )
+endif()

@@ -1,0 +1,28 @@
+from datetime import timedelta
+
+from .application_modules import *
+from vaf import *
+
+# If applicable, import the CaC support depending on your middleware for access to platform interfaces and executables.
+
+# --------------------------------------------------------------------------------------------------------------------------
+#  Executable definitions
+# --------------------------------------------------------------------------------------------------------------------------
+# executable = Executable("ExecutableName", timedelta(milliseconds=10))
+
+# --------------------------------------------------------------------------------------------------------------------------
+#  Application module instantiations
+# --------------------------------------------------------------------------------------------------------------------------
+# executable.add_application_module(AppModule1, [(Instances.AppModule1.Tasks.PeriodicTask, timedelta(milliseconds=1), 0)])
+# executable.add_application_module(AppModule2, [(Instances.AppModule2.Tasks.PeriodicTask, timedelta(milliseconds=1), 1)])
+
+# --------------------------------------------------------------------------------------------------------------------------
+#  Wiring of application and platform modules
+# --------------------------------------------------------------------------------------------------------------------------
+# executable.connect_interfaces(AppModule1, Instances.AppModule1.ProvidedInterfaces.MyInternalProvider,
+#                               AppModule2, Instances.AppModule2.ConsumedInterfaces.MyInternalConsumer)
+
+# executable.connect_consumed_interface_to_silkit(AppModule1, Instances.AppModule1.ConsumedInterfaces.MyExternalConsumer,
+#                                                 "Silkit_ExternalConsumer")
+# executable.connect_provided_interface_to_silkit(AppModule2, Instances.AppModule2.ProvidedInterfaces.MyExternalProvider,
+#                                                 "Silkit_ExternalProvider")

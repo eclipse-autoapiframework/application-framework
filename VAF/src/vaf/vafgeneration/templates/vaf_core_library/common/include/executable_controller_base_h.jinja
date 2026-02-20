@@ -1,0 +1,90 @@
+{% include "common/copyright.jinja" %}
+
+#ifndef VAF_EXECUTABLE_CONTROLLER_BASE_H_
+#define VAF_EXECUTABLE_CONTROLLER_BASE_H_
+
+/*!********************************************************************************************************************
+ *  INCLUDES
+ *********************************************************************************************************************/
+#include <atomic>
+#include <thread>
+
+#include "vaf/container_types.h"
+#include "vaf/controller_interface.h"
+#include "vaf/executable_controller_interface.h"
+#include "vaf/logging.h"
+#include "vaf/module_states.h"
+#include "vaf/runtime.h"
+#include "vaf/user_controller_interface.h"
+
+namespace vaf {
+
+class ExecutableControllerBase : public vaf::ExecutableControllerInterface {
+ public:
+  ExecutableControllerBase();
+  virtual ~ExecutableControllerBase() = default;
+
+  ExecutableControllerBase(const ExecutableControllerBase&) = delete;
+  ExecutableControllerBase(ExecutableControllerBase&&) = delete;
+  ExecutableControllerBase& operator=(const ExecutableControllerBase&) = delete;
+  ExecutableControllerBase& operator=(ExecutableControllerBase&&) = delete;
+
+  void Run(bool use_exec_mgr = false) noexcept;
+  void Run(int argc, char* argv[], bool use_exec_mgr = false) noexcept;
+  void InitiateShutdown() noexcept;
+
+  void RegisterModule(std::shared_ptr<vaf::ControlInterface> module);
+
+  void ReportOperationalOfModule(vaf::String name) override;
+  void SkipStartingOfModule(vaf::String name) override;
+  void ReportErrorOfModule(const vaf::Error& error, vaf::String name, bool critical) override;
+
+ protected:
+  virtual void DoInitialize();
+  virtual void DoStart();
+  virtual void DoShutdown();
+  void WaitForShutdown();
+  bool IsShutdownRequested();
+  void ChangeStateOfModule(vaf::String name, ModuleStates state);
+  void StartModules();
+  void StartEventHandlersForModule(const vaf::String& module_name, const vaf::Vector<vaf::String>& dependencies);
+  void StopEventHandlersForModule(const vaf::String& module_name, const vaf::Vector<vaf::String>& dependencies);
+  void CheckStartingModules();
+
+ private:
+  class ModuleContainer {
+   public:
+    ModuleContainer(vaf::String name, std::shared_ptr<vaf::ControlInterface> module, vaf::Vector<vaf::String> dependencies)
+      : name_{std::move(name)}, module_{std::move(module)}, dependencies_{std::move(dependencies)} {
+    }
+    vaf::String name_;
+    std::shared_ptr<vaf::ControlInterface> module_;
+    vaf::Vector<vaf::String> dependencies_;
+    ModuleStates state_{ModuleStates::kNotInitialized};
+    uint64_t starting_counter_{0};
+  };
+
+  void SetupExecutionManager();
+  void ReportStateToExecutionManager(bool is_running);
+
+  /*!
+   * \brief Entry point of the thread receiving signals from the execution manager.
+   */
+  void InitializeSignalHandling() noexcept;
+  void SignalHandlerThread();
+
+  int signal_handling_init_;
+  vaf::Runtime runtime_;
+  std::atomic_bool shutdown_requested_;
+  bool use_execution_mgr_{false};
+
+  vaf::Logger& logger_;
+  vaf::Vector<ModuleContainer> modules_;
+  std::unique_ptr<UserControllerInterface> user_controller_;
+
+  std::thread signal_handler_thread_;
+};
+
+}  // namespace vaf
+
+#endif  // VAF_EXECUTABLE_CONTROLLER_BASE_H_

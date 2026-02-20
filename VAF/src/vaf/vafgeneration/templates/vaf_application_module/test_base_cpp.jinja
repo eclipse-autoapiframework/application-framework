@@ -1,10 +1,18 @@
-
 {% extends "common/cpp_file_base.jinja" %}
 
 {% block content %}
-{{ app_module.Name }}Base::{{ app_module.Name }}Base(ConstructorToken&& token){% if (interfaces | length) > 0 %}:{% endif %}
+{{ app_module.Name }}Base::{{ app_module.Name }}Base(ConstructorToken&& token){% if (interfaces | length) > 0 or (persistency_files | length) > 0 %}:{% endif %}
 
-{% for i in interfaces %}
-      {{ i["instance"] }}_{std::move(token.{{ i["instance"] }}_)}{% if not loop.last %},
-{% endif %}{% endfor %} {}
+      {% for i in interfaces %}
+      {% if (persistency_files | length) > 0 %}
+      {{ i["instance"] }}_{std::move(token.{{ i["instance"] }}_)},
+      {% else %}
+      {{ i["instance"] }}_{std::move(token.{{ i["instance"] }}_)}{% if not loop.last %},{% endif %}
+      {% endif %}
+      {% endfor %}
+      {% for i in persistency_files %}
+      persistency_{{ i["instance"] }}_{std::move(token.persistency_{{ i["instance"] }}_)}{% if not loop.last %},{% endif %}
+      {% endfor %}
+{
+}
 {% endblock %}

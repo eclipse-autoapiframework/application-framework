@@ -169,23 +169,6 @@ Generated files:
     └── CMakeLists.txt
 ```
 
-### vaf_core_support
-
-Generates source code, CMake, and configuration files to initialize executable-level core
-functionality.
-
-Generated files:
-
-``` text
-<project>
-└── src-gen/libs/core_support
-    ├── config/<executable_name>/etc
-    |   └── logging_config.json
-    ├── src
-    |   └── initialization.cpp
-    └── CMakeLists.txt
-```
-
 ### vaf_interface
 
 Generates header and CMake files to support the module interfaces configured in CaC.

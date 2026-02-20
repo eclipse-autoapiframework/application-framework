@@ -1,0 +1,43 @@
+{
+  "version": "{{vaf_version}}",
+  "DataTypeDefinitions": {
+    "Strings": [
+      {
+        "Name": "string",
+        "Namespace": "demo"
+      },
+      {
+        "Name": "String",
+        "Namespace": "vaf"
+      }
+    ]
+  },
+  "ModuleInterfaces": [
+    {
+      "Name": "HelloWorldIf",
+      "Namespace": "demo",
+      "DataElements": [
+        {
+          "Name": "Message",
+          "TypeRef": "demo::string"
+        },
+        {
+          "Name": "Message_base_string",
+          "TypeRef": "vaf::String"
+        }
+      ],
+      "Operations": [
+        {
+          "Name": "SetMsgId",
+          "Parameters": [
+            {
+              "Name": "MsgId",
+              "TypeRef": "uint8_t",
+              "Direction": "IN"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

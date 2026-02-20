@@ -2,6 +2,8 @@
 {% import "vaf_interface/macros.jinja" as interface with context %}
 
 {% block includes %}
+#include <cstdlib>
+#include <google/protobuf/serial_arena.h>
 #include <memory>
 
 #include "vaf/internal/data_ptr_helper.h"
@@ -12,7 +14,7 @@
 {% endblock %}
 
 {% block content %}
-{{ module.Name }}::{{ module.Name }}(vaf::Executor& executor, std::string name, vaf::ExecutableControllerInterface& executable_controller_interface)
+{{ module.Name }}::{{ module.Name }}(vaf::Executor& executor, vaf::String name, vaf::ExecutableControllerInterface& executable_controller_interface)
   	: vaf::ControlInterface(std::move(name), {}, executable_controller_interface, executor) {
 }
 
@@ -21,7 +23,9 @@ vaf::Result<void> {{ module.Name }}::Init() noexcept {
 }
 
 void {{ module.Name }}::Start() noexcept {
-  const auto registry_uri = "{{registry_uri}}";
+  const char* value = std::getenv("SILKIT_REGISTRY_URI");
+  const auto registry_uri = (value != nullptr) ? std::string(value) : "silkit://localhost:8501";
+
   const std::string participant_config_text = R"(
   Description: My participant configuration
   Logging:
@@ -36,8 +40,11 @@ void {{ module.Name }}::Start() noexcept {
   {% for de in module.ModuleInterfaceRef.DataElements %}
   {% set data_type = data_type_to_str(de.TypeRef) %}
   {% set de_name = add_namespace_to_name(de.Name, module.ModuleInterfaceRef.Namespace) %}
-  SilKit::Services::PubSub::PubSubSpec pubsubspec_{{ de_name }}{"{{ service_interface_name }}_{{ de.Name }}", SilKit::Util::SerDes::MediaTypeData()};
-  pubsubspec_{{ de_name }}.AddLabel("Instance", "{{ service_interface_name }}_{{ de.Name }}", SilKit::Services::MatchingLabel::Kind::Mandatory);
+  SilKit::Services::PubSub::PubSubSpec pubsubspec_{{ de_name }}{"{{ module.ModuleInterfaceRef.Name }}_{{ de.Name }}", "application/protobuf"};
+  pubsubspec_{{ de_name }}.AddLabel("Instance", "{{ silkit_instance }}", {{ "SilKit::Services::MatchingLabel::Kind::Mandatory" if silkit_instance_is_optional in [False] else "SilKit::Services::MatchingLabel::Kind::Optional" }});
+  {% if silkit_namespace is not none %}
+  pubsubspec_{{ de_name }}.AddLabel.AddLabel("Namespace", "{{ silkit_namespace }}", {{ "SilKit::Services::MatchingLabel::Kind::Mandatory" if silkit_namespace_is_optional in [False] else "SilKit::Services::MatchingLabel::Kind::Optional" }});
+  {% endif %}
   publisher_{{ de_name.replace("::","_") }}_= participant_->CreateDataPublisher("Publisher_{{ de_name.replace("::","_") }}", pubsubspec_{{ de_name.replace("::","_") }});
 
   {% endfor %}
@@ -48,50 +55,48 @@ void {{ module.Name }}::Start() noexcept {
   {% else %}
   {% set op_name = op.Name %}
   {% endif %}
-  SilKit::Services::Rpc::RpcSpec rpcspec_{{ op_name.replace("::","_") }}{"{{ service_interface_name }}_{{ op.Name }}", SilKit::Util::SerDes::MediaTypeRpc()};
-  rpcspec_{{ op_name.replace("::","_") }}.AddLabel("Instance", "{{ service_interface_name }}_{{ op.Name }}", SilKit::Services::MatchingLabel::Kind::Mandatory);
+  SilKit::Services::Rpc::RpcSpec rpcspec_{{ op_name.replace("::","_") }}{"{{ module.ModuleInterfaceRef.Name }}_{{ op.Name }}", "application/protobuf"};
+  rpcspec_{{ op_name.replace("::","_") }}.AddLabel("Instance", "{{ silkit_instance }}", {{ "SilKit::Services::MatchingLabel::Kind::Mandatory" if silkit_instance_is_optional in [False] else "SilKit::Services::MatchingLabel::Kind::Optional" }});
+  {% if silkit_namespace is not none %}
+  rpcspec_{{ op_name.replace("::","_") }}.AddLabel("Namespace", "{{ silkit_namespace }}", {{ "SilKit::Services::MatchingLabel::Kind::Mandatory" if silkit_namespace_is_optional in [False] else "SilKit::Services::MatchingLabel::Kind::Optional" }});
+  {% endif %}
   auto RemoteFunc_{{ op_name.replace("::","_") }} = [&](auto* server, const auto& event) {
-    SilKit::Util::SerDes::Deserializer deserializer(SilKit::Util::ToStdVector(event.argumentData));
-    std::vector<std::uint8_t> argument_vector = deserializer.Deserialize<std::vector<uint8_t>>();
-
     protobuf::interface::{{ module.ModuleInterfaceRef.Namespace }}::{{ module.ModuleInterfaceRef.Name }}::{{ op.Name }}_in deserialized;
-    deserialized.ParseFromArray( argument_vector.data(), argument_vector.size() );
-    {% for p in op.Parameters if not is_out_parameter(p) %}
+    deserialized.ParseFromArray(event.argumentData.data(), event.argumentData.size());
+    {% for p in op.Parameters if not p.is_direction_out %}
     {% set data_type = data_type_to_str(p.TypeRef) %}
     {{ data_type }} {{ p.Name }}{};
     {% endfor %}
-  {% if has_operation_in_or_inout_parameter(op) %}
+  {% if op.has_any_parameter_in_inout %}
     protobuf::interface::{{ module.ModuleInterfaceRef.Namespace }}::{{ module.ModuleInterfaceRef.Name }}::{{ op.Name }}InProtoToVaf(deserialized, {{ get_in_parameter_list_comma_separated(op) }});
   {% endif %}
-  {% if has_operation_out_or_inout_parameter(op) %}
+  {% if op.has_any_parameter_out_inout %}
     {{ operation_get_return_type(op, module.ModuleInterfaceRef) }} result;
   {% endif %}
     if (CbkFunction_{{ op_name.replace("::","_") }}_) {
-  {% if has_operation_out_or_inout_parameter(op) %}
+  {% if op.has_any_parameter_out_inout %}
       result = CbkFunction_{{ op_name.replace("::","_") }}_(
-  {%- for p in op.Parameters if not is_out_parameter(p) -%}
+  {%- for p in op.Parameters if not p.is_direction_out -%}
       {{ p.Name }}{% if not loop.last %}, {% endif %}
   {%- endfor -%}
   {% else %}
       CbkFunction_{{ op_name.replace("::","_") }}_(
-  {%- for p in op.Parameters if not is_out_parameter(p) -%}
+  {%- for p in op.Parameters if not p.is_direction_out -%}
       {{ p.Name }}{% if not loop.last %}, {% endif %}
   {%- endfor -%}
   {%- endif -%}
       );
     }
     protobuf::interface::{{ module.ModuleInterfaceRef.Namespace }}::{{ module.ModuleInterfaceRef.Name }}::{{ op.Name }}_out request;
-  {% if has_operation_out_or_inout_parameter(op) %}
+  {% if op.has_any_parameter_out_inout %}
     protobuf::interface::{{ module.ModuleInterfaceRef.Namespace }}::{{ module.ModuleInterfaceRef.Name }}::{{ op.Name }}OutVafToProto(result, request);
   {% endif %}
     size_t nbytes = request.ByteSizeLong();
     std::vector<std::uint8_t> serialized(nbytes);
-    if (nbytes) {
+    if (nbytes != 0u) {
       request.SerializeToArray(serialized.data(), nbytes);
     }
-    SilKit::Util::SerDes::Serializer serializer;
-    serializer.Serialize(serialized);
-    server->SubmitResult(event.callHandle, serializer.ReleaseBuffer());
+    server->SubmitResult(event.callHandle, serialized);
   };
   server_{{ op_name.replace("::","_") }}_= participant_->CreateRpcServer("{{ op_name }}", rpcspec_{{ op_name.replace("::","_") }}, RemoteFunc_{{ op_name.replace("::","_") }});
 
@@ -125,12 +130,10 @@ void {{ module.Name }}::DeInit() noexcept {
   protobuf::interface::{{ module.ModuleInterfaceRef.Namespace }}::{{ module.ModuleInterfaceRef.Name }}::{{ de.Name }}VafToProto(*vaf::internal::DataPtrHelper<{{ data_type }}>::getRawPtr(data), request);
   size_t nbytes = request.ByteSizeLong();
   std::vector<std::uint8_t> serialized(nbytes);
-  if (nbytes) {
+  if (nbytes != 0u) {
     request.SerializeToArray(serialized.data(), nbytes);
   }
-  SilKit::Util::SerDes::Serializer serializer;
-  serializer.Serialize(serialized);
-  publisher_{{ de_name.replace("::","_") }}_->Publish(serializer.ReleaseBuffer());
+  publisher_{{ de_name.replace("::","_") }}_->Publish(serialized);
 
   return ::vaf::Result<void>{};
 }
@@ -141,12 +144,10 @@ void {{ module.Name }}::DeInit() noexcept {
   protobuf::interface::{{ module.ModuleInterfaceRef.Namespace }}::{{ module.ModuleInterfaceRef.Name }}::{{ de.Name }}VafToProto(data, request);
   size_t nbytes = request.ByteSizeLong();
   std::vector<std::uint8_t> serialized(nbytes);
-  if (nbytes) {
+  if (nbytes != 0u) {
     request.SerializeToArray(serialized.data(), nbytes);
   }
-  SilKit::Util::SerDes::Serializer serializer;
-  serializer.Serialize(serialized);
-  publisher_{{ de_name.replace("::","_") }}_->Publish(serializer.ReleaseBuffer());
+  publisher_{{ de_name.replace("::","_") }}_->Publish(serialized);
 
   return ::vaf::Result<void>{};
 }

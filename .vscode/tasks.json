@@ -60,16 +60,5 @@
                 "clear": true,
             }
         },
-        {
-            "label": "Build TC",
-            "type": "shell",
-            "command": "cd TechnicalConcept && make html",
-            "group": "build",
-            "options": { },
-            "presentation": {
-                "reveal": "silent",
-                "clear": true,
-            }
-        },
     ]
 }

@@ -1,40 +1,27 @@
-"""Runtime for building a complete model with config as code"""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
-from collections import defaultdict
-from typing import Dict, List, Tuple
+"""Runtime for building a complete model with Config as Code."""
+
+from pathlib import Path
+from typing import List, Optional, Tuple
+
+from typing_extensions import Self
 
 from vaf import vafmodel
-from vaf.cli_core.common.utils import create_name_namespace_full_name
+from vaf.core.common.utils import ProjectType as PType
+from vaf.core.common.utils import create_name_namespace_full_name
+from vaf.core.state_manager.tracker import tracking_context
 
-from .core import ModelError, VafpyAbstractBase
+from .core import ModelError, VafpyAbstractBase, VafpyAbstractModelRuntime
+from .validator import CleanupOverride, _Validator
 
 
-class ModelRuntime:
+class ModelRuntime(VafpyAbstractModelRuntime):
     """Runtime to store modeling progress"""
 
-    # Dict that stores namespace & name of used module interfaces
-    # and their respectives data_elements & operations typerefs
-    used_module_interfaces: Dict[str, List[str]] = {}
-    # List that stores the name of internal interfaces
-    internal_interfaces: List[str] = []
-    # List that stores the name of connected internal interfaces
-    connected_interfaces: defaultdict[str, List[str]] = defaultdict(list)
-    # dictionary that stores vafpy elements by namespace (for CaC)
-    # Reason: getter function in runtime.py can get the vafpy elements
-    # CaC and some generations are namespace-based: One can access the model
-    # by calling <vafpy_element>.vafmodel
-    element_by_namespace: Dict[str, Dict[str, Dict[str, VafpyAbstractBase]]] = {}
-
-    def __init__(self) -> None:
-        self.main_model = vafmodel.MainModel()
-
-    def reset(self) -> None:
-        """Resets the model runtime"""
-        self.main_model = vafmodel.MainModel()
-        self.used_module_interfaces.clear()
-        self.internal_interfaces.clear()
-        self.connected_interfaces.clear()
-        self.element_by_namespace.clear()
+    # validator
+    __validator: _Validator
 
     @staticmethod
     def __get_element_type(vaf_model_obj: VafpyAbstractBase) -> str:
@@ -102,10 +89,8 @@ class ModelRuntime:
                     )
 
             # special operations for specific elements
-            # ModuleInterface, PlatformModule, Executable
-            if isinstance(element, vafmodel.PlatformModule):
-                self.add_used_module_interfaces(element.ModuleInterfaceRef)
-            elif not imported:
+            # ModuleInterface, Executable
+            if not imported:
                 if isinstance(element, vafmodel.ModuleInterface):
                     self.add_used_module_interfaces(element)
                 elif isinstance(element, vafmodel.ApplicationModule):
@@ -142,8 +127,6 @@ class ModelRuntime:
             # ModuleInterface, PlatformModule, Executable
             if isinstance(element, vafmodel.ModuleInterface):
                 self.remove_used_module_interfaces(element)
-            elif isinstance(element, vafmodel.PlatformModule):
-                self.remove_used_module_interfaces(element.ModuleInterfaceRef)
             elif isinstance(element, vafmodel.ApplicationModule):
                 self.remove_used_module_interfaces(
                     [mi.ModuleInterfaceRef for mi in element.ConsumedInterfaces + element.ProvidedInterfaces]
@@ -169,8 +152,31 @@ class ModelRuntime:
                         element_list[idx] = element
                         break
 
+    def get_model_runtime_element(
+        self, name: str, namespace: str, element_type: str, assert_result: bool = True
+    ) -> Optional[VafpyAbstractBase]:
+        """Method to get element's object based on type
+        Args:
+            name: name of the element
+            namespace: namespace of the element
+            element_type: type of the element
+            assert_result: flag to activate result assertion
+
+        Raises:
+            ModelError: if no element found
+
+        Returns:
+            Vafpy type belongs to the element
+        """
+        found = self.element_by_namespace.get(namespace, {}).get(element_type, {}).get(name, None)
+        if assert_result:
+            if found is None:
+                raise ModelError(f"Could not find {element_type}: {namespace}::{name}!")
+        return found
+
     def add_used_module_interfaces(
-        self, module_interfaces: List[vafmodel.ModuleInterface] | vafmodel.ModuleInterface
+        self,
+        module_interfaces: List[vafmodel.ModuleInterface] | vafmodel.ModuleInterface,
     ) -> None:
         """Adds a module interface to the used module interface
         Args:
@@ -189,7 +195,8 @@ class ModelRuntime:
                         ]
                         + [
                             create_name_namespace_full_name(
-                                surgery_parameter.TypeRef.Name, surgery_parameter.TypeRef.Namespace
+                                surgery_parameter.TypeRef.Name,
+                                surgery_parameter.TypeRef.Namespace,
                             )
                             for surgery in mi.Operations
                             for surgery_parameter in surgery.Parameters
@@ -198,7 +205,8 @@ class ModelRuntime:
                 )
 
     def remove_used_module_interfaces(
-        self, module_interfaces: List[vafmodel.ModuleInterface] | vafmodel.ModuleInterface
+        self,
+        module_interfaces: List[vafmodel.ModuleInterface] | vafmodel.ModuleInterface,
     ) -> None:
         """Adds a module interface to the used module interface
         Args:
@@ -211,6 +219,56 @@ class ModelRuntime:
             if module_interface_id in self.used_module_interfaces:
                 del self.used_module_interfaces[module_interface_id]
 
+    def validate(self, project_type: PType, override_cleanup: CleanupOverride = CleanupOverride.DEFAULT) -> Self:
+        """Method to validate and cleanup model based on project_type
+        Args:
+            project_type: Type of the project
+            override_cleanup: boolean to override the project_type logic
+        """
+        self.__validator = _Validator(self, project_type, override_cleanup)
+        self.__validator.validate_model()
 
-# prevent cylic dependency
-model_runtime = ModelRuntime()
+        # returns self so it can be used in one-liner
+        return self
+
+    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-positional-arguments
+    def save(
+        self,
+        path: Path,
+        project_type: PType,
+        keys: Optional[List[str]] = None,
+        cleanup: CleanupOverride = CleanupOverride.DEFAULT,
+        skip_validation: bool = False,
+    ) -> None:
+        """
+        Saves the main model to file with undo/redo support.
+
+        Args:
+            path (Path): Path to the file
+            keys: (list[str]): Key to be saved in the export
+            project_type (ProjectType): Type of the current project
+            cleanup (bool): Boolean flag to remove unused data elements & module interfaces in model
+            skip_validation (bool): Boolean flag to indicate the need for model validation
+        """
+        if not skip_validation:
+            self.validate(project_type, override_cleanup=cleanup)
+        else:
+            print("Skipping the model validation.")
+
+        if keys is not None:
+            target_model: vafmodel.MainModel = vafmodel.MainModel()
+            for key in keys:
+                if hasattr(target_model, key):
+                    getattr(target_model, key).extend(getattr(self.main_model, key))
+
+        # Generate new model JSON string
+        model_as_string = (self.main_model if keys is None else target_model).model_dump_json(
+            indent=2, exclude_none=True, exclude_defaults=True, by_alias=True
+        )
+
+        # Use stateless undo manager with context for atomic operations
+        with tracking_context(f"Save model to {path.name}") as tracker:
+            # Handle main file modification
+            # Create/ Modify main file
+            tracker.create_modify_file(path, model_as_string)

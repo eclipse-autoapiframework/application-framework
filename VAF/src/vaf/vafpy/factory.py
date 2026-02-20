@@ -1,23 +1,25 @@
-"""Factory to build"""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
-from typing import Any, Optional
+"""Factory to build."""
 
-from pydantic._internal._model_construction import ModelMetaclass
-from typing_extensions import Self
+from typing import Any
 
 from vaf import vafmodel
 
-from .core import BaseTypesWrapper, ModelError, VafpyAbstractBase
-from .model_runtime import model_runtime
+from .core import ModelError, VafpyAbstractBase
+from .model_runtime import ModelRuntime
 
 # pylint: disable=too-few-public-methods
 
 
-class VafpyAbstractElement(VafpyAbstractBase):
-    """Generic Abstract type for Vafpy Element"""
+class VafpyFactory:
+    """Generic Abstract type for vafpy element"""
 
-    @classmethod
-    def __ensure_name_ns(cls, name: str | None, namespace: str | None) -> None:
+    @staticmethod
+    def __ensure_name_ns(
+        constructor: type[vafmodel.vafmodel.VafBaseModel], name: str | None, namespace: str | None
+    ) -> None:
         """Method to ensure name & namespaces of the object
         Args:
             kwargs: attributes to be checked
@@ -25,9 +27,12 @@ class VafpyAbstractElement(VafpyAbstractBase):
             ModelError: if name and namespace is not valid
         """
         if name is None and namespace is None:
-            type_str = cls.__name__
+            type_str = constructor.__name__
             error_msg = "".join(
-                [f"Dude, why do you want to initialize {type_str}", "with name = None & namespace = None?"]
+                [
+                    f"Why do you want to initialize {type_str}",
+                    "with name = None & namespace = None?",
+                ]
             )
             raise ModelError(error_msg)
 
@@ -48,77 +53,41 @@ class VafpyAbstractElement(VafpyAbstractBase):
             raise ModelError(reason)
 
     @classmethod
-    def __get_vafmodel_parent(cls) -> ModelMetaclass:
-        """Method to get first vafmodel parent from class
-        Returns:
-            vafmodel class
-        Raises:
-            ModelError: if class is not a children of a vafmodel class
-        """
-        tmp_cls: Any = cls
-
-        looping_louie: bool = True
-        while looping_louie:
-            tmp_cls = getattr(tmp_cls, "__base__", None)
-            looping_louie = tmp_cls is not None and not tmp_cls.__module__.endswith("vafmodel")
-
-        if type(tmp_cls) is not ModelMetaclass or not tmp_cls.__module__.endswith("vafmodel"):  # pylint: disable=unidiomatic-typecheck
-            raise ModelError("Dude, your class has the wrong parent!")
-
-        return tmp_cls
-
-    @classmethod
-    def _construct_typeref_object(cls, typeref: VafpyAbstractBase | BaseTypesWrapper, object_class: type) -> None:
-        """Method to construct typeref object
-        Args:
-            typeref: typeref as cac object
-            object_class: class of the typeref
-        """
-        # assert typeref hasn't constructed yet
-        if (
-            model_runtime.element_by_namespace.get(typeref.Namespace, {})
-            .get(object_class.__name__ + "s", {})
-            .get(typeref.Name, None)
-            is None
-        ):
-            # construct the typeref as vafpy object
-            object_class(typeref.Name, typeref.Namespace)
-
-    @classmethod
-    def _build_instance(cls, obj: Optional[Self] = None, **kwargs: Any) -> Optional[Self]:
+    def create(cls, constructor: type[vafmodel.VafBaseModel], obj: VafpyAbstractBase, **kwargs: Any) -> None:
         """Method to build an instance of a vafpy element
         Args:
+            constructor: parent of object whose constructor will be used
             obj: object if it's already built
             kwargs: attributes of the object
-        Returns:
-            constructed object that can be fetched by caller
         """
-        # construct empty instance if obj is none
-        if obj is None:
-            obj = cls.__new__(cls)
         # ensure validity of attributes
-        cls.__ensure_name_ns(name=kwargs.get("Name", None), namespace=kwargs.get("Namespace", None))
+        cls.__ensure_name_ns(
+            constructor=constructor, name=kwargs.get("Name", None), namespace=kwargs.get("Namespace", None)
+        )
         # construct via vafmodel constructor
-        vafmodel_parent = cls.__get_vafmodel_parent()
-        vafmodel_parent.__init__(  # type:ignore[misc]
+        constructor.__init__(  # pylint:disable=unnecessary-dunder-call  # type:ignore[misc]
             obj,
-            **{
-                init_args: kwargs[init_args] for init_args in vafmodel_parent.model_fields.keys() if init_args in kwargs
-            },
+            **{init_args: kwargs[init_args] for init_args in constructor.model_fields.keys() if init_args in kwargs},
         )
         # add to model runtime
-        model_runtime.add_element(obj, imported=kwargs.get("imported", False))
-
-        return obj
+        ModelRuntime().add_element(obj, imported=kwargs.get("imported", False))
 
     @classmethod
-    def _from_vaf_model(cls, vaf_model: vafmodel.ModelElement, **kwargs: Any) -> None:
-        """Method to init vafpy object from a vaf_model
+    def create_from_model(
+        cls,
+        vaf_model: vafmodel.VafBaseModel,
+        vafpy_class: type[VafpyAbstractBase],
+        **kwargs: Any,
+    ) -> None:
+        """Method to init vafpy object from a vafmodel object
         Args:
             vaf_model: vafmodel object as input
+            vafpy_class: vafpy class of the goal object
             kwargs: Other variables
         """
         # append vaf_model attributes to kwargs
         kwargs |= {init_args: getattr(vaf_model, init_args) for init_args in vaf_model.model_fields_set}
+        # construct empty instance if obj is none
+        obj = vafpy_class.__new__(vafpy_class)
         # construct object from kwargs
-        cls._build_instance(**kwargs)
+        cls.create(constructor=type(vaf_model), obj=obj, **kwargs)

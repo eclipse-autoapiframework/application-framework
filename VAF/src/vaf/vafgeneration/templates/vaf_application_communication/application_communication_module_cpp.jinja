@@ -3,10 +3,11 @@
 
 {% block includes %}
 #include "vaf/internal/data_ptr_helper.h"
-{% endblock -%}
+#include "vaf/internal/promise.h"
+{% endblock %}
 
 {% block content %}
-{{ module.Name }}::{{ module.Name }}(vaf::Executor& executor, std::string name, std::vector<std::string> dependencies, vaf::ExecutableControllerInterface& executable_controller_interface)
+{{ module.Name }}::{{ module.Name }}(vaf::Executor& executor, vaf::String name, vaf::Vector<vaf::String> dependencies, vaf::ExecutableControllerInterface& executable_controller_interface)
   : vaf::ControlInterface(std::move(name), std::move(dependencies), executable_controller_interface, executor),
     executor_{vaf::ControlInterface::executor_} {
 }
@@ -25,7 +26,7 @@ void {{ module.Name }}::Stop() noexcept {
 void {{ module.Name }}::DeInit() noexcept  {
 }
 
-void {{ module.Name }}::StartEventHandlerForModule(const std::string& module) {
+void {{ module.Name }}::StartEventHandlerForModule(const vaf::String& module) {
   {% for de in module.ModuleInterfaceRef.DataElements %}
   for(auto& handler_container : {{ de.Name }}_handlers_) {
     if(handler_container.owner_ == module) {
@@ -37,7 +38,7 @@ void {{ module.Name }}::StartEventHandlerForModule(const std::string& module) {
   active_modules_.push_back(module);
 }
 
-void {{ module.Name }}::StopEventHandlerForModule(const std::string& module) {
+void {{ module.Name }}::StopEventHandlerForModule(const vaf::String& module) {
   {% for de in module.ModuleInterfaceRef.DataElements %}
   for(auto& handler_container : {{ de.Name }}_handlers_) {
     if(handler_container.owner_ == module) {
@@ -46,12 +47,11 @@ void {{ module.Name }}::StopEventHandlerForModule(const std::string& module) {
   }
   {% endfor %}
 
-  static_cast<void>(std::remove(active_modules_.begin(), active_modules_.end(), module));
+  active_modules_.erase(std::remove(active_modules_.begin(), active_modules_.end(), module));
 }
 
 {% for de in module.ModuleInterfaceRef.DataElements %}
 {% set data_type = data_type_to_str(de.TypeRef) %}
-
 
 {{ interface.consumer_data_element_get_allocated(de, module.Name ) }} {
   return vaf::Result<vaf::ConstDataPtr<const {{ data_type }} >>::FromValue( {{ de.Name }}_sample_);
@@ -60,6 +60,7 @@ void {{ module.Name }}::StopEventHandlerForModule(const std::string& module) {
 {{ interface.consumer_data_element_get(de, module.Name ) }} { return *{{ de.Name }}_sample_; }
 
 {{ interface.consumer_data_element_handler(de, module.Name ) }} {
+  StartEventHandlerForModule(owner);
   {{ de.Name }}_handlers_.emplace_back(owner, std::move(f));
   if(std::find(active_modules_.begin(), active_modules_.end(), owner) != active_modules_.end()) {
     {{ de.Name }}_handlers_.back().is_active_ = true;
@@ -97,32 +98,30 @@ void {{ module.Name }}::StopEventHandlerForModule(const std::string& module) {
 
   return vaf::Result<void>{};
 }
-
 {% endfor %}
 
 {% for op in module.ModuleInterfaceRef.Operations %}
+
 {{ interface.provider_operation(op, module.ModuleInterfaceRef, module.Name) }} {
   {{ op.Name }}_handler_ = std::move(f);
 }
 
 {{ interface.consumer_operation(op, module.ModuleInterfaceRef, module.Name) }} {
-  ::vaf::Promise<{{ operation_get_return_type(op, module.ModuleInterfaceRef) }}> p;
+  ::vaf::internal::Promise<{{ operation_get_return_type(op, module.ModuleInterfaceRef) }}> p;
 
   if({{ op.Name }}_handler_) {
-  {% if has_operation_out_or_inout_parameter(op) %}
+  {% if op.has_any_parameter_out_inout %}
     p.set_value({{ op.Name }}_handler_({{ interface.operation_expand_in_parameters(op) }}));
   {% else %}
     {{ op.Name }}_handler_({{ interface.operation_expand_in_parameters(op) }});
     p.set_value();
   {% endif %}
   } else {
-    vaf::Error error_code{::vaf::ErrorCode::kNoOperationHandlerRegistered, "No operation handler registered for {{ op.Name }}."};
-    p.SetError(error_code);
+    vaf::Error error_code{::vaf::ErrorCode::kNotOk, "No operation handler registered for {{ op.Name }}."};
+    vaf::internal::SetVafErrorCodeToPromise(p, error_code);
   }
 
-  return p.get_future();
+  return ::vaf::internal::CreateVafFutureFromVafPromise<{{ operation_get_return_type(op, module.ModuleInterfaceRef) }}>(p);
 }
-
 {% endfor %}
-
 {% endblock %}

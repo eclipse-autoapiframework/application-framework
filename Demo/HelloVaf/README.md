@@ -1,109 +1,75 @@
-# Hello VAF Demo
+# "Hello, world!" demo with the Vehicle Application Framework
 
-This `Hello, World!` style demo, introduces to the Vehicle Application Framework (VAF) with a simple
-example. The figure below provides a schematic illustration to give an overview of its building
-blocks:
+The **Vehicle Application Framework (VAF)** supports three different project types, *interface
+project*, *app-module project*, and *integration project*. These project types are useful for
+handling large projects with distributed development teams. In this `Hello, world!` demo, we will
+introduce those project types and realize a simple modular application that consists from one
+executable only.
 
-![hello](../figures/hello.drawio.svg)
+The figure below provides a schematic illustration of the example at hand to give you an overview of
+its building blocks:
+
+![hvac](../figures/hello.drawio.svg)
 
 `AppModule1` provides a communication interface that is used by `AppModule2`.
 
-The first application module periodically sends a message of format `Hello, VAF! - MsgID: <ID>`
+The first application module periodically sends a message of the format `Hello, VAF! - MsgID: <ID>`
 to the second application module. The second module subscribes to message changes and prints new
 messages on the terminal. It uses an operation to periodically change the MsgID of the first
-application module, which is part of the message above.
-
-## Prerequisites
-
-### Docker setup
-All steps in this tutorial are executed from within a container. Recipe and build script for the
-appropriate VAF image are provided in the [Container](../../Container/README.md) folder of this
-project repository.
-
-Execute `docker images` to check if a REPOSITORY named `vaf` with TAG `latest` is available in the
-list before moving on to the next steps.
-
-### Workspace
-The Vehicle Application Framework (VAF) supports three different project types, *interface project*,
-*app-module project*, and *integration project*. These project types are useful for the organization
-of small and large projects but especially helpful, when working with distributed development teams.
-
-To group projects that belong together, it is recommended to create a so-called *workspace*. This
-parent folder contains for example a devcontainer file to facilitate the work with VS Code.
-
-To create a workspace, navigate to the target location, then use the below command to start a VAF
-container and finally, create a VAF workspace there and enter the new directory.
-``` bash
-cd <some-dir>
-docker run -it --rm --network=host -v$PWD:$PWD -w$PWD vaf:latest /bin/bash
-
-vaf workspace init
-Enter your workspace name: VafWorkspace
-
-cd VafWorkspace
-```
-
-The following steps of the tutorial can either be executed in this already open terminal window or
-directly from VS Code as described below.
-
-### VS Code setup
-To work with the VS Code container extension, enter a VAF workspace directory and make sure to
-re-open the folder in the container:
-
-* Open a remote window (bottom-left corner)
-
-![remote-window](../figures/vscode-remote-window.png)
-
-* Re-open project in container
-
-![reopen-container](../figures/vscode-reopen-container.png)
-  
-In the bottom-left corner you find also a task runner extension that supports with the individual
-steps of the VAF workflow. Commands can be clicked instead of using the command line interface. 
-
->**ℹ️ Note**  
-> The execution path gets derived from the current working directory based on the currently opened
-> file in editor area of the IDE.
+application module, which is part of the changed message.
 
 ## Project setup
+Make sure you have built the VAF Docker container image as described in the getting started section
+of the top-level [README](../../README.md).
 
-First step is to create an integration project. This type of project deals with the integration of
-an application, which includes instantiation and wiring of application modules, configuration of the
-executable(s), and finally, the build of the binaries for execution on the target machine.
-Application module projects can either be created in place, i.e., as sub-project of an integration
-project, or imported from some external location. For the sake of simplicity, this demo makes use of
-the first option.
+With the image ready, open a terminal window, run the container, and create a new VAF workspace at a
+location of your choice as follows:
+```bash
+docker run -it --rm -v$PWD:$PWD -w$PWD vaf:latest /bin/bash
 
-First step is to create the required projects by using the following CLI commands:
+cd <your-working-directory>
 
+vaf workspace init
+
+Enter your workspace name: <your-workspace-name>
+? Enter the directory to store your workspace in .
+bash
+```
+
+Next, switch folders to this workspace. Ideally, open this folder directly in VS Code and select
+`Reopen folder in Container`.
+
+Then start this tutorial by creating an integration project. This project type defines the
+executables of the application. It can contain application module projects or imports external ones.
+For the simplicity of this demo, we will use the first option.
 ``` bash
 vaf project init integration
 Enter your project name: HelloVaf
-? Enter the directory to store your project in .
 
 cd HelloVaf
 
 vaf project create app-module
 Enter the name of the app-module: AppModule1
 Enter the namespace of the app-module: demo
-? Enter the path to the project root directory .
 
 vaf project create app-module
 Enter the name of the app-module: AppModule2
 Enter the namespace of the app-module: demo
-? Enter the path to the project root directory .
 ```
 
+>**ℹ️ Hint**  
+> If you're using VS Code, you can also use the tasks provided by the VAF extension instead of
+> typing the CLI commands. You don't have to switch directories to do this, just select the project
+> you want to run a task for in the `VAF Navigation` view and run a task from the `VAF Tasks` view.
+
 The above commands create the structure of the corresponding projects. The application module
-sub-projects are stored in the `HelloVaf/src/application_modules` directory, i.e., directly in the
-integration project.
+projects are stored in the `src/application_modules` directory of the integration project.
 
 ## Definition of interfaces
 
-Communication between application modules is defined by means of communication interfaces. The
-Configuration as Code (CaC) file for this step is part of the project template and located in the
-`model` folder of each app-module sub-project. Extend the `app_module1.py` file of the first
-app-module located in `HelloVaf/src/application_modules/app_module1/model` as follows:
+To describe the communication between the application modules, we define a communication interface.
+This can be done in the Configuration as Code (CaC) file of the app-modules. Extend the
+`app_module1.py` file in the model folder of the first app-module:
 
 ``` python
 interface = vafpy.ModuleInterface(name="HelloWorldIf", namespace="demo")
@@ -111,116 +77,120 @@ interface.add_data_element("Message", datatype=BaseTypes.STRING)
 interface.add_operation("SetMsgId", in_parameter={"MsgId": BaseTypes.UINT8_T})
 ```
 
-This snippet defines a simple interface containing one data element (`Message`) and one operation
-(`SetMsgId`).
+This defines a simple interface containing a data element (`Message`) and an operation (`SetMsgId`).
 
-As this interface definition is also used by the other app-module, make sure to copy the above
-definition to the corresponding CaC file of the second app-module.
+To be able to use this interface in both app-modules, copy the interface definition to the
+corresponding CaC file of the second application module.
 
 ## Configuration of application modules
 
-Next step is the configuration of both app-modules. For `AppModule1`, modify the generated template
-of the CaC file to add a provider instance of the above interface and a periodically executed task:
+The next step is to configure the behavior of both app-modules. For `AppModule1`, modify the
+generated template of the CaC file to add the above defined interface and a periodically executed
+task to the application module:
 
 ``` python
+app_module1 = vafpy.ApplicationModule(name="AppModule1", namespace="demo")
 app_module1.add_provided_interface("HelloWorldProvider", interface)
 
 periodic_task = vafpy.Task(name="PeriodicTask", period=timedelta(milliseconds=500))
 app_module1.add_task(task=periodic_task)
 ```
 
-The configuration snippet for `AppModule2` is almost similar. Only the interface instance is a
-consumed one in this case:
+The CaC changes for `AppModule2` are similar. Note the difference in the interface direction and the
+task period:
 
 ``` python
+app_module2 = vafpy.ApplicationModule(name="AppModule2", namespace="demo")
 app_module2.add_consumed_interface("HelloWorldConsumer", interface)
 
 periodic_task = vafpy.Task(name="PeriodicTask", period=timedelta(milliseconds=1000))
 app_module2.add_task(task=periodic_task)
 ```
 
-With this, the Configuration as Code part is complete. Next step is to start the code generation for
-both app-modules. Change to the appropriate project directories
-`HelloVaf/src/application_modules/app_module1` and `HelloVaf/src/application_modules/app_module2` to
-run:
+The next step is to start the code generation for both app-modules. Change to the appropriate
+project directory in `src/application_modules` and run:
 
 ``` bash
 vaf project generate
 ```
 
 This step provides the implementation stubs in the `implementation` subdirectory of the app-module
-projects. It also configures CMake with a release and debug preset to enable support by the VS Code
-CMake Tools extension as well as IntelliSense features.
+projects. It also configures CMake with a release and debug preset to enable the use of the VS Code
+CMake Tools extension and IntelliSense features.
 
-## Implementation of business logic
-Now, some business logic can be added according to the demo description in the introduction of this
-tutorial. For that, the periodic tasks of both app-modules need to be implemented. Further, an
-operation handler needs to be registered in `AppModule1`. In `AppModule2` a data element handler is
-needed.
+### Implementation of business logic
 
-In the first app-module, add the following snippet to the constructor 
-(see `HelloVaf/src/application_modules/app_module1/implementation/src/app_module1.cpp`):
+To realize the behavior as described in the introduction, we implement the periodic tasks of both
+app-modules, add an operation handler to `AppModule1`, and register a data element handler in
+`AppModule2`.
+
+In the first app-module, add the following snippet to the constructor:
 
 ``` cpp
 HelloWorldProvider_->RegisterOperationHandler_SetMsgId(
-  [this](const std::uint8_t& msg_id) { msg_id_ = static_cast<uint8_t>(msg_id); }
+    [this](const std::uint8_t& msg_id) { msg_id_ = static_cast<uint8_t>(msg_id); }
 );
 ```
 
-Next, extend the periodic task with a simple method:
+And a simple method call to the periodic task:
 
 ``` cpp
 std::string myMsg = "Hello, VAF! - MsgID: " + std::to_string(msg_id_);
 HelloWorldProvider_->Set_Message(myMsg.c_str());
 ```
 
-Additionally, a member attribute must be defined in the corresponding header file of AppModule1:
+Additionally, a member attribute must be defined in the corresponding header file:
 
 ``` cpp
  private:
   uint8_t msg_id_;
 ```
 
-In the constructor of the second app-module, register a data element handler as follows:
+In the constructor of the second app-module, register the data element handler:
 
 ``` cpp
 HelloWorldConsumer_->RegisterDataElementHandler_Message(
-  GetName(),
-  [](const auto& hello_text) { std::cout << "Received: " << *hello_text << std::endl; }
+    GetName(),
+    [](const auto& hello_text) { vaf::OutputSyncStream{} << "Received: " << *hello_text << std::endl; }
 );
 ```
 
-Further, modify the periodic task to include the following snippet:
+>**ℹ️ Note**  
+> Instead of using `vaf::OutputSyncStream` you can also make use of `std::cout`. The synchronized
+> output stream is provided by the Application Framework to allow synchronized output to stdout
+> without any overlapping. This is especially helpful in bigger projects with multiple executables
+> and included app-modules.
+
+And modify the periodic task to include the following snippet:
 
 ``` cpp
 static uint8_t msg_id = 0;
 HelloWorldConsumer_->SetMsgId(msg_id++);
 ```
 
-Also, extend the include directives, for example with `#include <iostream>` in `app_module2.cpp`.
+Add the necessary include directives as needed, for example `#include "vaf/output_sync_stream.h"` in
+`app_module2.cpp`.
 
 >**ℹ️ Note**  
 > To check for compilation errors, you can compile the app-modules into static libraries using `vaf
-> make build` inside of the app-module project directory.
+> make build` inside of the project directory.
 
-## Executable configuration
+## Configuration of the executable
 
-Returning to the integration project, both application modules can now be instantiated. Those
-instances are then mapped to some executable, and finally, connected among each other. First,
-however, the model changes from the application module projects above must be updated as to be
-present on the level of the integration project. To do so, run the following command from the 
-integration projects' root directory, i.e. `HelloVaf`:
+Returning to the integration project, both application modules can now be connected to the
+executable. Before you do this, you need to apply the model changes from the application module
+projects to the integration project:
 
 ``` bash
 vaf model update
 ```
 
-Select both application modules in the appearing interactive dialog.
+Select both application modules in the interactive dialog.
 
-Now, the CaC file of the integration project in `HelloVaf/model/vaf/hello_vaf.py` can be extended:
+Now, the CaC file of the integration project `model/vaf/hello_vaf.py` can be extended:
 
 ``` python
-# Create executable instances
+# Create executable instances (or configure existing ones from the platform configuration)
 executable = Executable("HelloVaf")
 
 # Add application modules to executable instances
@@ -228,10 +198,11 @@ executable.add_application_module(AppModule1, [(Instances.AppModule1.Tasks.Perio
 executable.add_application_module(AppModule2, [(Instances.AppModule2.Tasks.PeriodicTask, timedelta(milliseconds=10), 1)])
 ```
 
-The above config snippet adds one instance of each app-module to the `HelloVaf` executable, enables
-the periodic tasks, and sets them with a time budget of 10 ms and a preferred execution order.
+The above config snippet adds the app-modules to the executable, enables their tasks, and sets them
+with a time budget of 10 ms and their preferred execution order.
 
-Next step is the connection of the two application modules:
+Next, connect the interfaces of the two application modules:
+
 ``` python
 # Connect the internal application module instances
 executable.connect_interfaces(
@@ -242,8 +213,8 @@ executable.connect_interfaces(
 )
 ```
 
-Now, the project configuration is complete. The source code on executable-level can be generated
-and the executable can be built as listed below:
+Now, the project is completely configured. The remaining source code can be generated and the
+executable can be built:
 
 ``` bash
 vaf project generate
@@ -251,14 +222,12 @@ vaf make install
 ```
 
 >**ℹ️ Note**  
-> If something changes in any sub-project of the integration project, the entire integration project
-> with all it's dependencies can be regenerated using `vaf project generate --mode ALL`. This also
-> includes the `vaf model update` command as mentioned at the beginning of this section.
+> If something changes in any sub-project of an integration project, the entire integration project
+> with all it's dependencies can be regenerated using `vaf project generate --mode all`. This also
+> includes the `vaf model update` command mentioned at the beginning of this section.
 
 ## Running the application
-
-After the successful install step, the binary executable is located in the
-`HelloVaf/build/<build_type>/install` directory and can be executed from there as follows:
+Run the executable located in the `build/<build_type>/install/opt` directory:
 
 ``` bash
 cd build/Release/install/opt/HelloVaf/
@@ -291,28 +260,21 @@ Received: Hello, VAF! - MsgID: 3
 ...
 ```
 
-## Introduction to interface projects
+## Introduction to Interface Projects
 
-In the above example, the interface definition is needed in both application module projects and
-had to be copied. This works for small projects but even there, it can easily happen that
-definitions diverge from each other. In consequence, consolidation or merging is needed.
+To avoid the duplicated definition of datatypes and interfaces in the configuration of each
+application module that wants to use them, one can use an *interface project* instead. Projects of
+this type can be used to define communication interfaces in a central location. Application module
+projects can then import these interfaces to use their definitions.
 
-To avoid such situations, *interface projects* in the VAF can be used to define communication
-interfaces in a central location. Application module projects can then import these interfaces to
-the Configuration as Code level for further use.
-
-The following steps illustrate, how an interface project can be added to the above example.
-At first, create a new interface project in your workspace, i.e., next to the `HelloVaf` folder:
+To use this concept in this demo, create a new interface project in your workspace:
 
 ``` bash
 vaf project init interface
 Enter your project name: HelloInterfaces
-? Enter the directory to store your project in .
 ```
 
-The interface definitions that earlier got directly added to the configuration in the app-module
-projects can now go here. To specify the `HelloWorldIf`, extend the generated `hello_interfaces.py`
-file as follows:
+To specify the interfaces extend the generated `hello_interfaces.py` file:
 
 ``` python
 interface = vafpy.ModuleInterface(name="HelloWorldIf", namespace="demo")
@@ -320,40 +282,37 @@ interface.add_data_element("Message", datatype=BaseTypes.STRING)
 interface.add_operation("SetMsgId", in_parameter={"MsgId": BaseTypes.UINT8_T})
 ```
 
-Next, generate the corresponding data exchange format of this interface definition:
+Generate the exchange format of the interface definition:
 
 ``` bash
-cd HelloInterfaces
 vaf model generate
 ```
 
-Switch to the directory of each application module project and run the following command to import
-the interface project. Choose the path to the `HelloInterfaces/export/HelloInterfaces.json` file
-in the interactive prompt:
+Then, in the directory of each application module project, run the following command to import the
+interface project and choose the path to the `HelloInterfaces/export/HelloInterfaces.json` file in
+the interactive prompt:
 
 ``` bash
 vaf project import
 ```
 
-The original interface definition can now be removed from both app-module configurations. Instead,
-the following line must be uncommented:
+The interface definition can now be removed from both app module configurations. Instead, the
+following line must be uncommented:
 
 ``` python
 from .imported_models import *
 ```
 
-The interface can now be used through the imported CaC helper as illustrated below:
+The interface can now be used through the imported CaC helper:
 
 ``` python
 app_module1.add_provided_interface("HelloWorldProvider", hello_interfaces.Demo.hello_world_if)
 ```
 
-Apply those changes for both application modules.
-
-Finally and due to changes in both app-modules, the executable can be rebuilt by navigating to the
+After all changes in both app-modules have been made, the executable can be rebuilt by going to the
 integration project directory and running the following commands:
 
 ``` bash
-vaf project generate --mode ALL
+vaf project generate --mode all
 vaf make install
 ```

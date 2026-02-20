@@ -1,17 +1,122 @@
 {
   "python.defaultInterpreterPath": "${workspaceFolder}/VAF/.venv/bin/python",
 
+  // formatting
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+  },
+  "autoDocstring.docstringFormat": "google-notypes",
+
+  // linting
+  "pylint.importStrategy": "fromEnvironment",
+  "mypy.runUsingActiveInterpreter": true,
+  "mypy.extraArguments": [ "--explicit-package-bases" ], // prevent issues around both doc and spec contain a conf module
+
+  "editor.formatOnSave": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "never",
+    "source.fixAll.eslint": "never"
+  },
   // testing
   "python.testing.pytestEnabled": true,
   "python.testing.pytestArgs": [
     "--no-cov", // when using 'pytest-cov' we need to disable coverage when debugging
-    "VAF/tests",
+    "${workspaceFolder}/VAF/tests",
     "-vv",
     "--runslow"
   ],
   "python.testing.unittestEnabled": false,
+  // "terminal.integrated.shellIntegration.enabled": false, // enable for using copilot
 
   // misc
+  "editor.insertSpaces": true,
+  "editor.tabSize": 4,
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+  "[markdown]": {
+    "files.trimTrailingWhitespace": false
+  },
+  "files.associations": {
+    "cstdint": "cpp",
+    "random": "cpp",
+    "*.tcc": "cpp",
+    "atomic": "cpp",
+    "cctype": "cpp",
+    "clocale": "cpp",
+    "cmath": "cpp",
+    "csignal": "cpp",
+    "cstdarg": "cpp",
+    "cstddef": "cpp",
+    "cstdio": "cpp",
+    "cstdlib": "cpp",
+    "cstring": "cpp",
+    "ctime": "cpp",
+    "cwchar": "cpp",
+    "cwctype": "cpp",
+    "array": "cpp",
+    "bit": "cpp",
+    "bitset": "cpp",
+    "chrono": "cpp",
+    "compare": "cpp",
+    "concepts": "cpp",
+    "condition_variable": "cpp",
+    "deque": "cpp",
+    "list": "cpp",
+    "map": "cpp",
+    "set": "cpp",
+    "string": "cpp",
+    "unordered_map": "cpp",
+    "unordered_set": "cpp",
+    "vector": "cpp",
+    "exception": "cpp",
+    "algorithm": "cpp",
+    "functional": "cpp",
+    "iterator": "cpp",
+    "memory": "cpp",
+    "memory_resource": "cpp",
+    "numeric": "cpp",
+    "optional": "cpp",
+    "ratio": "cpp",
+    "regex": "cpp",
+    "string_view": "cpp",
+    "system_error": "cpp",
+    "tuple": "cpp",
+    "type_traits": "cpp",
+    "utility": "cpp",
+    "fstream": "cpp",
+    "future": "cpp",
+    "initializer_list": "cpp",
+    "iomanip": "cpp",
+    "iosfwd": "cpp",
+    "iostream": "cpp",
+    "istream": "cpp",
+    "limits": "cpp",
+    "mutex": "cpp",
+    "new": "cpp",
+    "numbers": "cpp",
+    "ostream": "cpp",
+    "semaphore": "cpp",
+    "shared_mutex": "cpp",
+    "sstream": "cpp",
+    "stdexcept": "cpp",
+    "stop_token": "cpp",
+    "streambuf": "cpp",
+    "thread": "cpp",
+    "cinttypes": "cpp",
+    "typeinfo": "cpp",
+    "variant": "cpp",
+    "any": "cpp",
+    "codecvt": "cpp",
+    "forward_list": "cpp"
+  },
   "window.zoomLevel": 0,
-  "terminal.integrated.allowChords": false
+  "terminal.integrated.allowChords": false,
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.inlayHints.functionReturnTypes": true,
+  "python.analysis.inlayHints.variableTypes": true,
+  "python.analysis.diagnosticMode": "workspace",
+  "python.terminal.activateEnvironment": true,
+  "python.terminal.activateEnvInCurrentTerminal": true
 }

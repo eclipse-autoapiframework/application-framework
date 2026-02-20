@@ -1,7 +1,7 @@
 {% extends "common/h_file_base.jinja" %}
 
 {% block includes %}
-{{ get_data_type_include_from_type_ref(vaf_type_ref.TypeRef) }}
+{{ get_data_type_include(vaf_type_ref.TypeRef) }}
 {% endblock %}
 
 {% set ref_type = get_file_helper(vaf_type_ref.TypeRef) %}

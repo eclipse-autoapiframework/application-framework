@@ -48,7 +48,9 @@ message {{ enum.Name }} {
 message {{ struct.Name }} {
 {% for sub_element in struct.SubElements %}
 {% set type=data_type_to_proto_type(sub_element.TypeRef) %}
-  {{ type }} {{ sub_element.Name }} = {{ loop.index }};
+{% if sub_element.IsOptional %}  optional {{ type }} {{ sub_element.Name }} = {{ loop.index }};
+{% else %}  {{ type }} {{ sub_element.Name }} = {{ loop.index }};
+{% endif %}
 {% endfor %}
 }
 {% endfor %}

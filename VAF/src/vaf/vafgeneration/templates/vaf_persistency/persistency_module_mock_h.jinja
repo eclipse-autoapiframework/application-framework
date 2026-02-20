@@ -1,0 +1,28 @@
+{% extends "common/h_file_base.jinja" %}
+
+{% block includes %}
+#include "vaf/container_types.h"
+#include "vaf/data_ptr.h"
+#include "vaf/result.h"
+#include "vaf/error_domain.h"
+#include "gmock/gmock.h"
+#include "{{ interface_file.namespace }}/{{ to_snake_case(interface_file.name) }}.h"
+
+{% for include in includes%}
+{{include}}
+{% endfor%}
+{% endblock %}
+
+{% block content %}
+class {{ module_name }} : public {{interface_file.name}}{
+ public:
+{% for proto, basetype in proto_basetype_dict.items() %}
+  MOCK_METHOD(::vaf::Result<{{basetype}}>, Get_{{proto}}Value, (const vaf::String& key), (override));
+  MOCK_METHOD(::vaf::Result<void>, Set_{{proto}}Value, (const vaf::String& key, const {{basetype}}& value), (override));
+{% endfor %}
+{% for name in datatype_names %}
+  MOCK_METHOD(::vaf::Result<{{"::" + name}}>, Get_{{name.rsplit("::")[-1]}}Value, (const vaf::String& key), (override));
+  MOCK_METHOD(::vaf::Result<void>, Set_{{name.rsplit("::")[-1]}}Value, (const vaf::String& key, const {{"::" + name}}& value), (override));
+{% endfor %}
+};
+{% endblock %}

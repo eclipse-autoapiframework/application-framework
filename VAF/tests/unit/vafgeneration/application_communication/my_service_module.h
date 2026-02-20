@@ -2,11 +2,8 @@
  *  COPYRIGHT
  *  -------------------------------------------------------------------------------------------------------------------
  *  \verbatim
- *  Copyright (c) 2025 by Vector Informatik GmbH. All rights reserved.
- *
- *                This software is copyright protected and proprietary to Vector Informatik GmbH.
- *                Vector Informatik GmbH grants to you only those rights as set out in the license conditions.
- *                All other rights remain with Vector Informatik GmbH.
+ *  Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+ *  SPDX-License-Identifier: Apache-2.0
  *  \endverbatim
  *  -------------------------------------------------------------------------------------------------------------------
  *  FILE DESCRIPTION
@@ -20,9 +17,8 @@
 #define TEST_MY_SERVICE_MODULE_H
 
 #include <memory>
-#include <string>
-#include <vector>
 
+#include "vaf/container_types.h"
 #include "vaf/receiver_handler_container.h"
 #include "vaf/controller_interface.h"
 #include "vaf/data_ptr.h"
@@ -34,11 +30,10 @@
 
 namespace test {
 
-
 class MyServiceModule
     : public test::MyInterfaceConsumer, public test::MyInterfaceProvider, public vaf::ControlInterface {
  public:
-  MyServiceModule(vaf::Executor& executor, std::string name, std::vector<std::string> dependencies, vaf::ExecutableControllerInterface& executable_controller_interface);
+  MyServiceModule(vaf::Executor& executor, vaf::String name, vaf::Vector<vaf::String> dependencies, vaf::ExecutableControllerInterface& executable_controller_interface);
   ~MyServiceModule() override = default;
 
   MyServiceModule(const MyServiceModule&) = delete;
@@ -50,19 +45,19 @@ class MyServiceModule
   void Start() noexcept override;
   void Stop() noexcept override;
   void DeInit() noexcept override;
-  void StartEventHandlerForModule(const std::string& module) override;
-  void StopEventHandlerForModule(const std::string& module) override;
+  void StartEventHandlerForModule(const vaf::String& module) override;
+  void StopEventHandlerForModule(const vaf::String& module) override;
 
   ::vaf::Result<::vaf::ConstDataPtr<const std::uint64_t>> GetAllocated_my_data_element1() override;
   std::uint64_t Get_my_data_element1() override;
-  void RegisterDataElementHandler_my_data_element1(std::string owner, std::function<void(const ::vaf::ConstDataPtr<const std::uint64_t>)>&& f) override;
+  void RegisterDataElementHandler_my_data_element1(vaf::String owner, std::function<void(const ::vaf::ConstDataPtr<const std::uint64_t>)>&& f) override;
 
   ::vaf::Result<::vaf::DataPtr<std::uint64_t>> Allocate_my_data_element1() override;
   ::vaf::Result<void> SetAllocated_my_data_element1(::vaf::DataPtr<std::uint64_t>&& data) override;
   ::vaf::Result<void> Set_my_data_element1(const std::uint64_t& data) override;
   ::vaf::Result<::vaf::ConstDataPtr<const std::uint64_t>> GetAllocated_my_data_element2() override;
   std::uint64_t Get_my_data_element2() override;
-  void RegisterDataElementHandler_my_data_element2(std::string owner, std::function<void(const ::vaf::ConstDataPtr<const std::uint64_t>)>&& f) override;
+  void RegisterDataElementHandler_my_data_element2(vaf::String owner, std::function<void(const ::vaf::ConstDataPtr<const std::uint64_t>)>&& f) override;
 
   ::vaf::Result<::vaf::DataPtr<std::uint64_t>> Allocate_my_data_element2() override;
   ::vaf::Result<void> SetAllocated_my_data_element2(::vaf::DataPtr<std::uint64_t>&& data) override;
@@ -75,18 +70,17 @@ class MyServiceModule
 
  private:
   vaf::ModuleExecutor& executor_;
-  std::vector<std::string> active_modules_;
+  vaf::Vector<vaf::String> active_modules_;
 
   vaf::ConstDataPtr<const std::uint64_t> my_data_element1_sample_{std::make_unique<std::uint64_t>()};
-  std::vector<vaf::ReceiverHandlerContainer<std::function<void(const ::vaf::ConstDataPtr<const std::uint64_t>)>>> my_data_element1_handlers_;
+  vaf::Vector<vaf::ReceiverHandlerContainer<std::function<void(const ::vaf::ConstDataPtr<const std::uint64_t>)>>> my_data_element1_handlers_;
   vaf::ConstDataPtr<const std::uint64_t> my_data_element2_sample_{std::make_unique<std::uint64_t>()};
-  std::vector<vaf::ReceiverHandlerContainer<std::function<void(const ::vaf::ConstDataPtr<const std::uint64_t>)>>> my_data_element2_handlers_;
+  vaf::Vector<vaf::ReceiverHandlerContainer<std::function<void(const ::vaf::ConstDataPtr<const std::uint64_t>)>>> my_data_element2_handlers_;
 
   std::function<void(const std::uint64_t&)> MyVoidOperation_handler_;
   std::function<test::MyOperation::Output(const std::uint64_t&, const std::uint64_t&)> MyOperation_handler_;
 
 };
-
 
 } // namespace test
 

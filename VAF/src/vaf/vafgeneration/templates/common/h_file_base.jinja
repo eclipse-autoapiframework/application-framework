@@ -1,13 +1,22 @@
 {% include "common/copyright.jinja" %}
 
-
 {{ file_helper.get_include_guard_start() }}
 {% block includes %}
 {% endblock %}
+{% if file_helper.get_namespace_start() %}
 
 {{ file_helper.get_namespace_start() }}
+{% endif %}
+{% if self.content() %}
+
+{% endif %}
 {% block content %}
 {% endblock %}
+{% if file_helper.get_namespace_end() %}
 
 {{ file_helper.get_namespace_end() }}
+{% endif %}
+{% if file_helper.get_include_guard_end() %}
+
 {{ file_helper.get_include_guard_end() }}
+{% endif %}

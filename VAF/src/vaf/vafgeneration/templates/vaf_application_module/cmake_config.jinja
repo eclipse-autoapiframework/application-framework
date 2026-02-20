@@ -1,0 +1,13 @@
+
+include(CMakeFindDependencyMacro)
+
+find_dependency(vaf_core)
+{% if data_type_definitions_exist %}
+find_dependency(vaf_data_types)
+{% endif %}
+find_dependency(vaf_data_types)
+find_dependency(vaf_module_interfaces)
+find_dependency(vaf_{{ target_name }}_base)
+find_dependency(Threads)
+
+include("${CMAKE_CURRENT_LIST_DIR}/{{ target_name }}Targets.cmake")

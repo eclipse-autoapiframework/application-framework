@@ -23,7 +23,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 
-// This text will be stored with each diagram;  use it for notes.file:///home/visdks/Projects/014_FC_ApplicationFramework/FTAF-409/pes-ft-applicationframework/Concepts/dominik-uml-diagramm-for-vaf-FTAF-336/ClassDiagram.uxf
+// This text will be stored with each diagram.
 </help_text>
   <zoom_level>7</zoom_level>
   <element>
@@ -143,7 +143,7 @@ uses</panel_attributes>
     <panel_attributes>&lt;&lt;Generated&gt;&gt;
 executable_controller::ExecutableController
 --
--executor_: std::unique_ptr&lt;vaf::Executor&gt; 
+-executor_: std::unique_ptr&lt;vaf::Executor&gt;
 --
 #/DoInitialize()
 #/DoStart()
@@ -196,15 +196,15 @@ bg=light_gray</panel_attributes>
     </coordinates>
     <panel_attributes>vaf::Executor
 --
--running_period_: std::chrono::milliseconds 
+-running_period_: std::chrono::milliseconds
 -runnables_: std::vector&lt;std::shared_ptr&lt;RunnableHandle&gt;&gt;
 -exit_requested_: std::atomic&lt;bool&gt;
 -thread_: std::thread
 --
-+RunPeriodic(name: const std::string&amp;, 
-            period: std::chrono::milliseconds , 
-            runnable: T&amp;&amp; , 
-            owner: const std::string&amp;, 
++RunPeriodic(name: const std::string&amp;,
+            period: std::chrono::milliseconds ,
+            runnable: T&amp;&amp; ,
+            owner: const std::string&amp;,
             run_after: const std::vector&lt;std::string&gt;&amp; ,
             run_after_runnables: const std::vector&lt;std::string&gt;&amp;,
             offset: uint64_t,
@@ -286,10 +286,10 @@ uses</panel_attributes>
 --
 +Start()
 +Stop()
-+RunPeriodic(name: const std::string&amp;, 
-            period: std::chrono::milliseconds , 
-            runnable: T&amp;&amp; , 
-            owner: const std::string&amp;, 
++RunPeriodic(name: const std::string&amp;,
+            period: std::chrono::milliseconds ,
+            runnable: T&amp;&amp; ,
+            owner: const std::string&amp;,
             runnable_dependencies: std::vector&lt;std::string&gt;,
             offset: uint64_t,
             budget: std::chrono::nanoseconds): std::shared_ptr&lt;RunnableHandle&gt;</panel_attributes>

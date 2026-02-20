@@ -1,12 +1,9 @@
-ARG USER="eclipse"
-ARG PDM_VERSION="2.22.4"
-ARG CONAN_VERSION="2.13.0"
+# syntax=docker/dockerfile:1
 
-FROM ubuntu:24.04 AS vaf-base
+FROM ubuntu:24.04 AS vaf-dev
 ARG TZ="Europe/Berlin"
-ARG USER
-ARG CONAN_VERSION
-ARG PDM_VERSION
+ARG USER="eclipse"
+ARG CONAN_VERSION="2.20"
 
 ENV LC_ALL="C.UTF-8" \
     LANG="C.UTF-8"
@@ -16,23 +13,25 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
     build-essential \
+    bash-completion \
     ca-certificates \
     ccache \
     clangd \
     cmake \
+    clang-format \
     g++-12 \
-    gdb \
     git \
+    gdb \
     pipx \
     python3-pip \
     python3.12 \
     python3.12-venv \
     rake \
     sudo \
+    ssh \
     nano \
     vim \
     emacs \
-    ssh \
     && apt-get clean autoclean \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* \
@@ -45,20 +44,19 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 # RUN update-ca-certificates /usr/local/share/ca-certificates/
 # ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 
-# Build & install SilKit
+# Build & install SIL Kit
 RUN mkdir -p /tmp/silkit \
     && git clone --recurse-submodules -j4 https://github.com/vectorgrp/sil-kit.git /tmp/silkit \
-    && git -C /tmp/silkit checkout tags/v4.0.55 \
+    && git -C /tmp/silkit checkout tags/v5.0.1 \
     && git -C /tmp/silkit submodule update --init --recursive \
     && mkdir /tmp/silkit/build \
-    && cmake -DSILKIT_BUILD_DEMOS=OFF -DSILKIT_BUILD_TESTS=OFF -DSILKIT_BUILD_DASHBOARD=OFF -DSILKIT_BUILD_STATIC=ON \
-    -S /tmp/silkit -B /tmp/silkit/build \
-    && cmake --build /tmp/silkit/build --target install --parallel 12 \
+    && sudo cmake -DSILKIT_BUILD_DEMOS=OFF -DSILKIT_BUILD_TESTS=OFF -DSILKIT_BUILD_DASHBOARD=OFF -DSILKIT_BUILD_STATIC=ON -S /tmp/silkit -B /tmp/silkit/build \
+    && sudo cmake --build /tmp/silkit/build --target install --parallel 12 \
     # Workaround for broken installation when building statically linked libraries
-    && cp /tmp/silkit/build/ThirdParty/_tp_spdlog/libspdlog.a /usr/local/lib/ \
-    && cp /tmp/silkit/build/ThirdParty/_tp_yaml-cpp/libyaml-cpp.a /usr/local/lib/ \
-    && cp /tmp/silkit/build/Release/libSilKit.a /usr/local/lib/ \
-    && rm -rf /tmp/silkit
+    && sudo cp /tmp/silkit/build/ThirdParty/_tp_spdlog/libspdlog.a /usr/local/lib/ \
+    && sudo cp /tmp/silkit/build/ThirdParty/_tp_rapidyaml/librapidyaml-static.a /usr/local/lib/ \
+    && sudo cp /tmp/silkit/build/Release/libSilKit.a /usr/local/lib/ \
+    && sudo rm -rf /tmp/silkit
 
 # Create working directory and add user
 RUN mkdir -p /workspaces \
@@ -68,24 +66,24 @@ RUN mkdir -p /workspaces \
     # Allow usage of sudo without password
     && echo "${USER} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/${USER}_all \
     && chown -R ${USER}:${USER} /workspaces
-USER ${USER}
 
-# Install common python dependencies
-RUN pip3 install conan==${CONAN_VERSION} --break-system-packages \
-    && pipx ensurepath \
-    && pipx install pdm==${PDM_VERSION} \
-    && pipx install pre-commit \
+# Switch the user
+USER ${USER}
+ENV PATH=/home/${USER}/.local/bin:$PATH
+
+# Install Python dependencies
+# install uv
+ENV UV_NATIVE_TLS=true
+ENV UV_TOOL_BIN_DIR="/home/${USER}/.local/bin"
+# conan is installed system-wide, as it is required as a package by vaf-cli
+RUN pipx install uv \
+    && uv tool install conan==${CONAN_VERSION} \
+    && uv tool install pre-commit --with pre-commit-uv \
     && rm -rf /home/${USER}/.cache/*
 
 # Pre-build conan packages
-RUN --mount=type=bind,source=SwLibraries/vaf_core_library,target=/tmp/vafcpp/src,readwrite \
-    --mount=type=bind,source=Container/conan,target=/tmp/conan,readwrite \
-    --mount=type=bind,source=version.txt,target=/tmp/version.txt \
-    sudo chown -R 1000:1000 /tmp/vafcpp /tmp/conan \
-    && export PATH="$PATH:/home/${USER}/.local/bin" \
-    && cd /tmp/vafcpp/src \
-    && conan create . --profile:all=./test_package/gcc12__x86_64-pc-linux-elf -s build_type=Release \
-    && conan create . --profile:all=./test_package/gcc12__x86_64-pc-linux-elf -s build_type=Debug \
+RUN --mount=type=bind,source=Container/conan,target=/tmp/conan,readwrite \
+    sudo chown -R 1000:1000 /tmp/conan \
     && conan install /tmp/conan -pr:a=/tmp/conan/gcc12__x86_64-pc-linux-elf --build=missing \
     && conan install /tmp/conan -pr:a=/tmp/conan/gcc12__x86_64-pc-linux-elf --build=missing -s build_type=Debug \
     && conan cache clean

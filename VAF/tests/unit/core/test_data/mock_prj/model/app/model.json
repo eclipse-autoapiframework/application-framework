@@ -1,0 +1,144 @@
+{
+    "DataTypeDefinitions":
+        {
+            "Vectors": [
+                {
+                    "Name": "MyVector",
+                    "Namespace": "data_types",
+                    "TypeRef": "data_types::MyStruct"
+                }
+            ],
+            "Structs": [
+                {
+                    "Name": "MyStruct",
+                    "Namespace": "data_types",
+                    "SubElements": [
+                        {
+                            "Name": "x",
+                            "TypeRef": "uint64_t"
+                        }
+                    ]
+                }
+            ],
+            "Arrays": [
+                {
+                    "Name": "MyArray",
+                    "Namespace": "data_types",
+                    "TypeRef": "data_types::MyVector",
+                    "Size": 100
+                }
+            ],
+            "Strings": [
+                {
+                    "Name": "MyString",
+                    "Namespace": "data_types"
+                }
+            ],
+            "TypeRefs": [
+                {
+                    "Name": "MyTypeRef",
+                    "Namespace": "data_types",
+                    "TypeRef": "data_types::MyString"
+                }
+            ],
+            "Enums": [
+                {
+                    "Name": "MyEnum",
+                    "Namespace": "data_types",
+                    "Literals": [
+                        {
+                            "Item": "A",
+                            "Value": 0
+                        },
+                        {
+                            "Item": "B",
+                            "Value": 1
+                        }
+                    ]
+                }
+            ],
+            "Maps": [
+                {
+                    "Name": "MyMap",
+                    "Namespace": "data_types",
+                    "MapKeyTypeRef": "data_types::MyTypeRef",
+                    "MapValueTypeRef": "data_types::MyEnum"
+                }
+            ]
+        },
+    "ModuleInterfaces": [
+        {
+            "Name": "MyInterface",
+            "Namespace": "interfaces",
+            "DataElements": [
+                {
+                    "Name": "a",
+                    "TypeRef": "data_types::MyVector"
+                },
+                {
+                    "Name": "b",
+                    "TypeRef": "data_types::MyStruct"
+                },
+                {
+                    "Name": "c",
+                    "TypeRef": "data_types::MyMap"
+                }
+            ],
+            "Operations": [
+                {
+                    "Name": "MyOperation",
+                    "Parameters": [
+                        {
+                            "Name": "in1",
+                            "TypeRef": "uint16_t",
+                            "Direction": "IN"
+                        },
+                        {
+                            "Name": "in2",
+                            "TypeRef": "data_types::MyEnum",
+                            "Direction": "IN"
+                        },
+                        {
+                            "Name": "out",
+                            "TypeRef": "data_types::MyString",
+                            "Direction": "OUT"
+                        },
+                        {
+                            "Name": "inout",
+                            "TypeRef": "data_types::MyVector",
+                            "Direction": "INOUT"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "ApplicationModules": [
+        {
+            "Name": "AppModule1",
+            "Namespace": "app_modules",
+            "ProvidedInterfaces": [
+                {
+                    "InstanceName": "Instance1",
+                    "ModuleInterfaceRef": "interfaces::MyInterface"
+                },
+                {
+                    "InstanceName": "Instance2",
+                    "ModuleInterfaceRef": "interfaces::MyInterface"
+                }
+            ],
+            "ConsumedInterfaces": [ ],
+            "PersistencyFiles": [],
+            "Tasks": [
+                {
+                    "Name": "Step",
+                    "Period": "10ms",
+                    "PreferredOffset": 0
+                }
+            ],
+            "ImplementationProperties": {
+                "GenerateUnitTestStubs": false
+            }
+        }
+    ]
+}

@@ -1,6 +1,7 @@
-"""
-Application communication generator test
-"""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Application communication generator test."""
 
 # pylint: disable=duplicate-code
 # pylint: disable=missing-param-doc
@@ -80,7 +81,9 @@ class TestIntegration:
                 ExecutorPeriod="10ms",
                 InternalCommunicationModules=[
                     vafmodel.PlatformModule(
-                        Name="MyServiceModule", Namespace="test", ModuleInterfaceRef=m.ModuleInterfaces[0]
+                        Name="MyServiceModule",
+                        Namespace="test",
+                        ModuleInterfaceRef=m.ModuleInterfaces[0],
                     )
                 ],
                 ApplicationModules=[],

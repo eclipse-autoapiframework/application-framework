@@ -1,0 +1,102 @@
+{
+  "version": "{{vaf_version}}",
+  "DataTypeDefinitions": {
+    "Arrays": [
+      {
+        "Name": "MyArray2",
+        "Namespace": "demo",
+        "TypeRef": "uint8_t",
+        "Size": 4
+      }
+    ]
+  },
+  "ApplicationModules": [
+    {
+      "Name": "AM1",
+      "Namespace": "test",
+      "ConsumedInterfaces": [],
+      "ProvidedInterfaces": [],
+      "PersistencyFiles": [],
+      "PersistencyInitValues": [
+        {
+          "FileName": "shared_file",
+          "Key": "KeyUint32",
+          "TypeRef": "uint32_t",
+          "Value": {
+            "InitValue": 1,
+            "Type": "uint32_t"
+          }
+        },
+        {
+          "FileName": "shared_file",
+          "Key": "KeyStruct",
+          "TypeRef": "demo::MyStruct",
+          "Value": {
+            "InitValue": [
+              1,
+              "hej",
+              true
+            ],
+            "Type": "struct"
+          }
+        },
+        {
+          "FileName": "private_file",
+          "Key": "KeyArray",
+          "TypeRef": "demo::MyArray",
+          "Value": {
+            "InitValue": [
+              1,
+              2,
+              3
+            ],
+            "Type": "array"
+          }
+        },
+        {
+          "FileName": "third_file",
+          "Key": "KeyArray",
+          "TypeRef": "demo::MyArray",
+          "Value": {
+            "InitValue": [
+              3,
+              3,
+              3
+            ],
+            "Type": "array"
+          }
+        },
+        {
+          "FileName": "shared_file",
+          "Key": "KeyArray",
+          "TypeRef": "demo::MyArray",
+          "Value": {
+            "InitValue": [
+              255,
+              2,
+              255
+            ],
+            "Type": "array"
+          }
+        },
+        {
+          "FileName": "private_file",
+          "Key": "KeyUint32",
+          "TypeRef": "uint32_t",
+          "Value": {
+            "InitValue": 1,
+            "Type": "uint32_t"
+          }
+        }
+      ],
+      "DataTypesForSerialization": [
+        {
+        "TypeRef": "demo::MyArray2"
+        }
+      ],
+      "ImplementationProperties": {
+        "GenerateUnitTestStubs": true
+      }
+    }
+  ]
+}

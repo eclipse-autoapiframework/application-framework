@@ -1,6 +1,7 @@
-"""
-Tests for cmake common
-"""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Tests for cmake common."""
 
 import filecmp
 import os
@@ -26,7 +27,13 @@ class TestIntegration:
         m = vafmodel.MainModel()
         m.ModuleInterfaces.append(vafmodel.ModuleInterface(Name="MyInterface", Namespace="test"))
         m.ApplicationModules.append(
-            vafmodel.ApplicationModule(Name="MyApp", Namespace="test", ConsumedInterfaces=[], ProvidedInterfaces=[])
+            vafmodel.ApplicationModule(
+                Name="MyApp",
+                Namespace="test",
+                ConsumedInterfaces=[],
+                ProvidedInterfaces=[],
+                PersistencyFiles=[],
+            )
         )
 
         vaf_module = vafmodel.PlatformModule(
@@ -35,7 +42,7 @@ class TestIntegration:
             ModuleInterfaceRef=m.ModuleInterfaces[0],
             OriginalEcoSystem=vafmodel.OriginalEcoSystemEnum.SILKIT,
             ConnectionPointRef=vafmodel.SILKITConnectionPoint(
-                Name="MyConnectionPoint1", ServiceInterfaceName="ServiceName", RegistryUri="silkit://localhost:8500"
+                Name="MyConnectionPoint1", SilkitInstance="MySilkitInstance"
             ),
         )
 
@@ -80,12 +87,15 @@ class TestIntegration:
             script_dir / "cmake_common/libs_cmake.txt",
         )
 
+        m.ApplicationModules[0].PersistencyFiles.append("file1.db")
         vaf_cmake_common.generate(m, tmp_path)
 
         assert filecmp.cmp(
             tmp_path / "src-gen/libs/CMakeLists.txt",
             script_dir / "cmake_common/libs_cmake_append.txt",
         )
+
+        m.ApplicationModules[0].PersistencyFiles.remove("file1.db")
 
         m.PlatformProviderModules.append(
             vafmodel.PlatformModule(
@@ -94,9 +104,7 @@ class TestIntegration:
                 ModuleInterfaceRef=m.ModuleInterfaces[0],
                 OriginalEcoSystem=vafmodel.OriginalEcoSystemEnum.SILKIT,
                 ConnectionPointRef=vafmodel.SILKITConnectionPoint(
-                    Name="CPoint",
-                    ServiceInterfaceName="MyInterface",
-                    RegistryUri="silkit://localhost:8500",
+                    Name="CPoint", SilkitInstance="MyInterface", SilkitInstanceIsOptional=False
                 ),
             )
         )

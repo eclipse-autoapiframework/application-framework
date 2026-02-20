@@ -60,7 +60,7 @@ target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE
     Threads::Threads
-    $<IF:$<TARGET_EXISTS:vafcpp::vaf_core>,vafcpp::vaf_core,vaf_core>
+    vaf_core
     gmock
     gtest::gtest
     $<TARGET_NAME_IF_EXISTS:vaf_data_types>
@@ -69,5 +69,5 @@ target_link_libraries(
 )
 # cmake-format: on
 
-gtest_discover_tests(${PROJECT_NAME})
+gtest_discover_tests(${PROJECT_NAME} DISCOVERY_MODE PRE_TEST)
 {# dummy comment for new line #}

@@ -4,18 +4,16 @@
 #include "vaf/user_controller_interface.h"
 {% endblock %}
 
-{% block content %}
+{% block content -%}
 class UserController : public vaf::UserControllerInterface {
-public:
-  void PreInitialize() override;
-  void PostInitialize() override;
-  void PreStart() override;
-  void PostStart() override;
-  void PreShutdown() override;
-  void PostShutdown() override;
+  public:
+    void PreInitialize() override;
+    void PostInitialize() override;
+    void PreStart() override;
+    void PostStart() override;
+    void PreShutdown() override;
+    void PostShutdown() override;
 
-  void OnError(vaf::Error error, std::string name, bool critical) override;
-
-private:
+    void OnError(vaf::Error error, vaf::String name, bool critical) override;
 };
 {% endblock %}

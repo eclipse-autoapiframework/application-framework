@@ -1,0 +1,7 @@
+{% extends "common/cmake_library.jinja" %}
+
+{% block packages %}
+{% for pkg in packages -%}
+find_package({{ pkg }} REQUIRED)
+{% endfor %}
+{% endblock %}

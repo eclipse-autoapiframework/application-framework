@@ -1,14 +1,29 @@
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 """Base data model library of Vehicle Application Framework"""  # pylint: disable=too-many-lines
 
 import json
+from collections import OrderedDict
 from enum import Enum
 from pathlib import Path
-from typing import Optional
+from typing import Any, Callable, Dict, List, Literal, Optional, Union, get_origin
 
-from pydantic import BaseModel, Field, ValidationInfo, WithJsonSchema, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    Field,
+    ValidationInfo,
+    WithJsonSchema,
+    field_validator,
+    model_serializer,
+    model_validator,
+)
 from pydantic.config import ConfigDict
 from pydantic.functional_serializers import PlainSerializer
 from typing_extensions import Annotated, Self
+
+from vaf.core.common import constants
+from vaf.core.common.constants import get_package_version
 
 # pylint: disable=missing-class-docstring
 
@@ -29,6 +44,38 @@ class ModelReferenceError(Exception):
 class DataType(VafBaseModel):
     Name: str
     Namespace: str
+
+    @property
+    def has_base_namespace(self) -> bool:
+        """Check if data type has a base namespace
+        Returns:
+            boolean if namespace is empty or "std"
+        """
+        return self.Namespace in ["", "std"]
+
+    @property
+    def is_base_type(self) -> bool:
+        """Check if data type is a base type
+        Returns:
+            boolean if data type is a base type
+        """
+        return self.has_base_namespace and self.Name in constants.BASE_TYPE
+
+    @property
+    def is_cstdint_type(self) -> bool:
+        """Check if data type is a C++ std int type
+        Returns:
+            boolean if data type is a C++ std int type
+        """
+        return self.has_base_namespace and self.Name in constants.CSTDINT_TYPE
+
+    @property
+    def is_cpp_base_type(self) -> bool:
+        """Check if data type is a C++ std int type
+        Returns:
+            boolean if data type is a C++ std int type
+        """
+        return self.is_base_type or self.is_cstdint_type
 
 
 def serialize_data_type_ref(m: DataType) -> str:
@@ -65,15 +112,7 @@ base_types = [
 ]
 
 
-data_types = [
-    "Strings",
-    "Enums",
-    "Arrays",
-    "Vectors",
-    "Maps",
-    "Structs",
-    "TypeRefs",
-]
+data_types = ["Strings", "Enums", "Arrays", "Vectors", "Maps", "Structs", "TypeRefs", "Variants"]
 
 
 def validate_type_ref(raw: str | DataType, info: ValidationInfo) -> DataType:
@@ -137,7 +176,7 @@ class String(DataType):
 
 
 class EnumLiteral(VafBaseModel):
-    Label: str
+    Item: str
     Value: int
 
 
@@ -168,6 +207,7 @@ class TypeRef(DataType):
 class SubElement(VafBaseModel):
     Name: str
     TypeRef: DataTypeRef
+    IsOptional: bool = False
     Min: Optional[float] = None
     Max: Optional[float] = None
     _validate_TypeRef = field_validator("TypeRef", mode="before")(validate_type_ref)
@@ -184,7 +224,180 @@ class Vector(DataType):
     _validate_TypeRef = field_validator("TypeRef", mode="before")(validate_type_ref)
 
 
-ModelDataType = Array | VafEnum | Map | String | Struct | TypeRef | Vector
+class Variant(DataType):
+    Name: str
+    VariantTypeRefs: list[DataTypeRef]
+
+
+ModelDataType = Array | VafEnum | Map | String | Struct | TypeRef | Vector | Variant
+
+
+def _include_literals_internal(self: Any, next_serializer: Any) -> Any:
+    dumped = next_serializer(self)
+    for name, field_info in self.__class__.model_fields.items():
+        if get_origin(field_info.annotation) == Literal:  # pylint: disable=comparison-with-callable
+            dumped[name] = getattr(self, name)
+    return dumped
+
+
+class BoolInit(VafBaseModel):
+    Type: Literal["bool"] = "bool"
+    InitValue: bool
+
+    @model_serializer(mode="wrap")
+    def include_literals(self: Any, next_serializer: Any) -> Any:  # pylint: disable=missing-function-docstring
+        return _include_literals_internal(self, next_serializer)
+
+
+class UInt8Init(VafBaseModel):
+    Type: Literal["uint8_t"] = "uint8_t"
+    InitValue: int
+
+    @model_serializer(mode="wrap")
+    def include_literals(self: Any, next_serializer: Any) -> Any:  # pylint: disable=missing-function-docstring
+        return _include_literals_internal(self, next_serializer)
+
+
+class UInt16Init(VafBaseModel):
+    Type: Literal["uint16_t"] = "uint16_t"
+    InitValue: int
+
+    @model_serializer(mode="wrap")
+    def include_literals(self: Any, next_serializer: Any) -> Any:  # pylint: disable=missing-function-docstring
+        return _include_literals_internal(self, next_serializer)
+
+
+class UInt32Init(VafBaseModel):
+    Type: Literal["uint32_t"] = "uint32_t"
+    InitValue: int
+
+    @model_serializer(mode="wrap")
+    def include_literals(self: Any, next_serializer: Any) -> Any:  # pylint: disable=missing-function-docstring
+        return _include_literals_internal(self, next_serializer)
+
+
+class UInt64Init(VafBaseModel):
+    Type: Literal["uint64_t"] = "uint64_t"
+    InitValue: int
+
+    @model_serializer(mode="wrap")
+    def include_literals(self: Any, next_serializer: Any) -> Any:  # pylint: disable=missing-function-docstring
+        return _include_literals_internal(self, next_serializer)
+
+
+class Int8Init(VafBaseModel):
+    Type: Literal["int8_t"] = "int8_t"
+    InitValue: int
+
+    @model_serializer(mode="wrap")
+    def include_literals(self: Any, next_serializer: Any) -> Any:  # pylint: disable=missing-function-docstring
+        return _include_literals_internal(self, next_serializer)
+
+
+class Int16Init(VafBaseModel):
+    Type: Literal["int16_t"] = "int16_t"
+    InitValue: int
+
+    @model_serializer(mode="wrap")
+    def include_literals(self: Any, next_serializer: Any) -> Any:  # pylint: disable=missing-function-docstring
+        return _include_literals_internal(self, next_serializer)
+
+
+class Int32Init(VafBaseModel):
+    Type: Literal["int32_t"] = "int32_t"
+    InitValue: int
+
+    @model_serializer(mode="wrap")
+    def include_literals(self: Any, next_serializer: Any) -> Any:  # pylint: disable=missing-function-docstring
+        return _include_literals_internal(self, next_serializer)
+
+
+class Int64Init(VafBaseModel):
+    Type: Literal["int64_t"] = "int64_t"
+    InitValue: int
+
+    @model_serializer(mode="wrap")
+    def include_literals(self: Any, next_serializer: Any) -> Any:  # pylint: disable=missing-function-docstring
+        return _include_literals_internal(self, next_serializer)
+
+
+class FloatInit(VafBaseModel):
+    Type: Literal["float"] = "float"
+    InitValue: float
+
+    @model_serializer(mode="wrap")
+    def include_literals(self: Any, next_serializer: Any) -> Any:  # pylint: disable=missing-function-docstring
+        return _include_literals_internal(self, next_serializer)
+
+
+class DoubleInit(VafBaseModel):
+    Type: Literal["double"] = "double"
+    InitValue: float
+
+    @model_serializer(mode="wrap")
+    def include_literals(self: Any, next_serializer: Any) -> Any:  # pylint: disable=missing-function-docstring
+        return _include_literals_internal(self, next_serializer)
+
+
+class ArrayInit(VafBaseModel):
+    Type: Literal["array"] = "array"
+    InitValue: List[Union[str, int, float]]
+
+    @model_serializer(mode="wrap")
+    def include_literals(self: Any, next_serializer: Any) -> Any:  # pylint: disable=missing-function-docstring
+        return _include_literals_internal(self, next_serializer)
+
+
+class StructInit(VafBaseModel):
+    Type: Literal["struct"] = "struct"
+    InitValue: Any
+
+    @model_serializer(mode="wrap")
+    def include_literals(self: Any, next_serializer: Any) -> Any:  # pylint: disable=missing-function-docstring
+        return _include_literals_internal(self, next_serializer)
+
+
+class StringInit(VafBaseModel):
+    Type: Literal["String"] = "String"
+    InitValue: str
+
+    @model_serializer(mode="wrap")
+    def include_literals(self: Any, next_serializer: Any) -> Any:  # pylint: disable=missing-function-docstring
+        return _include_literals_internal(self, next_serializer)
+
+
+InitValueTypes = Annotated[
+    Union[
+        BoolInit,
+        UInt8Init,
+        UInt16Init,
+        UInt32Init,
+        UInt64Init,
+        Int8Init,
+        Int16Init,
+        Int32Init,
+        Int64Init,
+        FloatInit,
+        DoubleInit,
+        ArrayInit,
+        StructInit,
+        StringInit,
+    ],
+    Field(discriminator="Type"),
+]
+
+
+class PersistencyInitValue(VafBaseModel):
+    FileName: str
+    Key: str
+    TypeRef: DataTypeRef
+    Value: InitValueTypes
+    _validate_TypeRef = field_validator("TypeRef", mode="before")(validate_type_ref)
+
+
+class DataTypeForSerialization(VafBaseModel):
+    TypeRef: DataTypeRef
+    _validate_TypeRef = field_validator("TypeRef", mode="before")(validate_type_ref)
 
 
 class DataTypeDefinition(VafBaseModel):
@@ -195,6 +408,7 @@ class DataTypeDefinition(VafBaseModel):
     TypeRefs: list[TypeRef] = []
     Structs: list[Struct] = []
     Vectors: list[Vector] = []
+    Variants: list[Variant] = []
 
     def extend(self, new_data_type_def: Self) -> None:
         """Function to extend DataTypeDefinition by further DataTypeDefinition
@@ -230,10 +444,74 @@ class Parameter(VafBaseModel):
     Direction: ParameterDirection
     _validate_TypeRef = field_validator("TypeRef", mode="before")(validate_type_ref)
 
+    @property
+    def is_direction_in(self) -> bool:
+        """Check if direction is in
+        Returns:
+            boolean if direction is IN
+        """
+        return self.Direction == ParameterDirection.IN
+
+    @property
+    def is_direction_out(self) -> bool:
+        """Check if direction is out
+        Returns:
+            boolean if direction is OUT
+        """
+        return self.Direction == ParameterDirection.OUT
+
+    @property
+    def is_direction_inout(self) -> bool:
+        """Check if direction is inout
+        Returns:
+            boolean if direction is INOUT
+        """
+        return self.Direction == ParameterDirection.INOUT
+
 
 class Operation(VafBaseModel):
     Name: str
     Parameters: list[Parameter] = []
+
+    @property
+    def has_any_parameter_in(self) -> bool:
+        """Check if any parameter has in direction
+        Returns:
+            boolean if any parameter has IN direction
+        """
+        return any(par.is_direction_in for par in self.Parameters)
+
+    @property
+    def has_any_parameter_in_inout(self) -> bool:
+        """Check if any parameter has in/inout direction
+        Returns:
+            boolean if any parameter has IN/INOUT direction
+        """
+        return any(par.is_direction_in or par.is_direction_inout for par in self.Parameters)
+
+    @property
+    def has_any_parameter_out(self) -> bool:
+        """Check if any parameter has out direction
+        Returns:
+            boolean if any parameter has OUT direction
+        """
+        return any(par.is_direction_out for par in self.Parameters)
+
+    @property
+    def has_any_parameter_out_inout(self) -> bool:
+        """Check if any parameter has out/inout direction
+        Returns:
+            boolean if any parameter has OUT/INOUT direction
+        """
+        return any(par.is_direction_out or par.is_direction_inout for par in self.Parameters)
+
+    @property
+    def has_any_parameter_inout(self) -> bool:
+        """Check if any parameter has inout direction
+        Returns:
+            boolean if any parameter has INOUT direction
+        """
+        return any(par.is_direction_inout for par in self.Parameters)
 
 
 class ModuleInterface(VafBaseModel):
@@ -245,7 +523,6 @@ class ModuleInterface(VafBaseModel):
                      representing the interface, it should be placed in the namespace \
                      given by this parameter. Format: xxx::yyy::zzz."
     )
-    OperationOutputNamespace: Optional[str] = None
     DataElements: Annotated[
         list[DataElement],
         Field(
@@ -424,20 +701,19 @@ class ApplicationModuleConsumedInterface(VafBaseModel):
 
 class SILKITConnectionPoint(VafBaseModel):
     Name: str
-    ServiceInterfaceName: str = Field(
-        description="The concept of a service is not defined in SILKIT. This means that we need \
-                     to create a service based on the artifacts that are available in SILIT. \
-                     This tag defines the name of the service interface that is used by the service."
+    SilkitInstance: str = Field(description="The SIL Kit Instance of the Platform Module")
+    SilkitInstanceIsOptional: bool = Field(
+        default=False, description="Indicates if the SIL Kit Instance is optional or mandatory for discovery"
     )
-    RegistryUri: str = Field(
-        description="The registry's URI specifies where the registry can be reached. It defaults to \
-        silkit://localhost:8500, that is, the registry is reachable via TCP/IP on the 'localhost' on port 8500."
+    SilkitNamespace: Optional[str] = Field(default=None, description="The SIL Kit Namespace of the Platform Module")
+    SilkitNamespaceIsOptional: Optional[bool] = Field(
+        default=None, description="Indicates if the SIL Kit Namespace is optional or mandatory for discovery"
     )
 
 
 class SILKITAdditionalConfigurationType(VafBaseModel):
     ConnectionPoints: list[SILKITConnectionPoint] = Field(
-        description="A connection point in SILKIT is a unique name mapping."
+        description="A connection point in SIL Kit is a unique name mapping."
     )
 
 
@@ -522,6 +798,9 @@ class PlatformModule(VafBaseModel):
             "Invalid connection point reference set: " + str(self.ConnectionPointRef) + " expected: " + str(expected)
         )
 
+    def __hash__(self) -> int:
+        return hash(repr(self))
+
 
 class ImplementationProperty(VafBaseModel):
     GenerateUnitTestStubs: Optional[bool] = None
@@ -546,11 +825,25 @@ class ApplicationModule(VafBaseModel):
         description="This array defines the interfaces which are provided \
                      by the Application Module. An application can provide 0..N interfaces."
     )
+    PersistencyFiles: list[str] = Field(
+        description="This array defines the persistency files which are needed \
+                     by the Application Module. An application can use 0..N persistency files."
+    )
+    PersistencyInitValues: Optional[list[PersistencyInitValue]] = None
+    DataTypesForSerialization: Optional[list[DataTypeForSerialization]] = None
     ImplementationProperties: Annotated[
         Optional[ImplementationProperty],
         Field(description="Includes implementation properties for the Application Module."),
     ] = None
     Tasks: list[ApplicationModuleTasks] = []
+
+    @property
+    def has_persistency(self) -> bool:
+        """return if app module has any persistency defined
+        Returns:
+            persistency hash as string
+        """
+        return len(self.PersistencyFiles) > 0
 
 
 def serialize_application_module_ref(m: ApplicationModule) -> str:
@@ -633,8 +926,8 @@ def resolve_platform_module_ref(raw: str | PlatformModule, info: ValidationInfo)
         for m in info.context.get("PlatformConsumerModules", []) + info.context.get("PlatformProviderModules", []):
             if m["Namespace"] + "::" + m["Name"] == raw:
                 return PlatformModule.model_validate(m, context=info.context)
-        # TODO(virmlj) how is checking if the the reference is in the same executable?
-        # eventually consolidate together with PlatformModule
+        # How to check if the reference is in the same executable?
+        # Eventually consolidate together with PlatformModule
         for e in info.context["Executables"]:
             if "InternalCommunicationModules" in e:
                 for m in e["InternalCommunicationModules"]:
@@ -664,12 +957,63 @@ class ExecutableApplicationModuleMapping(VafBaseModel):
         resolve_application_module_ref
     )
 
+    @property
+    def used_environment(self) -> List[Optional[OriginalEcoSystemEnum]]:
+        """get used environment
+        Returns:
+            list of used environments
+        """
+        return list(
+            {
+                interface_mapping.ModuleRef.OriginalEcoSystem
+                for interface_mapping in self.InterfaceInstanceToModuleMappings
+            }
+        )
+
+    @property
+    def is_silkit_used(self) -> bool:
+        """check if SIL Kit is used
+        Returns:
+            status if SIL Kit is used
+        """
+        return OriginalEcoSystemEnum.SILKIT in self.used_environment
+
+
+class PersistencyFileMapping(VafBaseModel):
+    AppModuleName: str
+    FileName: str
+    FilePath: str
+    Sync: str
+
+
+class ExecutablePersistencyMapping(VafBaseModel):
+    PersistencyLibrary: constants.PersistencyLibrary = constants.PersistencyLibrary.NONE
+    PersistencyFiles: list[PersistencyFileMapping] = []
+
 
 class Executable(VafBaseModel):
     Name: str
     ExecutorPeriod: str
     InternalCommunicationModules: list[PlatformModule] = []
     ApplicationModules: list[ExecutableApplicationModuleMapping]
+    PersistencyModule: Optional[ExecutablePersistencyMapping] = None
+
+    @property
+    def is_silkit_used(self) -> bool:
+        """check if SIL Kit is used
+        Returns:
+            status if SIL Kit is used
+        """
+        return any(am.is_silkit_used for am in self.ApplicationModules)
+
+    def is_module_internal_communication(self, m: PlatformModule) -> bool:
+        """check if a module is an internal comm module
+        Args:
+            m: PlatformModule to be checked
+        Returns:
+            if a module is an internal comm module
+        """
+        return any(m == icm for icm in self.InternalCommunicationModules)
 
 
 # all model element that have namespace & name
@@ -681,7 +1025,6 @@ class MainModel(VafBaseModel):
         title="VAF schema",
         arbitrary_types_allowed=True,
         extra="forbid",
-        json_schema_extra={"version": "v0.6.0"},
     )
 
     schema_reference: Annotated[Optional[str], Field(alias="$schema")] = None
@@ -701,6 +1044,95 @@ class MainModel(VafBaseModel):
         ),
     ] = None
 
+    @property
+    def is_persistency_used(self) -> bool:
+        """check if persistency is used
+        Returns:
+            status if persistency is used
+        """
+        # if any of the has_persistency is True
+        return any(am.has_persistency for am in self.ApplicationModules)
+
+    @property
+    def is_silkit_used(self) -> bool:
+        """check if SIL Kit is used
+        Returns:
+            status if SIL Kit is used
+        """
+        return any(
+            module.OriginalEcoSystem == OriginalEcoSystemEnum.SILKIT
+            for module in self.PlatformConsumerModules + self.PlatformProviderModules
+        )
+
+    @property
+    def has_module_interfaces(self) -> bool:
+        """check if model has module interfaces
+        Returns:
+            status if model has module interfaces
+        """
+        return bool(self.ModuleInterfaces)
+
+    @property
+    def has_platform_providers(self) -> bool:
+        """check if model has Platform Provider Modules
+        Returns:
+            status if model has Platform Provider Modules
+        """
+        return bool(self.PlatformProviderModules)
+
+    @property
+    def has_platform_consumers(self) -> bool:
+        """check if model has Platform Consumer Modules
+        Returns:
+            status if model has Platform Provider Modules
+        """
+        return bool(self.PlatformConsumerModules)
+
+    @property
+    def has_app_modules(self) -> bool:
+        """check if model has AppModules
+        Returns:
+            status if model has AppModules
+        """
+        return bool(self.ApplicationModules)
+
+    @property
+    def has_executables(self) -> bool:
+        """check if model has Executables
+        Returns:
+            status if model has Executables
+        """
+        return bool(self.Executables)
+
+    @model_serializer(mode="wrap")  # type:ignore[type-var]
+    def _serialize_with_version(
+        self,
+        next_serializer: Callable[[Any], Dict[str, Any]],
+        info: ValidationInfo,  # pylint: disable=unused-argument
+    ) -> Dict[str, Any]:
+        """
+        Custom serializer that adds package version to the model data.
+
+        This serializer wraps the default serialization to inject the package version
+        as the first key in the output dictionary, ensuring it appears at the top
+        when serialized to JSON.
+
+        Args:
+            next_serializer: The next serializer in the chain
+            info: Serialization info from Pydantic
+
+        Returns:
+            dict: The serialized data with version as the first key
+        """
+        # Get the default serialized data
+        data = next_serializer(self)
+        # Fetch the package version dynamically
+        package_version = get_package_version()
+        # Create ordered dict with version first
+        ordered_data = OrderedDict([("version", package_version)])
+        ordered_data.update(data)
+        return ordered_data
+
 
 ###################### functions ######################
 def generate_json_schema(path: str) -> None:
@@ -715,7 +1147,7 @@ def generate_json_schema(path: str) -> None:
 
 
 def load_json(path: str | Path) -> MainModel:
-    """Loads a model from JSON.
+    """Loads a model from JSON, excluding the "version" key.
 
     Args:
         path (str | Path): Path to the JSON file.
@@ -725,7 +1157,7 @@ def load_json(path: str | Path) -> MainModel:
     """
     with open(path, encoding="utf-8") as fh:
         raw_model = json.load(fh)
-
+        raw_model.pop("version", None)  # Exclude the "version" key if it exists
         return MainModel.model_validate(raw_model, context=raw_model)
 
 

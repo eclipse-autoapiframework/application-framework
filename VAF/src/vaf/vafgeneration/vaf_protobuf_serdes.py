@@ -1,4 +1,7 @@
-"""Generator library for protbuf serialization/deserialization."""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Generator library for protobuf serialization/deserialization."""
 
 from pathlib import Path
 from typing import Dict, List
@@ -11,9 +14,6 @@ from .generation import (
     FileHelper,
     Generator,
     data_type_to_str,
-    is_data_type_base_type,
-    is_data_type_cstdint_type,
-    is_out_parameter,
 )
 
 
@@ -27,7 +27,7 @@ def data_type_to_proto_type(data_type: vafmodel.DataType) -> str:
         str: DataType as string
     """
     result = ""
-    if is_data_type_cstdint_type(data_type.Name, data_type.Namespace):
+    if data_type.is_cstdint_type:
         match data_type.Name:
             case "uint8_t":
                 result = "uint32"
@@ -57,27 +57,23 @@ def data_type_to_proto_type(data_type: vafmodel.DataType) -> str:
     return result
 
 
-def _prepend_double_colon(datatype: vafmodel.DataType) -> str:
-    if not is_data_type_base_type(datatype.Name, datatype.Namespace):
-        return "::"
-    return ""
+def __add_datatype_double_colon(datatype: vafmodel.DataType) -> str:
+    return "::" if not datatype.is_base_type else ""
 
 
-def _add_double_colon(name: str, namespace: str) -> str:
-    if not is_data_type_base_type(name, namespace):
-        return "::"
-    return ""
+def __add_double_colon(name: str, namespace: str) -> str:
+    return __add_datatype_double_colon(vafmodel.DataType(Name=name, Namespace=namespace))
 
 
 def _get_operation_parameter_list_with_in(operation: vafmodel.Operation) -> str:
     parameter_str = ""
     is_first = True
     for parameter in operation.Parameters:
-        if not is_out_parameter(parameter):
+        if not parameter.is_direction_out:
             if is_first:
                 parameter_str = (
                     "const "
-                    + _prepend_double_colon(parameter.TypeRef)
+                    + __add_datatype_double_colon(parameter.TypeRef)
                     + data_type_to_str(parameter.TypeRef)
                     + "& in_"
                     + parameter.Name
@@ -87,7 +83,7 @@ def _get_operation_parameter_list_with_in(operation: vafmodel.Operation) -> str:
                 parameter_str = (
                     parameter_str
                     + ", const "
-                    + _prepend_double_colon(parameter.TypeRef)
+                    + __add_datatype_double_colon(parameter.TypeRef)
                     + data_type_to_str(parameter.TypeRef)
                     + "& in_"
                     + parameter.Name
@@ -99,10 +95,10 @@ def _get_operation_parameter_list_with_out(operation: vafmodel.Operation) -> str
     parameter_str = ""
     is_first = True
     for parameter in operation.Parameters:
-        if not is_out_parameter(parameter):
+        if not parameter.is_direction_out:
             if is_first:
                 parameter_str = (
-                    _prepend_double_colon(parameter.TypeRef)
+                    __add_datatype_double_colon(parameter.TypeRef)
                     + data_type_to_str(parameter.TypeRef)
                     + "& out_"
                     + parameter.Name
@@ -112,7 +108,7 @@ def _get_operation_parameter_list_with_out(operation: vafmodel.Operation) -> str
                 parameter_str = (
                     parameter_str
                     + ", "
-                    + _prepend_double_colon(parameter.TypeRef)
+                    + __add_datatype_double_colon(parameter.TypeRef)
                     + data_type_to_str(parameter.TypeRef)
                     + "& out_"
                     + parameter.Name
@@ -120,18 +116,11 @@ def _get_operation_parameter_list_with_out(operation: vafmodel.Operation) -> str
     return parameter_str
 
 
-def _is_base_type(data_type: vafmodel.DataType) -> bool:
-    result = False
-    if is_data_type_base_type(data_type.Name, data_type.Namespace) or is_data_type_cstdint_type(
-        data_type.Name, data_type.Namespace
-    ):
-        result = True
-    return result
-
-
 def _add_namespace_to_import(data_type: vafmodel.DataTypeRef, namespace: str, used_namespaces: List[str]) -> bool:
     return (
-        not _is_base_type(data_type) and data_type.Namespace != namespace and data_type.Namespace not in used_namespaces
+        not data_type.is_cpp_base_type
+        and data_type.Namespace != namespace
+        and data_type.Namespace not in used_namespaces
     )
 
 
@@ -155,12 +144,20 @@ def _get_namespace_imports(
                     namespace_imports[namespace] += [
                         *(
                             [dt.MapKeyTypeRef.Namespace]
-                            if _add_namespace_to_import(dt.MapKeyTypeRef, namespace, namespace_imports[namespace])
+                            if _add_namespace_to_import(
+                                dt.MapKeyTypeRef,
+                                namespace,
+                                namespace_imports[namespace],
+                            )
                             else []
                         ),
                         *(
                             [dt.MapValueTypeRef.Namespace]
-                            if _add_namespace_to_import(dt.MapValueTypeRef, namespace, namespace_imports[namespace])
+                            if _add_namespace_to_import(
+                                dt.MapValueTypeRef,
+                                namespace,
+                                namespace_imports[namespace],
+                            )
                             else []
                         ),
                     ]
@@ -189,7 +186,6 @@ def _get_used_namespaces_by_interface(interface: vafmodel.ModuleInterface) -> Li
 
 
 def _generate_proto_files(
-    model_runtime: ModelRuntime,
     output_path: Path,
     generator: Generator,
     verbose_mode: bool = False,
@@ -217,9 +213,9 @@ def _generate_proto_files(
         verbose_mode=verbose_mode,
     )
 
-    namespace_imports = _get_namespace_imports(model_runtime.element_by_namespace)
+    namespace_imports = _get_namespace_imports(ModelRuntime().element_by_namespace)
 
-    for namespace, data in model_runtime.element_by_namespace.items():
+    for namespace, data in ModelRuntime().element_by_namespace.items():
         generator.generate_to_file(
             FileHelper("protobuf_" + namespace.replace("::", "_"), "", True),
             ".proto",
@@ -233,11 +229,15 @@ def _generate_proto_files(
             verbose_mode=verbose_mode,
         )
 
-    for interface in model_runtime.main_model.ModuleInterfaces:
+    for interface in ModelRuntime().main_model.ModuleInterfaces:
         import_datatype_namespaces = _get_used_namespaces_by_interface(interface)
 
         generator.generate_to_file(
-            FileHelper("protobuf_interface_" + interface.Namespace.replace("::", "_") + "_" + interface.Name, "", True),
+            FileHelper(
+                "protobuf_interface_" + interface.Namespace.replace("::", "_") + "_" + interface.Name,
+                "",
+                True,
+            ),
             ".proto",
             "vaf_protobuf/interface_proto.jinja",
             str=str,
@@ -265,11 +265,11 @@ def _get_impl_type_include(data: vafmodel.ModelDataType) -> str:
     return '#include "' + data.Namespace.replace("::", "/") + "/impl_type_" + data.Name.lower() + '.h"'
 
 
-def _get_array_vector_type_ref_includes(data: vafmodel.Array | vafmodel.Vector | vafmodel.TypeRef) -> List[str]:
+def _get_array_vector_type_ref_includes(
+    data: vafmodel.Array | vafmodel.Vector | vafmodel.TypeRef,
+) -> List[str]:
     includes: List[str] = [_get_impl_type_include(data)]
-    if not is_data_type_base_type(data.TypeRef.Name, data.TypeRef.Namespace) and not is_data_type_cstdint_type(
-        data.TypeRef.Name, data.TypeRef.Namespace
-    ):
+    if not data.TypeRef.is_cpp_base_type:
         includes.append(
             '#include "' + data.TypeRef.Namespace.replace("::", "/") + "/impl_type_" + data.TypeRef.Name.lower() + '.h"'
         )
@@ -285,9 +285,7 @@ def _get_array_vector_type_ref_includes(data: vafmodel.Array | vafmodel.Vector |
 def _get_struct_includes(data: vafmodel.Struct) -> List[str]:
     includes: List[str] = [_get_impl_type_include(data)]
     for sub_element in data.SubElements:
-        if not is_data_type_base_type(
-            sub_element.TypeRef.Name, sub_element.TypeRef.Namespace
-        ) and not is_data_type_cstdint_type(sub_element.TypeRef.Name, sub_element.TypeRef.Namespace):
+        if not sub_element.TypeRef.is_cpp_base_type:
             includes.append(
                 '#include "'
                 + sub_element.TypeRef.Namespace.replace("::", "/")
@@ -311,9 +309,8 @@ def _get_map_includes(data: vafmodel.Map) -> List[str]:
 
     for map_attr in ["MapKeyTypeRef", "MapValueTypeRef"]:
         map_type_ref = getattr(data, map_attr)
-        if not is_data_type_base_type(map_type_ref.Name, map_type_ref.Namespace) and not is_data_type_cstdint_type(
-            map_type_ref.Name, map_type_ref.Namespace
-        ):
+        assert isinstance(map_type_ref, vafmodel.DataType)
+        if not map_type_ref.is_cpp_base_type:
             includes.append(
                 '#include "'
                 + map_type_ref.Namespace.replace("::", "/")
@@ -333,44 +330,47 @@ def _get_map_includes(data: vafmodel.Map) -> List[str]:
 # pylint:disable=too-many-locals
 # pylint:disable=too-many-branches
 # pylint:disable=too-many-statements
-def _generate_transfomer_files(
-    model_runtime: ModelRuntime,
+def _generate_transformer_files(
     output_path: Path,
     generator: Generator,
     verbose_mode: bool = False,
 ) -> None:
     generator.set_base_directory(output_path)
 
-    for namespace, data in model_runtime.element_by_namespace.items():
+    for namespace, data in ModelRuntime().element_by_namespace.items():
         if not namespace:
             raise ValueError("Input json contains 'DataTypeDefinition' with empty namespace ")
 
         includes: List[str] = [
             '#include "protobuf_' + namespace.replace("::", "_") + '.pb.h"',
             "#include <cstdlib>",
-            "#include <iostream>",
+            '#include "vaf/output_sync_stream.h"',
         ]
         for vector_array_typeref in (
             list(data.get("Arrays", {}).values())
             + list(data.get("Vectors", {}).values())
             + list(data.get("TypeRefs", {}).values())
         ):
-            if isinstance(vector_array_typeref, (vafmodel.Array, vafmodel.Vector, vafmodel.TypeRef)):
+            if isinstance(
+                vector_array_typeref,
+                (vafmodel.Array, vafmodel.Vector, vafmodel.TypeRef),
+            ):
                 includes += _get_array_vector_type_ref_includes(vector_array_typeref)
         for map_entry in data.get("Maps", {}).values():
             if isinstance(map_entry, vafmodel.Map):
                 includes += _get_map_includes(map_entry)
         for string in data.get("Strings", {}).values():
             if isinstance(string, vafmodel.String):
-                includes += _get_impl_type_include(string)
+                includes.append(_get_impl_type_include(string))
         for enum in data.get("Enums:", {}).values():
             if isinstance(enum, vafmodel.VafEnum):
-                includes += _get_impl_type_include(enum)
+                includes.append(_get_impl_type_include(enum))
         for struct in data.get("Structs", {}).values():
             if isinstance(struct, vafmodel.Struct):
                 includes += _get_struct_includes(struct)
 
         includes = list(set(includes))
+        includes.sort()
 
         generator.generate_to_file(
             FileHelper("protobuf_transformer", "protobuf::" + namespace, False),
@@ -382,12 +382,10 @@ def _generate_transfomer_files(
             include_namespace=namespace.replace("::", "/"),
             namespace_data=data,
             data_type_to_proto_type=data_type_to_proto_type,
-            is_data_type_base_type=is_data_type_base_type,
-            is_data_type_cstdint_type=is_data_type_cstdint_type,
             verbose_mode=verbose_mode,
         )
 
-    for interface in model_runtime.main_model.ModuleInterfaces:
+    for interface in ModelRuntime().main_model.ModuleInterfaces:
         includes = []
         import_datatype_namespaces = _get_used_namespaces_by_interface(interface)
 
@@ -402,12 +400,12 @@ def _generate_transfomer_files(
                 operation_with_out_parameters.append(o)
 
         out_parameter_type_namespace: str = interface.Namespace
-        if interface.OperationOutputNamespace is not None:
-            out_parameter_type_namespace = interface.OperationOutputNamespace
 
         generator.generate_to_file(
             FileHelper(
-                "protobuf_transformer", "protobuf::interface::" + interface.Namespace + "::" + interface.Name, False
+                "protobuf_transformer",
+                "protobuf::interface::" + interface.Namespace + "::" + interface.Name,
+                False,
             ),
             ".h",
             "vaf_protobuf/interface_transformer.jinja",
@@ -417,11 +415,10 @@ def _generate_transfomer_files(
             data_type_to_proto_type=data_type_to_proto_type,
             generate_types=False,
             imports=import_datatype_namespaces,
-            is_data_type_base_type=is_data_type_base_type,
-            is_data_type_cstdint_type=is_data_type_cstdint_type,
             get_operation_parameter_list_with_in=_get_operation_parameter_list_with_in,
             get_operation_parameter_list_with_out=_get_operation_parameter_list_with_out,
-            add_double_colon=_add_double_colon,
+            add_double_colon=__add_double_colon,
+            add_datatype_double_colon=__add_datatype_double_colon,
             verbose_mode=verbose_mode,
         )
 
@@ -436,15 +433,15 @@ def _generate_transfomer_files(
 
 
 # pylint: disable=duplicate-code
-def generate(model_runtime: ModelRuntime, output_dir: Path, verbose_mode: bool = False) -> None:
+def generate(output_dir: Path, verbose_mode: bool = False) -> None:
     """Generates the middleware wrappers for protobuf
 
     Args:
-        model_runtime (ModelRuntime): The main model
         output_dir (Path): The output path
         verbose_mode: flag to enable verbose_mode mode
     """
     output_path = output_dir / "src-gen/libs/protobuf_serdes"
+
     generator = Generator()
 
     subdirs: List[str] = []
@@ -460,6 +457,6 @@ def generate(model_runtime: ModelRuntime, output_dir: Path, verbose_mode: bool =
     )
 
     output_path = output_dir / "src-gen/libs/protobuf_serdes/proto"
-    _generate_proto_files(model_runtime, output_path, generator, verbose_mode=verbose_mode)
+    _generate_proto_files(output_path, generator, verbose_mode=verbose_mode)
     output_path = output_dir / "src-gen/libs/protobuf_serdes/transformer"
-    _generate_transfomer_files(model_runtime, output_path, generator, verbose_mode=verbose_mode)
+    _generate_transformer_files(output_path, generator, verbose_mode=verbose_mode)

@@ -1,6 +1,7 @@
-"""
-Unit tests for ensuring that string-based enums are correctly created and exported.
-"""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Unit tests for ensuring that string-based enums are correctly created and exported."""
 
 import unittest
 
@@ -49,9 +50,9 @@ class TestExportStringEnums(unittest.TestCase):
                 Name="Active",
                 Namespace="vss::mirrorstate",
                 Literals=[
-                    vafmodel.EnumLiteral(Label="NONE", Value=1),
-                    vafmodel.EnumLiteral(Label="ACTIVE", Value=2),
-                    vafmodel.EnumLiteral(Label="INACTIVE", Value=3),
+                    vafmodel.EnumLiteral(Item="NONE", Value=1),
+                    vafmodel.EnumLiteral(Item="ACTIVE", Value=2),
+                    vafmodel.EnumLiteral(Item="INACTIVE", Value=3),
                 ],
                 BaseType=vafmodel.DataType(Name="uint8_t", Namespace=""),
             ),
@@ -59,8 +60,8 @@ class TestExportStringEnums(unittest.TestCase):
                 Name="Mode",
                 Namespace="vss::mirrorstate",
                 Literals=[
-                    vafmodel.EnumLiteral(Label="AUTO", Value=1),
-                    vafmodel.EnumLiteral(Label="MANUAL", Value=2),
+                    vafmodel.EnumLiteral(Item="AUTO", Value=1),
+                    vafmodel.EnumLiteral(Item="MANUAL", Value=2),
                 ],
                 BaseType=vafmodel.DataType(Name="uint8_t", Namespace=""),
             ),
@@ -74,14 +75,17 @@ class TestExportStringEnums(unittest.TestCase):
             len(derived_model.DataTypeDefinitions.Enums), len(expected_enums)
         )  # Only 2 enums created (Active, Mode)
         for enum in expected_enums:
-            self.assertTrue(enum in derived_model.DataTypeDefinitions.Enums, f"Enum {enum.Name} not found")
+            self.assertTrue(
+                enum in derived_model.DataTypeDefinitions.Enums,
+                f"Enum {enum.Name} not found",
+            )
 
     def test_export_enum(self) -> None:
         """Test the export functionality for enums."""
         enum_type = EnumType(name="Active", namespace="example")
-        enum_type.add_literal(label="NONE", value=1)
-        enum_type.add_literal(label="ACTIVE", value=2)
-        enum_type.add_literal(label="INACTIVE", value=3)
+        enum_type.add_literal(item="NONE", value=1)
+        enum_type.add_literal(item="ACTIVE", value=2)
+        enum_type.add_literal(item="INACTIVE", value=3)
 
         exported_enum = enum_type.export()
 
@@ -89,9 +93,9 @@ class TestExportStringEnums(unittest.TestCase):
         self.assertEqual(exported_enum.Name, "Active")
         self.assertEqual(exported_enum.BaseType.Name, "uint8_t")  # type: ignore
         self.assertEqual(len(exported_enum.Literals), 3)
-        self.assertEqual(exported_enum.Literals[0].Label, "NONE")
+        self.assertEqual(exported_enum.Literals[0].Item, "NONE")
         self.assertEqual(exported_enum.Literals[0].Value, 1)
-        self.assertEqual(exported_enum.Literals[2].Label, "INACTIVE")
+        self.assertEqual(exported_enum.Literals[2].Item, "INACTIVE")
         self.assertEqual(exported_enum.Literals[2].Value, 3)
 
 

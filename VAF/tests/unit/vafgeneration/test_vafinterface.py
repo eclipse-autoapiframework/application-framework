@@ -1,6 +1,7 @@
-"""
-example tests
-"""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Example tests"""
 
 import filecmp
 import os

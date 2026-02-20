@@ -1,0 +1,35 @@
+version 2.1;
+
+import module "SerializationService";
+import module "SilKit";
+import proto "./proto/protobuf_interface_test_MyInterface.proto";
+
+namespace MyExecutable
+{
+    [Binding="SilKit"]
+    [Serialization=GoogleProtobuf]
+    interface IConsumedtestMyProviderModule
+    {
+        consumed data protobuf::interface::test::MyInterface::my_data_element1 MyInterface_my_data_element1;
+        consumed data protobuf::interface::test::MyInterface::my_data_element2 MyInterface_my_data_element2;
+        consumed method protobuf::interface::test::MyInterface::MyVoidOperation_out MyInterface_MyVoidOperation(protobuf::interface::test::MyInterface::MyVoidOperation_in in_data);
+        consumed method protobuf::interface::test::MyInterface::MyOperation_out MyInterface_MyOperation(protobuf::interface::test::MyInterface::MyOperation_in in_data);
+        consumed method protobuf::interface::test::MyInterface::MyGetter_out MyInterface_MyGetter(protobuf::interface::test::MyInterface::MyGetter_in in_data);
+        consumed method protobuf::interface::test::MyInterface::MySetter_out MyInterface_MySetter(protobuf::interface::test::MyInterface::MySetter_in in_data);
+    }
+    IConsumedtestMyProviderModule MyInterface;
+
+    [Binding="SilKit"]
+    [Serialization=GoogleProtobuf]
+    interface IProvidedtestMyConsumerModule
+    {
+        provided data protobuf::interface::test::MyInterface::my_data_element1 MyInterface_my_data_element1;
+        provided data protobuf::interface::test::MyInterface::my_data_element2 MyInterface_my_data_element2;
+        provided method protobuf::interface::test::MyInterface::MyVoidOperation_out MyInterface_MyVoidOperation(protobuf::interface::test::MyInterface::MyVoidOperation_in in_data);
+        provided method protobuf::interface::test::MyInterface::MyOperation_out MyInterface_MyOperation(protobuf::interface::test::MyInterface::MyOperation_in in_data);
+        provided method protobuf::interface::test::MyInterface::MyGetter_out MyInterface_MyGetter(protobuf::interface::test::MyInterface::MyGetter_in in_data);
+        provided method protobuf::interface::test::MyInterface::MySetter_out MyInterface_MySetter(protobuf::interface::test::MyInterface::MySetter_in in_data);
+    }
+    IProvidedtestMyConsumerModule MyInterface;
+
+}

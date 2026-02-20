@@ -1,9 +1,11 @@
 from datetime import timedelta
 from vaf import vafpy, BaseTypes
 
+# TODO: Import the CaC support from platform derive or interface import
 from .vss import *
 
 vss_consumer = vafpy.ApplicationModule(name="VssConsumer", namespace="demo")
+
 vss_consumer.add_consumed_interface(
     "AccelerationConsumer", interface=Vss.Vehicle.acceleration_if
 )

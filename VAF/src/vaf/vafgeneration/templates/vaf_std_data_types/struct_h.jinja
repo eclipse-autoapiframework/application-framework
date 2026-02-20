@@ -4,12 +4,21 @@
 {% for i in includes | unique  %}
 {{ i }}
 {% endfor %}
+{% if vaf_struct.SubElements | selectattr('IsOptional') | list | length > 0 %}
+#include <optional>
+{% endif %}
 {% endblock %}
+
+
 
 {% block content %}
 struct {{ vaf_struct.Name }} {
 {% for s in vaf_struct.SubElements %}
+  {% if s.IsOptional %}
+  std::optional<{{ get_file_helper(s.TypeRef).get_full_type_name() }}> {{ s.Name }};
+  {% else %}
   {{ get_file_helper(s.TypeRef).get_full_type_name() }} {{ s.Name }};
+  {% endif %}
 {% endfor %}
 };
 {% endblock %}

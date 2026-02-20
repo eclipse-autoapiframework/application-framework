@@ -1,0 +1,26 @@
+{% include "common/copyright.jinja" %}
+
+#ifndef VAF_EXECUTABLE_CONTROLLER_INTERFACE_H_
+#define VAF_EXECUTABLE_CONTROLLER_INTERFACE_H_
+
+/*!********************************************************************************************************************
+ *  INCLUDES
+ *********************************************************************************************************************/
+
+#include "vaf/container_types.h"
+#include "vaf/error_domain.h"
+#include "vaf/module_states.h"
+
+namespace vaf {
+
+class ExecutableControllerInterface {
+ public:
+  virtual ~ExecutableControllerInterface() = default;
+  virtual void ReportOperationalOfModule(vaf::String name) = 0;
+  virtual void SkipStartingOfModule(vaf::String name) = 0;
+  virtual void ReportErrorOfModule(const vaf::Error& error, vaf::String name, bool critical) = 0;
+};
+
+} // namespace vaf
+
+#endif // VAF_EXECUTABLE_CONTROLLER_INTERFACE_H_

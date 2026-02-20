@@ -13,27 +13,27 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "UNDEFINED",
+            "Item": "UNDEFINED",
             "Value": 1
           },
           {
-            "Label": "LOCK",
+            "Item": "LOCK",
             "Value": 2
           },
           {
-            "Label": "OFF",
+            "Item": "OFF",
             "Value": 3
           },
           {
-            "Label": "ACC",
+            "Item": "ACC",
             "Value": 4
           },
           {
-            "Label": "ON",
+            "Item": "ON",
             "Value": 5
           },
           {
-            "Label": "START",
+            "Item": "START",
             "Value": 6
           }
         ]
@@ -44,27 +44,27 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "SAE_0",
+            "Item": "SAE_0",
             "Value": 1
           },
           {
-            "Label": "SAE_1",
+            "Item": "SAE_1",
             "Value": 2
           },
           {
-            "Label": "SAE_2",
+            "Item": "SAE_2",
             "Value": 3
           },
           {
-            "Label": "SAE_3",
+            "Item": "SAE_3",
             "Value": 4
           },
           {
-            "Label": "SAE_4",
+            "Item": "SAE_4",
             "Value": 5
           },
           {
-            "Label": "SAE_5",
+            "Item": "SAE_5",
             "Value": 6
           }
         ]
@@ -75,39 +75,39 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "SAE_0",
+            "Item": "SAE_0",
             "Value": 1
           },
           {
-            "Label": "SAE_1",
+            "Item": "SAE_1",
             "Value": 2
           },
           {
-            "Label": "SAE_2_DISENGAGING",
+            "Item": "SAE_2_DISENGAGING",
             "Value": 3
           },
           {
-            "Label": "SAE_2",
+            "Item": "SAE_2",
             "Value": 4
           },
           {
-            "Label": "SAE_3_DISENGAGING",
+            "Item": "SAE_3_DISENGAGING",
             "Value": 5
           },
           {
-            "Label": "SAE_3",
+            "Item": "SAE_3",
             "Value": 6
           },
           {
-            "Label": "SAE_4_DISENGAGING",
+            "Item": "SAE_4_DISENGAGING",
             "Value": 7
           },
           {
-            "Label": "SAE_4",
+            "Item": "SAE_4",
             "Value": 8
           },
           {
-            "Label": "SAE_5",
+            "Item": "SAE_5",
             "Value": 9
           }
         ]
@@ -118,27 +118,27 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "FRONT_LEFT",
+            "Item": "FRONT_LEFT",
             "Value": 1
           },
           {
-            "Label": "FRONT_RIGHT",
+            "Item": "FRONT_RIGHT",
             "Value": 2
           },
           {
-            "Label": "MIDDLE_LEFT",
+            "Item": "MIDDLE_LEFT",
             "Value": 3
           },
           {
-            "Label": "MIDDLE_RIGHT",
+            "Item": "MIDDLE_RIGHT",
             "Value": 4
           },
           {
-            "Label": "REAR_LEFT",
+            "Item": "REAR_LEFT",
             "Value": 5
           },
           {
-            "Label": "REAR_RIGHT",
+            "Item": "REAR_RIGHT",
             "Value": 6
           }
         ]
@@ -149,23 +149,23 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "INACTIVE",
+            "Item": "INACTIVE",
             "Value": 1
           },
           {
-            "Label": "CLOSE",
+            "Item": "CLOSE",
             "Value": 2
           },
           {
-            "Label": "OPEN",
+            "Item": "OPEN",
             "Value": 3
           },
           {
-            "Label": "ONE_SHOT_CLOSE",
+            "Item": "ONE_SHOT_CLOSE",
             "Value": 4
           },
           {
-            "Label": "ONE_SHOT_OPEN",
+            "Item": "ONE_SHOT_OPEN",
             "Value": 5
           }
         ]
@@ -176,23 +176,23 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "OFF",
+            "Item": "OFF",
             "Value": 1
           },
           {
-            "Label": "POSITION",
+            "Item": "POSITION",
             "Value": 2
           },
           {
-            "Label": "DAYTIME_RUNNING_LIGHTS",
+            "Item": "DAYTIME_RUNNING_LIGHTS",
             "Value": 3
           },
           {
-            "Label": "AUTO",
+            "Item": "AUTO",
             "Value": 4
           },
           {
-            "Label": "BEAM",
+            "Item": "BEAM",
             "Value": 5
           }
         ]
@@ -203,15 +203,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "INACTIVE",
+            "Item": "INACTIVE",
             "Value": 1
           },
           {
-            "Label": "ACTIVE",
+            "Item": "ACTIVE",
             "Value": 2
           },
           {
-            "Label": "ADAPTIVE",
+            "Item": "ADAPTIVE",
             "Value": 3
           }
         ]
@@ -222,23 +222,23 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "INACTIVE",
+            "Item": "INACTIVE",
             "Value": 1
           },
           {
-            "Label": "CLOSE",
+            "Item": "CLOSE",
             "Value": 2
           },
           {
-            "Label": "OPEN",
+            "Item": "OPEN",
             "Value": 3
           },
           {
-            "Label": "ONE_SHOT_CLOSE",
+            "Item": "ONE_SHOT_CLOSE",
             "Value": 4
           },
           {
-            "Label": "ONE_SHOT_OPEN",
+            "Item": "ONE_SHOT_OPEN",
             "Value": 5
           }
         ]
@@ -249,23 +249,23 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "INACTIVE",
+            "Item": "INACTIVE",
             "Value": 1
           },
           {
-            "Label": "CLOSE",
+            "Item": "CLOSE",
             "Value": 2
           },
           {
-            "Label": "OPEN",
+            "Item": "OPEN",
             "Value": 3
           },
           {
-            "Label": "ONE_SHOT_CLOSE",
+            "Item": "ONE_SHOT_CLOSE",
             "Value": 4
           },
           {
-            "Label": "ONE_SHOT_OPEN",
+            "Item": "ONE_SHOT_OPEN",
             "Value": 5
           }
         ]
@@ -276,27 +276,27 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "OFF",
+            "Item": "OFF",
             "Value": 1
           },
           {
-            "Label": "SLOW",
+            "Item": "SLOW",
             "Value": 2
           },
           {
-            "Label": "MEDIUM",
+            "Item": "MEDIUM",
             "Value": 3
           },
           {
-            "Label": "FAST",
+            "Item": "FAST",
             "Value": 4
           },
           {
-            "Label": "INTERVAL",
+            "Item": "INTERVAL",
             "Value": 5
           },
           {
-            "Label": "RAIN_SENSOR",
+            "Item": "RAIN_SENSOR",
             "Value": 6
           }
         ]
@@ -307,19 +307,19 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "STOP_HOLD",
+            "Item": "STOP_HOLD",
             "Value": 1
           },
           {
-            "Label": "WIPE",
+            "Item": "WIPE",
             "Value": 2
           },
           {
-            "Label": "PLANT_MODE",
+            "Item": "PLANT_MODE",
             "Value": 3
           },
           {
-            "Label": "EMERGENCY_STOP",
+            "Item": "EMERGENCY_STOP",
             "Value": 4
           }
         ]
@@ -330,27 +330,27 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "OFF",
+            "Item": "OFF",
             "Value": 1
           },
           {
-            "Label": "SLOW",
+            "Item": "SLOW",
             "Value": 2
           },
           {
-            "Label": "MEDIUM",
+            "Item": "MEDIUM",
             "Value": 3
           },
           {
-            "Label": "FAST",
+            "Item": "FAST",
             "Value": 4
           },
           {
-            "Label": "INTERVAL",
+            "Item": "INTERVAL",
             "Value": 5
           },
           {
-            "Label": "RAIN_SENSOR",
+            "Item": "RAIN_SENSOR",
             "Value": 6
           }
         ]
@@ -361,19 +361,19 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "STOP_HOLD",
+            "Item": "STOP_HOLD",
             "Value": 1
           },
           {
-            "Label": "WIPE",
+            "Item": "WIPE",
             "Value": 2
           },
           {
-            "Label": "PLANT_MODE",
+            "Item": "PLANT_MODE",
             "Value": 3
           },
           {
-            "Label": "EMERGENCY_STOP",
+            "Item": "EMERGENCY_STOP",
             "Value": 4
           }
         ]
@@ -384,15 +384,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "LEFT",
+            "Item": "LEFT",
             "Value": 1
           },
           {
-            "Label": "MIDDLE",
+            "Item": "MIDDLE",
             "Value": 2
           },
           {
-            "Label": "RIGHT",
+            "Item": "RIGHT",
             "Value": 3
           }
         ]
@@ -403,27 +403,27 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "UNDEFINED",
+            "Item": "UNDEFINED",
             "Value": 1
           },
           {
-            "Label": "CLOSED",
+            "Item": "CLOSED",
             "Value": 2
           },
           {
-            "Label": "OPEN",
+            "Item": "OPEN",
             "Value": 3
           },
           {
-            "Label": "CLOSING",
+            "Item": "CLOSING",
             "Value": 4
           },
           {
-            "Label": "OPENING",
+            "Item": "OPENING",
             "Value": 5
           },
           {
-            "Label": "STALLED",
+            "Item": "STALLED",
             "Value": 6
           }
         ]
@@ -434,23 +434,23 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "INACTIVE",
+            "Item": "INACTIVE",
             "Value": 1
           },
           {
-            "Label": "CLOSE",
+            "Item": "CLOSE",
             "Value": 2
           },
           {
-            "Label": "OPEN",
+            "Item": "OPEN",
             "Value": 3
           },
           {
-            "Label": "ONE_SHOT_CLOSE",
+            "Item": "ONE_SHOT_CLOSE",
             "Value": 4
           },
           {
-            "Label": "ONE_SHOT_OPEN",
+            "Item": "ONE_SHOT_OPEN",
             "Value": 5
           }
         ]
@@ -461,23 +461,23 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "INACTIVE",
+            "Item": "INACTIVE",
             "Value": 1
           },
           {
-            "Label": "CLOSE",
+            "Item": "CLOSE",
             "Value": 2
           },
           {
-            "Label": "OPEN",
+            "Item": "OPEN",
             "Value": 3
           },
           {
-            "Label": "ONE_SHOT_CLOSE",
+            "Item": "ONE_SHOT_CLOSE",
             "Value": 4
           },
           {
-            "Label": "ONE_SHOT_OPEN",
+            "Item": "ONE_SHOT_OPEN",
             "Value": 5
           }
         ]
@@ -488,23 +488,23 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "INACTIVE",
+            "Item": "INACTIVE",
             "Value": 1
           },
           {
-            "Label": "CLOSE",
+            "Item": "CLOSE",
             "Value": 2
           },
           {
-            "Label": "OPEN",
+            "Item": "OPEN",
             "Value": 3
           },
           {
-            "Label": "ONE_SHOT_CLOSE",
+            "Item": "ONE_SHOT_CLOSE",
             "Value": 4
           },
           {
-            "Label": "ONE_SHOT_OPEN",
+            "Item": "ONE_SHOT_OPEN",
             "Value": 5
           }
         ]
@@ -515,23 +515,23 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "INACTIVE",
+            "Item": "INACTIVE",
             "Value": 1
           },
           {
-            "Label": "CLOSE",
+            "Item": "CLOSE",
             "Value": 2
           },
           {
-            "Label": "OPEN",
+            "Item": "OPEN",
             "Value": 3
           },
           {
-            "Label": "ONE_SHOT_CLOSE",
+            "Item": "ONE_SHOT_CLOSE",
             "Value": 4
           },
           {
-            "Label": "ONE_SHOT_OPEN",
+            "Item": "ONE_SHOT_OPEN",
             "Value": 5
           }
         ]
@@ -542,23 +542,23 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "INACTIVE",
+            "Item": "INACTIVE",
             "Value": 1
           },
           {
-            "Label": "CLOSE",
+            "Item": "CLOSE",
             "Value": 2
           },
           {
-            "Label": "OPEN",
+            "Item": "OPEN",
             "Value": 3
           },
           {
-            "Label": "ONE_SHOT_CLOSE",
+            "Item": "ONE_SHOT_CLOSE",
             "Value": 4
           },
           {
-            "Label": "ONE_SHOT_OPEN",
+            "Item": "ONE_SHOT_OPEN",
             "Value": 5
           }
         ]
@@ -569,23 +569,23 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "INACTIVE",
+            "Item": "INACTIVE",
             "Value": 1
           },
           {
-            "Label": "CLOSE",
+            "Item": "CLOSE",
             "Value": 2
           },
           {
-            "Label": "OPEN",
+            "Item": "OPEN",
             "Value": 3
           },
           {
-            "Label": "ONE_SHOT_CLOSE",
+            "Item": "ONE_SHOT_CLOSE",
             "Value": 4
           },
           {
-            "Label": "ONE_SHOT_OPEN",
+            "Item": "ONE_SHOT_OPEN",
             "Value": 5
           }
         ]
@@ -596,23 +596,23 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "INACTIVE",
+            "Item": "INACTIVE",
             "Value": 1
           },
           {
-            "Label": "CLOSE",
+            "Item": "CLOSE",
             "Value": 2
           },
           {
-            "Label": "OPEN",
+            "Item": "OPEN",
             "Value": 3
           },
           {
-            "Label": "ONE_SHOT_CLOSE",
+            "Item": "ONE_SHOT_CLOSE",
             "Value": 4
           },
           {
-            "Label": "ONE_SHOT_OPEN",
+            "Item": "ONE_SHOT_OPEN",
             "Value": 5
           }
         ]
@@ -623,23 +623,23 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "INACTIVE",
+            "Item": "INACTIVE",
             "Value": 1
           },
           {
-            "Label": "CLOSE",
+            "Item": "CLOSE",
             "Value": 2
           },
           {
-            "Label": "OPEN",
+            "Item": "OPEN",
             "Value": 3
           },
           {
-            "Label": "ONE_SHOT_CLOSE",
+            "Item": "ONE_SHOT_CLOSE",
             "Value": 4
           },
           {
-            "Label": "ONE_SHOT_OPEN",
+            "Item": "ONE_SHOT_OPEN",
             "Value": 5
           }
         ]
@@ -650,23 +650,23 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "INACTIVE",
+            "Item": "INACTIVE",
             "Value": 1
           },
           {
-            "Label": "CLOSE",
+            "Item": "CLOSE",
             "Value": 2
           },
           {
-            "Label": "OPEN",
+            "Item": "OPEN",
             "Value": 3
           },
           {
-            "Label": "ONE_SHOT_CLOSE",
+            "Item": "ONE_SHOT_CLOSE",
             "Value": 4
           },
           {
-            "Label": "ONE_SHOT_OPEN",
+            "Item": "ONE_SHOT_OPEN",
             "Value": 5
           }
         ]
@@ -677,23 +677,23 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "INACTIVE",
+            "Item": "INACTIVE",
             "Value": 1
           },
           {
-            "Label": "CLOSE",
+            "Item": "CLOSE",
             "Value": 2
           },
           {
-            "Label": "OPEN",
+            "Item": "OPEN",
             "Value": 3
           },
           {
-            "Label": "ONE_SHOT_CLOSE",
+            "Item": "ONE_SHOT_CLOSE",
             "Value": 4
           },
           {
-            "Label": "ONE_SHOT_OPEN",
+            "Item": "ONE_SHOT_OPEN",
             "Value": 5
           }
         ]
@@ -704,23 +704,23 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "INACTIVE",
+            "Item": "INACTIVE",
             "Value": 1
           },
           {
-            "Label": "CLOSE",
+            "Item": "CLOSE",
             "Value": 2
           },
           {
-            "Label": "OPEN",
+            "Item": "OPEN",
             "Value": 3
           },
           {
-            "Label": "ONE_SHOT_CLOSE",
+            "Item": "ONE_SHOT_CLOSE",
             "Value": 4
           },
           {
-            "Label": "ONE_SHOT_OPEN",
+            "Item": "ONE_SHOT_OPEN",
             "Value": 5
           }
         ]
@@ -731,23 +731,23 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "INACTIVE",
+            "Item": "INACTIVE",
             "Value": 1
           },
           {
-            "Label": "CLOSE",
+            "Item": "CLOSE",
             "Value": 2
           },
           {
-            "Label": "OPEN",
+            "Item": "OPEN",
             "Value": 3
           },
           {
-            "Label": "ONE_SHOT_CLOSE",
+            "Item": "ONE_SHOT_CLOSE",
             "Value": 4
           },
           {
-            "Label": "ONE_SHOT_OPEN",
+            "Item": "ONE_SHOT_OPEN",
             "Value": 5
           }
         ]
@@ -758,15 +758,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "UP",
+            "Item": "UP",
             "Value": 1
           },
           {
-            "Label": "MIDDLE",
+            "Item": "MIDDLE",
             "Value": 2
           },
           {
-            "Label": "DOWN",
+            "Item": "DOWN",
             "Value": 3
           }
         ]
@@ -777,15 +777,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "UP",
+            "Item": "UP",
             "Value": 1
           },
           {
-            "Label": "MIDDLE",
+            "Item": "MIDDLE",
             "Value": 2
           },
           {
-            "Label": "DOWN",
+            "Item": "DOWN",
             "Value": 3
           }
         ]
@@ -796,15 +796,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "UP",
+            "Item": "UP",
             "Value": 1
           },
           {
-            "Label": "MIDDLE",
+            "Item": "MIDDLE",
             "Value": 2
           },
           {
-            "Label": "DOWN",
+            "Item": "DOWN",
             "Value": 3
           }
         ]
@@ -815,15 +815,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "UP",
+            "Item": "UP",
             "Value": 1
           },
           {
-            "Label": "MIDDLE",
+            "Item": "MIDDLE",
             "Value": 2
           },
           {
-            "Label": "DOWN",
+            "Item": "DOWN",
             "Value": 3
           }
         ]
@@ -834,15 +834,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "UP",
+            "Item": "UP",
             "Value": 1
           },
           {
-            "Label": "MIDDLE",
+            "Item": "MIDDLE",
             "Value": 2
           },
           {
-            "Label": "DOWN",
+            "Item": "DOWN",
             "Value": 3
           }
         ]
@@ -853,15 +853,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "UP",
+            "Item": "UP",
             "Value": 1
           },
           {
-            "Label": "MIDDLE",
+            "Item": "MIDDLE",
             "Value": 2
           },
           {
-            "Label": "DOWN",
+            "Item": "DOWN",
             "Value": 3
           }
         ]
@@ -872,15 +872,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "UP",
+            "Item": "UP",
             "Value": 1
           },
           {
-            "Label": "MIDDLE",
+            "Item": "MIDDLE",
             "Value": 2
           },
           {
-            "Label": "DOWN",
+            "Item": "DOWN",
             "Value": 3
           }
         ]
@@ -891,15 +891,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "UP",
+            "Item": "UP",
             "Value": 1
           },
           {
-            "Label": "MIDDLE",
+            "Item": "MIDDLE",
             "Value": 2
           },
           {
-            "Label": "DOWN",
+            "Item": "DOWN",
             "Value": 3
           }
         ]
@@ -910,27 +910,27 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "MILES_PER_KILOWATT_HOUR",
+            "Item": "MILES_PER_KILOWATT_HOUR",
             "Value": 1
           },
           {
-            "Label": "KILOMETERS_PER_KILOWATT_HOUR",
+            "Item": "KILOMETERS_PER_KILOWATT_HOUR",
             "Value": 2
           },
           {
-            "Label": "KILOWATT_HOURS_PER_100_MILES",
+            "Item": "KILOWATT_HOURS_PER_100_MILES",
             "Value": 3
           },
           {
-            "Label": "KILOWATT_HOURS_PER_100_KILOMETERS",
+            "Item": "KILOWATT_HOURS_PER_100_KILOMETERS",
             "Value": 4
           },
           {
-            "Label": "WATT_HOURS_PER_MILE",
+            "Item": "WATT_HOURS_PER_MILE",
             "Value": 5
           },
           {
-            "Label": "WATT_HOURS_PER_KILOMETER",
+            "Item": "WATT_HOURS_PER_KILOMETER",
             "Value": 6
           }
         ]
@@ -941,15 +941,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "WATT_HOURS",
+            "Item": "WATT_HOURS",
             "Value": 1
           },
           {
-            "Label": "AMPERE_HOURS",
+            "Item": "AMPERE_HOURS",
             "Value": 2
           },
           {
-            "Label": "KILOWATT_HOURS",
+            "Item": "KILOWATT_HOURS",
             "Value": 3
           }
         ]
@@ -960,27 +960,27 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "YYYY_MM_DD",
+            "Item": "YYYY_MM_DD",
             "Value": 1
           },
           {
-            "Label": "DD_MM_YYYY",
+            "Item": "DD_MM_YYYY",
             "Value": 2
           },
           {
-            "Label": "MM_DD_YYYY",
+            "Item": "MM_DD_YYYY",
             "Value": 3
           },
           {
-            "Label": "YY_MM_DD",
+            "Item": "YY_MM_DD",
             "Value": 4
           },
           {
-            "Label": "DD_MM_YY",
+            "Item": "DD_MM_YY",
             "Value": 5
           },
           {
-            "Label": "MM_DD_YY",
+            "Item": "MM_DD_YY",
             "Value": 6
           }
         ]
@@ -991,15 +991,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "METERS_PER_SECOND",
+            "Item": "METERS_PER_SECOND",
             "Value": 1
           },
           {
-            "Label": "MILES_PER_HOUR",
+            "Item": "MILES_PER_HOUR",
             "Value": 2
           },
           {
-            "Label": "KILOMETERS_PER_HOUR",
+            "Item": "KILOMETERS_PER_HOUR",
             "Value": 3
           }
         ]
@@ -1010,15 +1010,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "STANDARD",
+            "Item": "STANDARD",
             "Value": 1
           },
           {
-            "Label": "LARGE",
+            "Item": "LARGE",
             "Value": 2
           },
           {
-            "Label": "EXTRA_LARGE",
+            "Item": "EXTRA_LARGE",
             "Value": 3
           }
         ]
@@ -1029,11 +1029,11 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "DAY",
+            "Item": "DAY",
             "Value": 1
           },
           {
-            "Label": "NIGHT",
+            "Item": "NIGHT",
             "Value": 2
           }
         ]
@@ -1044,11 +1044,11 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "C",
+            "Item": "C",
             "Value": 1
           },
           {
-            "Label": "F",
+            "Item": "F",
             "Value": 2
           }
         ]
@@ -1059,23 +1059,23 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "MPG_UK",
+            "Item": "MPG_UK",
             "Value": 1
           },
           {
-            "Label": "MPG_US",
+            "Item": "MPG_US",
             "Value": 2
           },
           {
-            "Label": "MILES_PER_LITER",
+            "Item": "MILES_PER_LITER",
             "Value": 3
           },
           {
-            "Label": "KILOMETERS_PER_LITER",
+            "Item": "KILOMETERS_PER_LITER",
             "Value": 4
           },
           {
-            "Label": "LITERS_PER_100_KILOMETERS",
+            "Item": "LITERS_PER_100_KILOMETERS",
             "Value": 5
           }
         ]
@@ -1086,11 +1086,11 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "HR_12",
+            "Item": "HR_12",
             "Value": 1
           },
           {
-            "Label": "HR_24",
+            "Item": "HR_24",
             "Value": 2
           }
         ]
@@ -1101,11 +1101,11 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "MILES",
+            "Item": "MILES",
             "Value": 1
           },
           {
-            "Label": "KILOMETERS",
+            "Item": "KILOMETERS",
             "Value": 2
           }
         ]
@@ -1116,15 +1116,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "LITER",
+            "Item": "LITER",
             "Value": 1
           },
           {
-            "Label": "GALLON_US",
+            "Item": "GALLON_US",
             "Value": 2
           },
           {
-            "Label": "GALLON_UK",
+            "Item": "GALLON_UK",
             "Value": 3
           }
         ]
@@ -1135,15 +1135,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "PSI",
+            "Item": "PSI",
             "Value": 1
           },
           {
-            "Label": "KPA",
+            "Item": "KPA",
             "Value": 2
           },
           {
-            "Label": "BAR",
+            "Item": "BAR",
             "Value": 3
           }
         ]
@@ -1154,31 +1154,31 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "UNKNOWN",
+            "Item": "UNKNOWN",
             "Value": 1
           },
           {
-            "Label": "STOP",
+            "Item": "STOP",
             "Value": 2
           },
           {
-            "Label": "PLAY",
+            "Item": "PLAY",
             "Value": 3
           },
           {
-            "Label": "FAST_FORWARD",
+            "Item": "FAST_FORWARD",
             "Value": 4
           },
           {
-            "Label": "FAST_BACKWARD",
+            "Item": "FAST_BACKWARD",
             "Value": 5
           },
           {
-            "Label": "SKIP_FORWARD",
+            "Item": "SKIP_FORWARD",
             "Value": 6
           },
           {
-            "Label": "SKIP_BACKWARD",
+            "Item": "SKIP_BACKWARD",
             "Value": 7
           }
         ]
@@ -1189,63 +1189,63 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "UNKNOWN",
+            "Item": "UNKNOWN",
             "Value": 1
           },
           {
-            "Label": "SIRIUS_XM",
+            "Item": "SIRIUS_XM",
             "Value": 2
           },
           {
-            "Label": "AM",
+            "Item": "AM",
             "Value": 3
           },
           {
-            "Label": "FM",
+            "Item": "FM",
             "Value": 4
           },
           {
-            "Label": "DAB",
+            "Item": "DAB",
             "Value": 5
           },
           {
-            "Label": "TV",
+            "Item": "TV",
             "Value": 6
           },
           {
-            "Label": "CD",
+            "Item": "CD",
             "Value": 7
           },
           {
-            "Label": "DVD",
+            "Item": "DVD",
             "Value": 8
           },
           {
-            "Label": "AUX",
+            "Item": "AUX",
             "Value": 9
           },
           {
-            "Label": "USB",
+            "Item": "USB",
             "Value": 10
           },
           {
-            "Label": "DISK",
+            "Item": "DISK",
             "Value": 11
           },
           {
-            "Label": "BLUETOOTH",
+            "Item": "BLUETOOTH",
             "Value": 12
           },
           {
-            "Label": "INTERNET",
+            "Item": "INTERNET",
             "Value": 13
           },
           {
-            "Label": "VOICE",
+            "Item": "VOICE",
             "Value": 14
           },
           {
-            "Label": "BEEP",
+            "Item": "BEEP",
             "Value": 15
           }
         ]
@@ -1256,15 +1256,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "STANDARD_MALE",
+            "Item": "STANDARD_MALE",
             "Value": 1
           },
           {
-            "Label": "STANDARD_FEMALE",
+            "Item": "STANDARD_FEMALE",
             "Value": 2
           },
           {
-            "Label": "ETC",
+            "Item": "ETC",
             "Value": 3
           }
         ]
@@ -1275,15 +1275,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "MUTED",
+            "Item": "MUTED",
             "Value": 1
           },
           {
-            "Label": "ALERT_ONLY",
+            "Item": "ALERT_ONLY",
             "Value": 2
           },
           {
-            "Label": "UNMUTED",
+            "Item": "UNMUTED",
             "Value": 3
           }
         ]
@@ -1294,15 +1294,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "USB",
+            "Item": "USB",
             "Value": 1
           },
           {
-            "Label": "BLUETOOTH",
+            "Item": "BLUETOOTH",
             "Value": 2
           },
           {
-            "Label": "WIFI",
+            "Item": "WIFI",
             "Value": 3
           }
         ]
@@ -1313,15 +1313,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "NONE",
+            "Item": "NONE",
             "Value": 1
           },
           {
-            "Label": "ACTIVE",
+            "Item": "ACTIVE",
             "Value": 2
           },
           {
-            "Label": "INACTIVE",
+            "Item": "INACTIVE",
             "Value": 3
           }
         ]
@@ -1332,15 +1332,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "USB",
+            "Item": "USB",
             "Value": 1
           },
           {
-            "Label": "BLUETOOTH",
+            "Item": "BLUETOOTH",
             "Value": 2
           },
           {
-            "Label": "WIFI",
+            "Item": "WIFI",
             "Value": 3
           }
         ]
@@ -1351,15 +1351,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "NONE",
+            "Item": "NONE",
             "Value": 1
           },
           {
-            "Label": "ACTIVE",
+            "Item": "ACTIVE",
             "Value": 2
           },
           {
-            "Label": "INACTIVE",
+            "Item": "INACTIVE",
             "Value": 3
           }
         ]
@@ -1370,23 +1370,23 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "INACTIVE",
+            "Item": "INACTIVE",
             "Value": 1
           },
           {
-            "Label": "CLOSE",
+            "Item": "CLOSE",
             "Value": 2
           },
           {
-            "Label": "OPEN",
+            "Item": "OPEN",
             "Value": 3
           },
           {
-            "Label": "ONE_SHOT_CLOSE",
+            "Item": "ONE_SHOT_CLOSE",
             "Value": 4
           },
           {
-            "Label": "ONE_SHOT_OPEN",
+            "Item": "ONE_SHOT_OPEN",
             "Value": 5
           }
         ]
@@ -1397,31 +1397,31 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "INACTIVE",
+            "Item": "INACTIVE",
             "Value": 1
           },
           {
-            "Label": "CLOSE",
+            "Item": "CLOSE",
             "Value": 2
           },
           {
-            "Label": "OPEN",
+            "Item": "OPEN",
             "Value": 3
           },
           {
-            "Label": "ONE_SHOT_CLOSE",
+            "Item": "ONE_SHOT_CLOSE",
             "Value": 4
           },
           {
-            "Label": "ONE_SHOT_OPEN",
+            "Item": "ONE_SHOT_OPEN",
             "Value": 5
           },
           {
-            "Label": "TILT_UP",
+            "Item": "TILT_UP",
             "Value": 6
           },
           {
-            "Label": "TILT_DOWN",
+            "Item": "TILT_DOWN",
             "Value": 7
           }
         ]
@@ -1432,23 +1432,23 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "INACTIVE",
+            "Item": "INACTIVE",
             "Value": 1
           },
           {
-            "Label": "CLOSE",
+            "Item": "CLOSE",
             "Value": 2
           },
           {
-            "Label": "OPEN",
+            "Item": "OPEN",
             "Value": 3
           },
           {
-            "Label": "ONE_SHOT_CLOSE",
+            "Item": "ONE_SHOT_CLOSE",
             "Value": 4
           },
           {
-            "Label": "ONE_SHOT_OPEN",
+            "Item": "ONE_SHOT_OPEN",
             "Value": 5
           }
         ]
@@ -1459,39 +1459,39 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "NONE",
+            "Item": "NONE",
             "Value": 1
           },
           {
-            "Label": "TWO_D",
+            "Item": "TWO_D",
             "Value": 2
           },
           {
-            "Label": "TWO_D_SATELLITE_BASED_AUGMENTATION",
+            "Item": "TWO_D_SATELLITE_BASED_AUGMENTATION",
             "Value": 3
           },
           {
-            "Label": "TWO_D_GROUND_BASED_AUGMENTATION",
+            "Item": "TWO_D_GROUND_BASED_AUGMENTATION",
             "Value": 4
           },
           {
-            "Label": "TWO_D_SATELLITE_AND_GROUND_BASED_AUGMENTATION",
+            "Item": "TWO_D_SATELLITE_AND_GROUND_BASED_AUGMENTATION",
             "Value": 5
           },
           {
-            "Label": "THREE_D",
+            "Item": "THREE_D",
             "Value": 6
           },
           {
-            "Label": "THREE_D_SATELLITE_BASED_AUGMENTATION",
+            "Item": "THREE_D_SATELLITE_BASED_AUGMENTATION",
             "Value": 7
           },
           {
-            "Label": "THREE_D_GROUND_BASED_AUGMENTATION",
+            "Item": "THREE_D_GROUND_BASED_AUGMENTATION",
             "Value": 8
           },
           {
-            "Label": "THREE_D_SATELLITE_AND_GROUND_BASED_AUGMENTATION",
+            "Item": "THREE_D_SATELLITE_AND_GROUND_BASED_AUGMENTATION",
             "Value": 9
           }
         ]
@@ -1502,11 +1502,11 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "SPARK",
+            "Item": "SPARK",
             "Value": 1
           },
           {
-            "Label": "COMPRESSION",
+            "Item": "COMPRESSION",
             "Value": 2
           }
         ]
@@ -1517,11 +1517,11 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "SPARK",
+            "Item": "SPARK",
             "Value": 1
           },
           {
-            "Label": "COMPRESSION",
+            "Item": "COMPRESSION",
             "Value": 2
           }
         ]
@@ -1532,15 +1532,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "COMBUSTION",
+            "Item": "COMBUSTION",
             "Value": 1
           },
           {
-            "Label": "HYBRID",
+            "Item": "HYBRID",
             "Value": 2
           },
           {
-            "Label": "ELECTRIC",
+            "Item": "ELECTRIC",
             "Value": 3
           }
         ]
@@ -1551,51 +1551,51 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "UNKNOWN",
+            "Item": "UNKNOWN",
             "Value": 1
           },
           {
-            "Label": "STRAIGHT",
+            "Item": "STRAIGHT",
             "Value": 2
           },
           {
-            "Label": "V",
+            "Item": "V",
             "Value": 3
           },
           {
-            "Label": "BOXER",
+            "Item": "BOXER",
             "Value": 4
           },
           {
-            "Label": "W",
+            "Item": "W",
             "Value": 5
           },
           {
-            "Label": "ROTARY",
+            "Item": "ROTARY",
             "Value": 6
           },
           {
-            "Label": "RADIAL",
+            "Item": "RADIAL",
             "Value": 7
           },
           {
-            "Label": "SQUARE",
+            "Item": "SQUARE",
             "Value": 8
           },
           {
-            "Label": "H",
+            "Item": "H",
             "Value": 9
           },
           {
-            "Label": "U",
+            "Item": "U",
             "Value": 10
           },
           {
-            "Label": "OPPOSED",
+            "Item": "OPPOSED",
             "Value": 11
           },
           {
-            "Label": "X",
+            "Item": "X",
             "Value": 12
           }
         ]
@@ -1606,23 +1606,23 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "CRITICALLY_LOW",
+            "Item": "CRITICALLY_LOW",
             "Value": 1
           },
           {
-            "Label": "LOW",
+            "Item": "LOW",
             "Value": 2
           },
           {
-            "Label": "NORMAL",
+            "Item": "NORMAL",
             "Value": 3
           },
           {
-            "Label": "HIGH",
+            "Item": "HIGH",
             "Value": 4
           },
           {
-            "Label": "CRITICALLY_HIGH",
+            "Item": "CRITICALLY_HIGH",
             "Value": 5
           }
         ]
@@ -1633,19 +1633,19 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "UNKNOWN",
+            "Item": "UNKNOWN",
             "Value": 1
           },
           {
-            "Label": "NATURAL",
+            "Item": "NATURAL",
             "Value": 2
           },
           {
-            "Label": "SUPERCHARGER",
+            "Item": "SUPERCHARGER",
             "Value": 3
           },
           {
-            "Label": "TURBOCHARGER",
+            "Item": "TURBOCHARGER",
             "Value": 4
           }
         ]
@@ -1656,15 +1656,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "CRITICALLY_LOW",
+            "Item": "CRITICALLY_LOW",
             "Value": 1
           },
           {
-            "Label": "LOW",
+            "Item": "LOW",
             "Value": 2
           },
           {
-            "Label": "NORMAL",
+            "Item": "NORMAL",
             "Value": 3
           }
         ]
@@ -1675,23 +1675,23 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "CRITICALLY_LOW",
+            "Item": "CRITICALLY_LOW",
             "Value": 1
           },
           {
-            "Label": "LOW",
+            "Item": "LOW",
             "Value": 2
           },
           {
-            "Label": "NORMAL",
+            "Item": "NORMAL",
             "Value": 3
           },
           {
-            "Label": "HIGH",
+            "Item": "HIGH",
             "Value": 4
           },
           {
-            "Label": "CRITICALLY_HIGH",
+            "Item": "CRITICALLY_HIGH",
             "Value": 5
           }
         ]
@@ -1702,15 +1702,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "CRITICALLY_LOW",
+            "Item": "CRITICALLY_LOW",
             "Value": 1
           },
           {
-            "Label": "LOW",
+            "Item": "LOW",
             "Value": 2
           },
           {
-            "Label": "NORMAL",
+            "Item": "NORMAL",
             "Value": 3
           }
         ]
@@ -1721,27 +1721,27 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "UNKNOWN",
+            "Item": "UNKNOWN",
             "Value": 1
           },
           {
-            "Label": "NOT_APPLICABLE",
+            "Item": "NOT_APPLICABLE",
             "Value": 2
           },
           {
-            "Label": "STOP_START",
+            "Item": "STOP_START",
             "Value": 3
           },
           {
-            "Label": "BELT_ISG",
+            "Item": "BELT_ISG",
             "Value": 4
           },
           {
-            "Label": "CIMG",
+            "Item": "CIMG",
             "Value": 5
           },
           {
-            "Label": "PHEV",
+            "Item": "PHEV",
             "Value": 6
           }
         ]
@@ -1752,15 +1752,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "INACTIVE",
+            "Item": "INACTIVE",
             "Value": 1
           },
           {
-            "Label": "FAST_CHARGING_PREPARATION",
+            "Item": "FAST_CHARGING_PREPARATION",
             "Value": 2
           },
           {
-            "Label": "DRIVING_PREPARATION",
+            "Item": "DRIVING_PREPARATION",
             "Value": 3
           }
         ]
@@ -1771,35 +1771,35 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "DEACTIVATED",
+            "Item": "DEACTIVATED",
             "Value": 1
           },
           {
-            "Label": "AUTOMATIC",
+            "Item": "AUTOMATIC",
             "Value": 2
           },
           {
-            "Label": "TRIGGERED",
+            "Item": "TRIGGERED",
             "Value": 3
           },
           {
-            "Label": "TIMER",
+            "Item": "TIMER",
             "Value": 4
           },
           {
-            "Label": "PROFILE",
+            "Item": "PROFILE",
             "Value": 5
           },
           {
-            "Label": "EXTERNAL_ENTITY",
+            "Item": "EXTERNAL_ENTITY",
             "Value": 6
           },
           {
-            "Label": "MANUAL",
+            "Item": "MANUAL",
             "Value": 7
           },
           {
-            "Label": "GRID",
+            "Item": "GRID",
             "Value": 8
           }
         ]
@@ -1810,11 +1810,11 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "START",
+            "Item": "START",
             "Value": 1
           },
           {
-            "Label": "STOP",
+            "Item": "STOP",
             "Value": 2
           }
         ]
@@ -1825,11 +1825,11 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "OPEN",
+            "Item": "OPEN",
             "Value": 1
           },
           {
-            "Label": "CLOSED",
+            "Item": "CLOSED",
             "Value": 2
           }
         ]
@@ -1840,15 +1840,15 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "INACTIVE",
+            "Item": "INACTIVE",
             "Value": 1
           },
           {
-            "Label": "START_TIME",
+            "Item": "START_TIME",
             "Value": 2
           },
           {
-            "Label": "END_TIME",
+            "Item": "END_TIME",
             "Value": 3
           }
         ]
@@ -1859,23 +1859,23 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "NORMAL",
+            "Item": "NORMAL",
             "Value": 1
           },
           {
-            "Label": "SPORT",
+            "Item": "SPORT",
             "Value": 2
           },
           {
-            "Label": "ECONOMY",
+            "Item": "ECONOMY",
             "Value": 3
           },
           {
-            "Label": "SNOW",
+            "Item": "SNOW",
             "Value": 4
           },
           {
-            "Label": "RAIN",
+            "Item": "RAIN",
             "Value": 5
           }
         ]
@@ -1886,19 +1886,19 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "UNKNOWN",
+            "Item": "UNKNOWN",
             "Value": 1
           },
           {
-            "Label": "FORWARD_WHEEL_DRIVE",
+            "Item": "FORWARD_WHEEL_DRIVE",
             "Value": 2
           },
           {
-            "Label": "REAR_WHEEL_DRIVE",
+            "Item": "REAR_WHEEL_DRIVE",
             "Value": 3
           },
           {
-            "Label": "ALL_WHEEL_DRIVE",
+            "Item": "ALL_WHEEL_DRIVE",
             "Value": 4
           }
         ]
@@ -1909,11 +1909,11 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "MANUAL",
+            "Item": "MANUAL",
             "Value": 1
           },
           {
-            "Label": "AUTOMATIC",
+            "Item": "AUTOMATIC",
             "Value": 2
           }
         ]
@@ -1924,27 +1924,27 @@
         "BaseType": "uint8_t",
         "Literals": [
           {
-            "Label": "UNKNOWN",
+            "Item": "UNKNOWN",
             "Value": 1
           },
           {
-            "Label": "SEQUENTIAL",
+            "Item": "SEQUENTIAL",
             "Value": 2
           },
           {
-            "Label": "H",
+            "Item": "H",
             "Value": 3
           },
           {
-            "Label": "AUTOMATIC",
+            "Item": "AUTOMATIC",
             "Value": 4
           },
           {
-            "Label": "DSG",
+            "Item": "DSG",
             "Value": 5
           },
           {
-            "Label": "CVT",
+            "Item": "CVT",
             "Value": 6
           }
         ]

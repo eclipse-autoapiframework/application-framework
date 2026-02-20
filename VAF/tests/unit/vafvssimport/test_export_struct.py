@@ -1,6 +1,7 @@
-"""
-Unit tests for ensuring that string-based enums are correctly created and exported.
-"""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Unit tests for ensuring that string-based enums are correctly created and exported."""
 
 import unittest
 
@@ -135,6 +136,11 @@ class TestExportStringEnums(unittest.TestCase):
         self.assertEqual(len(data_elements), len(expected_outer_de))
         for de in data_elements:
             self.assertEqual(expected_outer_de[de.Name], de.TypeRef)
+        # assert setter callback for actuator
+        self.assertEqual(
+            derived_model.ModuleInterfaces[0].Operations[0].Name,
+            "Mode_Setter_Callback",
+        )
 
         # Assertions for inner struct
         data_elements = derived_model.ModuleInterfaces[1].DataElements

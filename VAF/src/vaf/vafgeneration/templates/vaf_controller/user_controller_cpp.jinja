@@ -1,7 +1,7 @@
 {% extends "common/cpp_file_base.jinja" %}
 
 {% block includes %}
-#include <iostream>
+#include "vaf/output_sync_stream.h"
 {% endblock %}
 
 {% block content %}
@@ -10,34 +10,34 @@ std::unique_ptr<vaf::UserControllerInterface> CreateUserController() {
 }
 
 void UserController::PreInitialize() {
- std::cout << "UserController::PreInitialize\n";
+ vaf::OutputSyncStream{} << "UserController::PreInitialize\n";
 }
 
 void UserController::PostInitialize() {
-  std::cout << "UserController::PostInitialize\n";
+  vaf::OutputSyncStream{} << "UserController::PostInitialize\n";
 }
 
 void UserController::PreStart() {
-  std::cout << "UserController::PreStart\n";
+  vaf::OutputSyncStream{} << "UserController::PreStart\n";
 }
 
 void UserController::PostStart() {
-  std::cout << "UserController::PostStart\n";
+  vaf::OutputSyncStream{} << "UserController::PostStart\n";
 }
 
 void UserController::PreShutdown() {
-  std::cout << "UserController::PreShutdown\n";
+  vaf::OutputSyncStream{} << "UserController::PreShutdown\n";
 }
 
 void UserController::PostShutdown() {
-  std::cout << "UserController::PostShutdown\n";
+  vaf::OutputSyncStream{} << "UserController::PostShutdown\n";
 }
 
-void UserController::OnError(vaf::Error error, std::string name, bool critical) {
-  std::cout << "UserController::OnError: name: " << name << ", Message: " << error.Message() << ", critical: " << critical << "\n";
+void UserController::OnError(vaf::Error error, vaf::String name, bool critical) {
+  vaf::OutputSyncStream{} << "UserController::OnError: name: " << name << ", Message: " << error.Message() << ", critical: " << critical << "\n";
   if(critical){
-    std::cout << "UserController::OnError: Critical call, aborting execution!" << std::endl;
+    vaf::OutputSyncStream{} << "UserController::OnError: Critical call, aborting execution!" << std::endl;
     std::abort();
   }
 }
-{%- endblock %}
+{% endblock %}

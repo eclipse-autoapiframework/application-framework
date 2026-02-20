@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+
+package protobuf.interface.test.MyInterface;
+
+message my_data_element1 {
+  uint64 vaf_value_internal = 1;
+}
+message my_data_element2 {
+  uint64 vaf_value_internal = 1;
+}
+message MyVoidOperation_out {
+}
+message MyVoidOperation_in {
+  uint64 in = 1;
+}
+message MyOperation_out {
+  uint64 out = 1;
+  uint64 inout = 2;
+}
+message MyOperation_in {
+  uint64 in = 1;
+  uint64 inout = 2;
+}
+message MyGetter_out {
+  uint64 a = 1;
+}
+message MyGetter_in {
+}
+message MySetter_out {
+}
+message MySetter_in {
+  uint64 a = 1;
+}

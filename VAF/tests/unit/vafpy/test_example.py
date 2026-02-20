@@ -1,6 +1,7 @@
-"""
-Test
-"""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Test example."""
 
 # pylint: disable=missing-class-docstring
 # pylint: disable=too-few-public-methods
@@ -11,6 +12,7 @@ Test
 # pylint: disable=too-many-function-args
 # pylint: disable=no-value-for-parameter
 # pylint: disable=unexpected-keyword-arg
+# pylint: disable=too-many-statements
 
 # mypy: disable-error-code="union-attr, call-arg, arg-type"
 
@@ -22,8 +24,40 @@ from datetime import timedelta
 import pytest
 
 from vaf import vafmodel, vafpy
-from vaf.cli_core.common.utils import create_name_namespace_full_name
-from vaf.vafpy.model_runtime import model_runtime
+from vaf.core.common.utils import create_name_namespace_full_name
+from vaf.vafpy.core import ModelError, VafpyAbstractBase, VafpyAbstractModelRuntime
+from vaf.vafpy.factory import VafpyFactory
+from vaf.vafpy.model_runtime import ModelRuntime
+
+
+class VafpyIntruder(VafpyAbstractModelRuntime):
+    def remove_element(self, element: VafpyAbstractBase) -> None:
+        """Remove an element from the model
+        Args:
+            element: element to be removed from the model
+        Raises:
+            NotImplementedError
+        """
+        pass  # pylint: disable=unnecessary-pass
+
+    def replace_element(self, element: VafpyAbstractBase) -> None:
+        """Replace an element with same name & namespace
+        Args:
+            element: element to be replaced in the model
+        Raises:
+            NotImplementedError
+        """
+        pass  # pylint: disable=unnecessary-pass
+
+
+def test_intruders() -> None:
+    """Ensure nobody can misuse VafpyAbstractModelRuntime"""
+    with pytest.raises(TypeError):
+        VafpyAbstractModelRuntime()  # type:ignore[abstract]  # pylint: disable=abstract-class-instantiated
+    with pytest.raises(NotImplementedError) as err:
+        VafpyIntruder()
+
+    assert err.value.args[0] == "__init__() is not implemented."
 
 
 class TestMain(unittest.TestCase):
@@ -36,7 +70,8 @@ class TestMain(unittest.TestCase):
 
     def setUp(self) -> None:
         """Reset model runtime for each test"""
-        model_runtime.reset()
+        self.model = ModelRuntime()
+        self.model.reset()
 
     def test_string(self) -> None:
         """test string creation"""
@@ -44,14 +79,102 @@ class TestMain(unittest.TestCase):
         r = vafpy.datatypes.String(name="MyString", namespace="test")
         assert isinstance(r, vafpy.datatypes.String)
 
-        vafpy.datatypes.String._from_vaf_model(vafmodel.String(Name="Mulligan", Namespace="test"))  # pylint:disable=protected-access
+        VafpyFactory.create_from_model(vafmodel.String(Name="Mulligan", Namespace="test"), vafpy.String)  # pylint:disable=protected-access
 
-        assert len(model_runtime.element_by_namespace["test"]["Strings"]) == 3
-        assert model_runtime.element_by_namespace["test"]["Strings"]["FirstString"].Name == "FirstString"
-        assert model_runtime.element_by_namespace["test"]["Strings"]["MyString"].Name == "MyString"
-        assert model_runtime.main_model.DataTypeDefinitions.Strings[0].Name == "FirstString"
-        assert model_runtime.main_model.DataTypeDefinitions.Strings[1].Name == "MyString"
-        assert model_runtime.main_model.DataTypeDefinitions.Strings[2].Name == "Mulligan"
+        assert len(self.model.element_by_namespace["test"]["Strings"]) == 3
+        assert self.model.element_by_namespace["test"]["Strings"]["FirstString"].Name == "FirstString"
+        assert self.model.element_by_namespace["test"]["Strings"]["MyString"].Name == "MyString"
+        assert self.model.main_model.DataTypeDefinitions.Strings[0].Name == "FirstString"
+        assert self.model.main_model.DataTypeDefinitions.Strings[1].Name == "MyString"
+        assert self.model.main_model.DataTypeDefinitions.Strings[2].Name == "Mulligan"
+
+    def test_enum(self) -> None:
+        """test string creation"""
+        # correct construction with default_values
+        my_enum = vafpy.datatypes.Enum(name="MyEnum", namespace="test")
+        my_enum.add_literal(item="ABC")
+        my_enum.add_literal(item="DEF")
+        my_enum.add_literal_list(literals=["COB", "PREN"])
+
+        assert self.model.main_model.DataTypeDefinitions.Enums[0].Literals[0].Item == "ABC"
+        assert self.model.main_model.DataTypeDefinitions.Enums[0].Literals[0].Value == 0
+        assert self.model.main_model.DataTypeDefinitions.Enums[0].Literals[1].Item == "DEF"
+        assert self.model.main_model.DataTypeDefinitions.Enums[0].Literals[1].Value == 1
+        assert self.model.main_model.DataTypeDefinitions.Enums[0].Literals[2].Item == "COB"
+        assert self.model.main_model.DataTypeDefinitions.Enums[0].Literals[2].Value == 2
+        assert self.model.main_model.DataTypeDefinitions.Enums[0].Literals[3].Item == "PREN"
+        assert self.model.main_model.DataTypeDefinitions.Enums[0].Literals[3].Value == 3
+
+        vafpy.datatypes.Enum(name="MyEnum2", namespace="test", literals=["AVA", "CBE"])
+
+        assert len(self.model.element_by_namespace["test"]["Enums"]) == 2
+        assert self.model.main_model.DataTypeDefinitions.Enums[1].Literals[0].Item == "AVA"
+        assert self.model.main_model.DataTypeDefinitions.Enums[1].Literals[0].Value == 0
+        assert self.model.main_model.DataTypeDefinitions.Enums[1].Literals[1].Item == "CBE"
+        assert self.model.main_model.DataTypeDefinitions.Enums[1].Literals[1].Value == 1
+
+        # construction with user defined values
+        yummy = vafpy.datatypes.Enum(name="Yummy", namespace="test", literals=[("AVA", 3), ("CBE", 77), "THN"])
+        yummy.add_literal(item="ABC")
+        yummy.add_literal(item="DEF", value=2)
+        yummy.add_literal(item="ERF")
+        yummy.add_literal_list(literals=["AXR", ("VERANDA", 101)])
+        yummy.add_literal(item="CIC")
+
+        assert self.model.main_model.DataTypeDefinitions.Enums[2].Literals[0].Item == "AVA"
+        assert self.model.main_model.DataTypeDefinitions.Enums[2].Literals[0].Value == 3
+        assert self.model.main_model.DataTypeDefinitions.Enums[2].Literals[1].Item == "CBE"
+        assert self.model.main_model.DataTypeDefinitions.Enums[2].Literals[1].Value == 77
+        assert self.model.main_model.DataTypeDefinitions.Enums[2].Literals[2].Item == "THN"
+        assert self.model.main_model.DataTypeDefinitions.Enums[2].Literals[2].Value == 78
+        assert self.model.main_model.DataTypeDefinitions.Enums[2].Literals[3].Item == "ABC"
+        assert self.model.main_model.DataTypeDefinitions.Enums[2].Literals[3].Value == 79
+        assert self.model.main_model.DataTypeDefinitions.Enums[2].Literals[4].Item == "DEF"
+        assert self.model.main_model.DataTypeDefinitions.Enums[2].Literals[4].Value == 2
+        assert self.model.main_model.DataTypeDefinitions.Enums[2].Literals[5].Item == "ERF"
+        assert self.model.main_model.DataTypeDefinitions.Enums[2].Literals[5].Value == 80
+        assert self.model.main_model.DataTypeDefinitions.Enums[2].Literals[6].Item == "AXR"
+        assert self.model.main_model.DataTypeDefinitions.Enums[2].Literals[6].Value == 81
+        assert self.model.main_model.DataTypeDefinitions.Enums[2].Literals[7].Item == "VERANDA"
+        assert self.model.main_model.DataTypeDefinitions.Enums[2].Literals[7].Value == 101
+        assert self.model.main_model.DataTypeDefinitions.Enums[2].Literals[8].Item == "CIC"
+        assert self.model.main_model.DataTypeDefinitions.Enums[2].Literals[8].Value == 102
+
+        ## assert validations: test bad constructions
+        # duplicate entries
+        with pytest.raises(ModelError):
+            yummy.add_literal(item="ABC")
+        with pytest.raises(ModelError):
+            yummy.add_literal(item="ABC", value=2)
+        with pytest.raises(ModelError):
+            yummy.add_literal(item=" COPACABANA", value=55)
+        with pytest.raises(ModelError):
+            yummy.add_literal(item="SIU", value=79)
+        # duplicate entry from lists
+        with pytest.raises(ModelError) as err_msg:
+            yummy.add_literal_list(literals=["AXR", ("GARNA", 101), "GARNA", "CBD", "HBL", ("AXR", 45)])
+        assert err_msg.value.args[0] == "Enum - Duplicate label not allowed: 'AXR'"
+        with pytest.raises(ModelError) as err_msg:
+            yummy.add_literal_list(literals=[("GARNA", 101), "GARNA", "CBD", "HBL", ("RRT", 45)])
+        assert err_msg.value.args[0] == "Enum - Duplicate value not allowed: '101' from label 'GARNA'"
+
+        with pytest.raises(ModelError) as err_msg:
+            vafpy.datatypes.Enum(
+                name="Gummi",
+                namespace="test",
+                literals=["AXR", ("GARNA", 101), "GARNA", "CBD", "HBL", ("AXR", 45)],
+            )
+        assert err_msg.value.args[0] == "Enum - Duplicate label in constructor: '['AXR', 'GARNA', 'GARNA', 'AXR']'"
+        with pytest.raises(ModelError) as err_msg:
+            vafpy.datatypes.Enum(
+                name="Bummi",
+                namespace="test",
+                literals=[("GARNA", 101), "TRN", ("CBD", 102), "HBL", ("RRT", 101)],
+            )
+        assert (
+            err_msg.value.args[0]
+            == "Enum - Duplicate value in constructor: '[('GARNA', 101), ('TRN', 102), ('CBD', 102), ('RRT', 101)]'"
+        )
 
     def test_invalid_data_types(self) -> None:
         """Test unnamed vector creation"""
@@ -83,7 +206,10 @@ class TestMain(unittest.TestCase):
         # invalid arguments
         with pytest.raises(TypeError):
             vafpy.datatypes.Vector(
-                namespace="test", name="TestVector", datatype=vafpy.BaseTypes.UINT16_T, abrakadabra=815
+                namespace="test",
+                name="TestVector",
+                datatype=vafpy.BaseTypes.UINT16_T,
+                abrakadabra=815,
             )
 
         # array with no size
@@ -101,15 +227,18 @@ class TestMain(unittest.TestCase):
 
         vafpy.datatypes.Vector(name="MyVector", namespace="test", datatype=vafpy.BaseTypes.UINT16_T)
 
-        assert "TypeRefs" not in model_runtime.element_by_namespace["test"]
-        self.assertEqual(model_runtime.element_by_namespace["test"]["Vectors"]["MyVector"].Name, "MyVector")
+        assert "TypeRefs" not in self.model.element_by_namespace["test"]
         self.assertEqual(
-            self.__get_type_ref_string(model_runtime.element_by_namespace["test"]["Vectors"]["MyVector"].TypeRef),
+            self.model.element_by_namespace["test"]["Vectors"]["MyVector"].Name,
+            "MyVector",
+        )
+        self.assertEqual(
+            self.__get_type_ref_string(self.model.element_by_namespace["test"]["Vectors"]["MyVector"].TypeRef),
             "::uint16_t",
         )
-        assert len(model_runtime.main_model.DataTypeDefinitions.Vectors) == 1
-        assert model_runtime.main_model.DataTypeDefinitions.Vectors[0].Name == "MyVector"
-        assert model_runtime.main_model.DataTypeDefinitions.Vectors[0].TypeRef == vafmodel.DataType(
+        assert len(self.model.main_model.DataTypeDefinitions.Vectors) == 1
+        assert self.model.main_model.DataTypeDefinitions.Vectors[0].Name == "MyVector"
+        assert self.model.main_model.DataTypeDefinitions.Vectors[0].TypeRef == vafmodel.DataType(
             Name="uint16_t", Namespace=""
         )
 
@@ -124,13 +253,13 @@ class TestMain(unittest.TestCase):
         my_outer_struct = vafpy.datatypes.Struct(name="MyStruct2", namespace="test")
         my_outer_struct.add_subelement(name="y", datatype=my_vector)
 
-        self.assertEqual(len(model_runtime.main_model.DataTypeDefinitions.Structs), 2)
+        self.assertEqual(len(self.model.main_model.DataTypeDefinitions.Structs), 2)
         self.assertEqual(
-            self.__get_type_ref_string(model_runtime.main_model.DataTypeDefinitions.Structs[1].SubElements[0].TypeRef),
+            self.__get_type_ref_string(self.model.main_model.DataTypeDefinitions.Structs[1].SubElements[0].TypeRef),
             "test::MyVector",
         )
-        self.assertEqual(len(model_runtime.main_model.DataTypeDefinitions.Vectors), 1)
-        self.assertEqual(model_runtime.main_model.DataTypeDefinitions.Vectors[0].Name, "MyVector")
+        self.assertEqual(len(self.model.main_model.DataTypeDefinitions.Vectors), 1)
+        self.assertEqual(self.model.main_model.DataTypeDefinitions.Vectors[0].Name, "MyVector")
 
     def test_exe(self) -> None:
         """Test creating a simple but complete model"""
@@ -173,8 +302,8 @@ class TestMain(unittest.TestCase):
         my_type_ref = vafpy.datatypes.TypeRef(name="MyTypeRef", namespace="other", datatype=my_vector)
 
         my_enum = vafpy.datatypes.Enum(name="MyEnum", namespace="complex")
-        my_enum.add_entry(label="ABC", value=1)
-        my_enum.add_entry(label="DEF", value=2)
+        my_enum.add_literal(item="ABC", value=1)
+        my_enum.add_literal(item="DEF", value=2)
 
         my_interface = vafpy.ModuleInterface(name="MyInterface", namespace="inter")
         my_interface.add_data_element(name="a", datatype=my_string)
@@ -200,7 +329,10 @@ class TestMain(unittest.TestCase):
         """Test creating operations"""
 
         my_array = vafpy.datatypes.Array(
-            name="MyArray", namespace="operations_types", datatype=vafpy.BaseTypes.DOUBLE, size=100
+            name="MyArray",
+            namespace="operations_types",
+            datatype=vafpy.BaseTypes.DOUBLE,
+            size=100,
         )
 
         my_interface = vafpy.ModuleInterface(name="MyInterface", namespace="interfaces1")
@@ -212,7 +344,9 @@ class TestMain(unittest.TestCase):
         )
         my_interface.add_operation(name="func2", out_parameter={"out": vafpy.BaseTypes.BOOL})
         my_interface.add_operation(
-            name="func3", out_parameter={"out": vafpy.BaseTypes.BOOL}, inout_parameter={"inout": vafpy.BaseTypes.BOOL}
+            name="func3",
+            out_parameter={"out": vafpy.BaseTypes.BOOL},
+            inout_parameter={"inout": vafpy.BaseTypes.BOOL},
         )
 
     def test_tasks(self) -> None:
@@ -224,100 +358,108 @@ class TestMain(unittest.TestCase):
         step1 = vafpy.Task(name="Step1", period=p_10ms, preferred_offset=0)
         step2 = vafpy.Task(name="Step2", period=p_10ms, preferred_offset=0, run_after=[step1])
         step3 = vafpy.Task(name="Step3", period=p_10ms, preferred_offset=0, run_after=[step1])
-        step4 = vafpy.Task(name="Step4", period=p_10ms, preferred_offset=0, run_after=[step1, step2, step3])
+        step4 = vafpy.Task(
+            name="Step4",
+            period=p_10ms,
+            preferred_offset=0,
+            run_after=[step1, step2, step3],
+        )
 
         app.add_task_chain(tasks=[step1])
         app.add_task_chain(tasks=[step2], run_after=[step3])
         app.add_task_chain(tasks=[step4, step3], run_after=[step1], increment_preferred_offset=True)
 
     def test_vaf_string_base_datatype(self) -> None:
-        """FTAF-597: Add vaf::string in model is used"""
+        """Add vaf::string in model is used"""
         # datatypes: vector/array/typeref
         vafpy.Vector("test", "MacVector", vafpy.BaseTypes.STRING)
 
         assert isinstance(
-            model_runtime.element_by_namespace.get("vaf", {}).get("Strings", {}).get("string", None), vafpy.String
+            self.model.element_by_namespace.get("vaf", {}).get("Strings", {}).get("String", None),
+            vafpy.String,
         )
-        assert model_runtime.main_model.DataTypeDefinitions.Strings[0].Namespace == "vaf"
-        assert model_runtime.main_model.DataTypeDefinitions.Strings[0].Name == "string"
+        assert self.model.main_model.DataTypeDefinitions.Strings[0].Namespace == "vaf"
+        assert self.model.main_model.DataTypeDefinitions.Strings[0].Name == "String"
 
-        model_runtime.reset()
+        self.model.reset()
         vafpy.Array("test", "MaXRay", vafpy.BaseTypes.STRING, 2)
 
         assert isinstance(
-            model_runtime.element_by_namespace.get("vaf", {}).get("Strings", {}).get("string", None), vafpy.String
+            self.model.element_by_namespace.get("vaf", {}).get("Strings", {}).get("String", None),
+            vafpy.String,
         )
-        assert model_runtime.main_model.DataTypeDefinitions.Strings[0].Namespace == "vaf"
-        assert model_runtime.main_model.DataTypeDefinitions.Strings[0].Name == "string"
+        assert self.model.main_model.DataTypeDefinitions.Strings[0].Namespace == "vaf"
+        assert self.model.main_model.DataTypeDefinitions.Strings[0].Name == "String"
 
-        model_runtime.reset()
+        self.model.reset()
         vafpy.TypeRef("test", "T-Rex", vafpy.BaseTypes.STRING)
 
         assert isinstance(
-            model_runtime.element_by_namespace.get("vaf", {}).get("Strings", {}).get("string", None), vafpy.String
+            self.model.element_by_namespace.get("vaf", {}).get("Strings", {}).get("String", None),
+            vafpy.String,
         )
         vafpy.Array("test", "MaXRay", vafpy.BaseTypes.STRING, 2)
-        assert len(model_runtime.element_by_namespace.get("vaf", {}).get("Strings", {}).keys()) == 1
-        assert model_runtime.main_model.DataTypeDefinitions.Strings[0].Namespace == "vaf"
-        assert model_runtime.main_model.DataTypeDefinitions.Strings[0].Name == "string"
+        assert len(self.model.element_by_namespace.get("vaf", {}).get("Strings", {}).keys()) == 1
+        assert self.model.main_model.DataTypeDefinitions.Strings[0].Namespace == "vaf"
+        assert self.model.main_model.DataTypeDefinitions.Strings[0].Name == "String"
 
-        model_runtime.reset()
+        self.model.reset()
         vafpy.Vector("test", "MacVector", vafpy.BaseTypes.BOOL)
-        assert model_runtime.element_by_namespace.get("vaf", {}).get("Strings", {}).get("string", None) is None
-        assert len(model_runtime.main_model.DataTypeDefinitions.Strings) == 0
+        assert self.model.element_by_namespace.get("vaf", {}).get("Strings", {}).get("String", None) is None
+        assert len(self.model.main_model.DataTypeDefinitions.Strings) == 0
 
         # struct
-        model_runtime.reset()
+        self.model.reset()
         struct = vafpy.Struct(name="MyStruct", namespace="demo")
         struct.add_subelement(name="MaStr", datatype=vafpy.BaseTypes.STRING)
-        assert len(model_runtime.element_by_namespace.get("vaf", {}).get("Strings", {}).keys()) == 1
-        assert model_runtime.main_model.DataTypeDefinitions.Strings[0].Namespace == "vaf"
-        assert model_runtime.main_model.DataTypeDefinitions.Strings[0].Name == "string"
+        assert len(self.model.element_by_namespace.get("vaf", {}).get("Strings", {}).keys()) == 1
+        assert self.model.main_model.DataTypeDefinitions.Strings[0].Namespace == "vaf"
+        assert self.model.main_model.DataTypeDefinitions.Strings[0].Name == "String"
 
     def test_vaf_string_base_module_interface(self) -> None:
-        """FTAF-597: Add vaf::string in model is used"""
+        """Add vaf::string in model is used"""
 
         # module interface
-        model_runtime.reset()
+        self.model.reset()
         interface = vafpy.ModuleInterface("Milan", "Inter")
-        assert model_runtime.element_by_namespace.get("vaf", {}).get("Strings", {}).get("string", None) is None
-        assert len(model_runtime.main_model.DataTypeDefinitions.Strings) == 0
+        assert self.model.element_by_namespace.get("vaf", {}).get("Strings", {}).get("String", None) is None
+        assert len(self.model.main_model.DataTypeDefinitions.Strings) == 0
 
         # via add data elements
         interface.add_data_element("Stringulation", vafpy.BaseTypes.STRING)
-        assert len(model_runtime.element_by_namespace.get("vaf", {}).get("Strings", {}).keys()) == 1
-        assert model_runtime.main_model.DataTypeDefinitions.Strings[0].Namespace == "vaf"
-        assert model_runtime.main_model.DataTypeDefinitions.Strings[0].Name == "string"
+        assert len(self.model.element_by_namespace.get("vaf", {}).get("Strings", {}).keys()) == 1
+        assert self.model.main_model.DataTypeDefinitions.Strings[0].Namespace == "vaf"
+        assert self.model.main_model.DataTypeDefinitions.Strings[0].Name == "String"
 
-        model_runtime.reset()
+        self.model.reset()
         interface = vafpy.ModuleInterface("Milan", "Inter")
 
         # via add operations in
         interface.add_operation("inopt", in_parameter={"in_string": vafpy.BaseTypes.STRING})
-        assert len(model_runtime.element_by_namespace.get("vaf", {}).get("Strings", {}).keys()) == 1
-        assert model_runtime.main_model.DataTypeDefinitions.Strings[0].Namespace == "vaf"
-        assert model_runtime.main_model.DataTypeDefinitions.Strings[0].Name == "string"
+        assert len(self.model.element_by_namespace.get("vaf", {}).get("Strings", {}).keys()) == 1
+        assert self.model.main_model.DataTypeDefinitions.Strings[0].Namespace == "vaf"
+        assert self.model.main_model.DataTypeDefinitions.Strings[0].Name == "String"
 
-        model_runtime.reset()
+        self.model.reset()
         interface = vafpy.ModuleInterface("Milan", "Inter")
 
         # via add operations out
         interface.add_operation("outopt", out_parameter={"out_string": vafpy.BaseTypes.STRING})
-        assert len(model_runtime.element_by_namespace.get("vaf", {}).get("Strings", {}).keys()) == 1
-        assert model_runtime.main_model.DataTypeDefinitions.Strings[0].Namespace == "vaf"
-        assert model_runtime.main_model.DataTypeDefinitions.Strings[0].Name == "string"
+        assert len(self.model.element_by_namespace.get("vaf", {}).get("Strings", {}).keys()) == 1
+        assert self.model.main_model.DataTypeDefinitions.Strings[0].Namespace == "vaf"
+        assert self.model.main_model.DataTypeDefinitions.Strings[0].Name == "String"
 
-        model_runtime.reset()
+        self.model.reset()
         interface = vafpy.ModuleInterface("Milan", "Inter")
 
         # via add operations inout
         interface.add_operation("twoway", inout_parameter={"bidirect_string": vafpy.BaseTypes.STRING})
-        assert len(model_runtime.element_by_namespace.get("vaf", {}).get("Strings", {}).keys()) == 1
-        assert model_runtime.main_model.DataTypeDefinitions.Strings[0].Namespace == "vaf"
-        assert model_runtime.main_model.DataTypeDefinitions.Strings[0].Name == "string"
+        assert len(self.model.element_by_namespace.get("vaf", {}).get("Strings", {}).keys()) == 1
+        assert self.model.main_model.DataTypeDefinitions.Strings[0].Namespace == "vaf"
+        assert self.model.main_model.DataTypeDefinitions.Strings[0].Name == "String"
 
         # full add
-        model_runtime.reset()
+        self.model.reset()
         interface = vafpy.ModuleInterface("Milan", "Inter")
         interface.add_operation(
             "inopt",
@@ -326,6 +468,6 @@ class TestMain(unittest.TestCase):
             inout_parameter={"bidirect_string": vafpy.BaseTypes.STRING},
         )
         interface.add_data_element("Stringulation", vafpy.BaseTypes.STRING)
-        assert len(model_runtime.element_by_namespace.get("vaf", {}).get("Strings", {}).keys()) == 1
-        assert model_runtime.main_model.DataTypeDefinitions.Strings[0].Namespace == "vaf"
-        assert model_runtime.main_model.DataTypeDefinitions.Strings[0].Name == "string"
+        assert len(self.model.element_by_namespace.get("vaf", {}).get("Strings", {}).keys()) == 1
+        assert self.model.main_model.DataTypeDefinitions.Strings[0].Namespace == "vaf"
+        assert self.model.main_model.DataTypeDefinitions.Strings[0].Name == "String"

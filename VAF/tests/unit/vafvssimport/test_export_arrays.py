@@ -1,6 +1,7 @@
-"""
-Unit tests for ensuring that arrays are correctly exported.
-"""
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Unit tests for ensuring that arrays are correctly exported."""
 
 import unittest
 
@@ -77,8 +78,16 @@ class TestExportArrays(unittest.TestCase):
     def test_export_fixed_size_arrays(self) -> None:
         """Test that fixed-size arrays are correctly exported."""
         expected_arrays = {
-            "uint8ArraySize5": {"size": 5, "type": vafpy.BaseTypes.UINT8_T.TypeRef, "passed": False},
-            "floatArraySize10": {"size": 10, "type": vafpy.BaseTypes.FLOAT.TypeRef, "passed": False},
+            "uint8ArraySize5": {
+                "size": 5,
+                "type": vafpy.BaseTypes.UINT8_T.TypeRef,
+                "passed": False,
+            },
+            "floatArraySize10": {
+                "size": 10,
+                "type": vafpy.BaseTypes.FLOAT.TypeRef,
+                "passed": False,
+            },
         }
         expected_vectors = {
             "int32Vector": {"type": vafpy.BaseTypes.INT32_T.TypeRef, "passed": False},
@@ -102,8 +111,16 @@ class TestExportArrays(unittest.TestCase):
     def test_export_duplicated_arrays(self) -> None:
         """Test that duplicated arrays and vectors are correctly only exported once."""
         expected_arrays = {
-            "floatArraySize10": {"size": 10, "type": vafpy.BaseTypes.FLOAT.TypeRef, "passed": False},
-            "floatArraySize5": {"size": 5, "type": vafpy.BaseTypes.FLOAT.TypeRef, "passed": False},
+            "floatArraySize10": {
+                "size": 10,
+                "type": vafpy.BaseTypes.FLOAT.TypeRef,
+                "passed": False,
+            },
+            "floatArraySize5": {
+                "size": 5,
+                "type": vafpy.BaseTypes.FLOAT.TypeRef,
+                "passed": False,
+            },
         }
         expected_vectors = {
             "int32Vector": {"type": vafpy.BaseTypes.INT32_T.TypeRef, "passed": False},

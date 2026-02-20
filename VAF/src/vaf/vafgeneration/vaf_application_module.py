@@ -1,4 +1,7 @@
-"""Generator for application modules
+# Copyright (c) 2024-2026 by Vector Informatik GmbH. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Generator for application modules.
 Generates
     - framework/AppModuleBase.h
     - framework/AppModuleBase.cpp
@@ -14,8 +17,10 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 from vaf import vafmodel
-from vaf.cli_core.common.utils import to_snake_case
+from vaf.core.common.utils import to_snake_case
+from vaf.vafgeneration.vaf_cmake_common import data_type_definitions_exist
 from vaf.vafmodel import ApplicationModule
+from vaf.vafpy.model_runtime import ModelRuntime
 
 from .generation import FileHelper, Generator
 from .vaf_generate_common import get_ancestor_file_suffix
@@ -38,7 +43,10 @@ def _get_interface_type_by_instance(interfaces: list[Any], instance_name: str) -
 
 # pylint:disable=too-many-locals
 def generate_app_module_base(
-    am: ApplicationModule, app_module_path_base: Path, generator: Generator, verbose_mode: bool = False
+    am: ApplicationModule,
+    app_module_path_base: Path,
+    generator: Generator,
+    verbose_mode: bool = False,
 ) -> None:
     """Generate base files for application modules
 
@@ -59,7 +67,8 @@ def generate_app_module_base(
     interfaces_p = []
     for consumed_interface in am.ConsumedInterfaces:
         interface_file = FileHelper(
-            consumed_interface.ModuleInterfaceRef.Name + "Consumer", consumed_interface.ModuleInterfaceRef.Namespace
+            consumed_interface.ModuleInterfaceRef.Name + "Consumer",
+            consumed_interface.ModuleInterfaceRef.Namespace,
         )
         interfaces_c.append(
             {
@@ -70,7 +79,8 @@ def generate_app_module_base(
         )
     for provided_interface in am.ProvidedInterfaces:
         interface_file = FileHelper(
-            provided_interface.ModuleInterfaceRef.Name + "Provider", provided_interface.ModuleInterfaceRef.Namespace
+            provided_interface.ModuleInterfaceRef.Name + "Provider",
+            provided_interface.ModuleInterfaceRef.Namespace,
         )
         interfaces_p.append(
             {
@@ -82,6 +92,18 @@ def generate_app_module_base(
 
     interfaces = interfaces_c + interfaces_p
 
+    persistency_files = []
+    persistency_includes = []
+    if am.has_persistency:
+        persistency_includes.append('#include "persistency/persistency_interface.h"')
+    for per_file in am.PersistencyFiles:
+        persistency_files.append(
+            {
+                "instance": to_snake_case(per_file),
+                "type": "persistency::PersistencyInterface",
+            }
+        )
+
     base_file = FileHelper(am.Name + "Base", am.Namespace)
     generator.generate_to_file(
         base_file,
@@ -89,6 +111,8 @@ def generate_app_module_base(
         "vaf_application_module/base_h.jinja",
         app_module=am,
         interfaces=interfaces,
+        persistency_files=persistency_files,
+        persistency_includes=persistency_includes,
         verbose_mode=verbose_mode,
     )
 
@@ -98,6 +122,8 @@ def generate_app_module_base(
         "vaf_application_module/base_cpp.jinja",
         app_module=am,
         interfaces=interfaces,
+        persistency_files=persistency_files,
+        persistency_includes=persistency_includes,
         verbose_mode=verbose_mode,
     )
 
@@ -108,12 +134,17 @@ def generate_app_module_base(
         "common/cmake_library.jinja",
         target_name=base_cmake_target_name,
         files=[base_file],
-        libraries=["$<IF:$<TARGET_EXISTS:vafcpp::vaf_core>,vafcpp::vaf_core,vaf_core>", "vaf_module_interfaces"],
+        libraries=[
+            "vaf_core",
+            "vaf_module_interfaces",
+        ],
         verbose_mode=verbose_mode,
     )
 
 
-def __read_interfaces_cplusplus_refs(am: vafmodel.ApplicationModule) -> List[Dict[str, str]]:
+def __read_interfaces_cplusplus_refs(
+    am: vafmodel.ApplicationModule,
+) -> List[Dict[str, str]]:
     """Method to collect interfaces reference in c++
     Args:
         am: ApplicationModule object
@@ -138,8 +169,14 @@ def __read_interfaces_cplusplus_refs(am: vafmodel.ApplicationModule) -> List[Dic
                 )()
                 # include calls get_include() method from FileHelper
                 # type calls get_full_type_name() method from FileHelper
-                for key, method_name in [("include", "get_include"), ("type", "get_full_type_name")]
-                for mock_type in ["", "Mock"]  # Mock only needed by unittest but no harm for include & src
+                for key, method_name in [
+                    ("include", "get_include"),
+                    ("type", "get_full_type_name"),
+                ]
+                for mock_type in [
+                    "",
+                    "Mock",
+                ]  # Mock only needed by unittest but no harm for include & src
             }
             # append to the respective interfaces
             locals()[to_snake_case(interface_type_attr)].append(
@@ -174,6 +211,15 @@ def generate_app_module_user(
     # collect interfaces c++ references for jinja files
     interfaces = __read_interfaces_cplusplus_refs(am)
 
+    persistency_files = []
+    for per_file in am.PersistencyFiles:
+        persistency_files.append(
+            {
+                "instance": to_snake_case(per_file),
+                "type": "persistency::PersistencyInterface",
+            }
+        )
+
     base_file = FileHelper(am.Name + "Base", am.Namespace)
     generator.set_base_directory(app_module_path)
     app_file = FileHelper(am.Name, am.Namespace)
@@ -193,9 +239,11 @@ def generate_app_module_user(
         check_to_overwrite=True,
         app_module=am,
         interfaces=interfaces,
+        persistency_files=persistency_files,
         get_interface_type_by_instance=_get_interface_type_by_instance,
         dummy_data_element=vafmodel.DataElement(
-            Name="MyDataElement", TypeRef=vafmodel.DataTypeRef(Name="uint64_t", Namespace="std")
+            Name="MyDataElement",
+            TypeRef=vafmodel.DataTypeRef(Name="uint64_t", Namespace="std"),
         ),
         verbose_mode=(verbose_mode and not is_ancestor),
     )
@@ -211,12 +259,26 @@ def generate_app_module_user(
         verbose_mode=(verbose_mode and not is_ancestor),
     )
 
-    # return list of user files' relative path to app_module
-    return [
+    return_list = [
         user_files_dir_name
         + str(getattr(app_file, method_str)(generator.base_directory, file_ext)).removeprefix(str(app_module_path))
-        for method_str, file_ext in [("get_file_path", ".h"), ("get_simple_file_path", ".cpp")]
+        for method_str, file_ext in [
+            ("get_file_path", ".h"),
+            ("get_simple_file_path", ".cpp"),
+        ]
     ] + [f"{user_files_dir_name}/CMakeLists.txt"]
+
+    generator.set_base_directory(app_module_path / "cmake")
+    generator.generate_to_simple_file(
+        FileHelper(to_snake_case(am.Name) + "Config.cmake", "", True),
+        "",
+        "vaf_application_module/cmake_config.jinja",
+        target_name=to_snake_case(am.Name),
+        data_type_definitions_exist=data_type_definitions_exist(ModelRuntime().main_model),
+    )
+
+    # return list of user files' relative path to app_module
+    return return_list
 
 
 def generate_app_unittest(
@@ -253,6 +315,18 @@ def generate_app_unittest(
     # collect interfaces c++ references for jinja files
     interfaces = __read_interfaces_cplusplus_refs(am)
 
+    persistency_files = []
+    persistency_includes = []
+    if am.has_persistency:
+        persistency_includes.append('#include "persistency/persistency_interface.h"')
+    for per_file in am.PersistencyFiles:
+        persistency_files.append(
+            {
+                "instance": to_snake_case(per_file),
+                "type": "persistency::PersistencyInterface",
+            }
+        )
+
     generator.generate_to_file(
         base_file,
         f".h{get_ancestor_file_suffix(is_ancestor)}",
@@ -260,6 +334,8 @@ def generate_app_unittest(
         app_module=am,
         interfaces=interfaces,
         check_to_overwrite=True,
+        persistency_files=persistency_files,
+        persistency_includes=persistency_includes,
         verbose_mode=(verbose_mode and not is_ancestor),
     )
 
@@ -271,6 +347,8 @@ def generate_app_unittest(
         interfaces=interfaces,
         len=len,
         check_to_overwrite=True,
+        persistency_files=persistency_files,
+        persistency_includes=persistency_includes,
         verbose_mode=(verbose_mode and not is_ancestor),
     )
 
@@ -306,6 +384,8 @@ def generate_app_unittest(
         interfaces=interfaces,
         app_include=FileHelper(am.Name, am.Namespace).get_include(),
         check_to_overwrite=True,
+        persistency_files=persistency_files,
+        persistency_includes=persistency_includes,
         verbose_mode=(verbose_mode and not is_ancestor),
     )
 
@@ -348,10 +428,19 @@ def generate_app_module_project_files(
 
     # don't generate app module base for ancestors
     if not is_ancestor:
-        generate_app_module_base(app_module, output_dir / app_modules_path_base, generator, verbose_mode=verbose_mode)
+        generate_app_module_base(
+            app_module,
+            output_dir / app_modules_path_base,
+            generator,
+            verbose_mode=verbose_mode,
+        )
 
     list_merge_relevant_files += generate_app_module_user(
-        app_module, output_dir / user_files_dir_name, generator, is_ancestor=is_ancestor, verbose_mode=verbose_mode
+        app_module,
+        output_dir / user_files_dir_name,
+        generator,
+        is_ancestor=is_ancestor,
+        verbose_mode=verbose_mode,
     )
     list_merge_relevant_files += generate_app_unittest(
         app_module,
@@ -374,7 +463,7 @@ def generate_app_module_project_files(
                 and app_module.ImplementationProperties.InstallationPath is not None
                 else to_snake_case(app_module.Name)
             ],
-            verbose_mode=verbose_mode,
+            verbose_mode=(verbose_mode and not is_ancestor),
         )
 
     # return list of str for relative paths of user files
@@ -395,7 +484,7 @@ def generate_app_module_files_for_integration_project(
         is_ancestor (bool): Flag to trigger generation for ancestor
         verbose_mode: flag to enable verbose_mode mode
     Returns:
-            List of paths for user-editable files
+        List of paths for user-editable files
     """
     app_modules_path_base = "src-gen/libs/application_modules_base"
     list_merge_relevant_files: List[str] = []
@@ -473,5 +562,8 @@ def validate_model_app_modules(model: vafmodel.MainModel) -> None:
             )
 
     if error_msg:
-        error_msg.insert(0, f"{len(error_msg)} Errors are found in the Application Modules' modelling:")
+        error_msg.insert(
+            0,
+            f"{len(error_msg)} Errors are found in the Application Modules' modelling:",
+        )
         raise RuntimeError("\n".join(error_msg))
