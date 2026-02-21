@@ -201,6 +201,8 @@ class Map(DataType):
 
 class TypeRef(DataType):
     TypeRef: DataTypeRef
+    Min: Optional[float] = None
+    Max: Optional[float] = None
     _validate_TypeRef = field_validator("TypeRef", mode="before")(validate_type_ref)
 
 
@@ -208,8 +210,6 @@ class SubElement(VafBaseModel):
     Name: str
     TypeRef: DataTypeRef
     IsOptional: bool = False
-    Min: Optional[float] = None
-    Max: Optional[float] = None
     _validate_TypeRef = field_validator("TypeRef", mode="before")(validate_type_ref)
 
 
@@ -427,8 +427,6 @@ class DataElement(VafBaseModel):
     Name: str
     TypeRef: DataTypeRef
     InitialValue: Optional[str] = None
-    Min: Optional[float] = None
-    Max: Optional[float] = None
     _validate_TypeRef = field_validator("TypeRef", mode="before")(validate_type_ref)
 
 

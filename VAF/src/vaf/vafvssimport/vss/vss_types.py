@@ -51,10 +51,9 @@ def is_numeric(datatype: str) -> bool:
 class BaseType(ABC):
     """Base class representing a VSS data type"""
 
-    def __init__(self, name: str, namespace: str, type_name: str = "") -> None:
+    def __init__(self, name: str, namespace: str) -> None:
         self.name: str = name
         self.namespace: str = namespace.lower()
-        self.type: str = type_name
 
     @abstractmethod
     def export(self) -> vafmodel.VafBaseModel:
@@ -67,23 +66,43 @@ class BaseType(ABC):
             vafmodel.VafBaseModel: Parent class for the VAF model types
         """
 
+    def getTypeRefStr(self) -> str:
+        """Returns the VAF TypeRef for this StructType"""
+        return f"{self.namespace}::{self.name}"
+
+    def __hash__(self) -> int:
+        return hash((self.name, self.namespace))
+
+    def __eq__(self, other: object) -> bool | NotImplementedType:
+        if not isinstance(other, ArrayType):
+            return NotImplemented
+        return self.name == other.name and self.namespace == other.namespace
+
 
 class PrimitiveType(BaseType):
     """Primitive types used in the VSS catalog"""
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments, too-many-positional-arguments
         self,
         name: str,
+        namespace: str,
         type_name: str,
         min_value: float | None = None,
         max_value: float | None = None,
     ) -> None:
-        super().__init__(name, "", type_name)
+        super().__init__(name, namespace)
+        self.type: str = type_name
         self.min_value = min_value
         self.max_value = max_value
 
-    def export(self) -> vafmodel.VafBaseModel:
-        raise ValueError("PrimitiveType cannot be exported.")
+    def export(self) -> vafmodel.TypeRef:
+        return vafmodel.TypeRef(
+            Name=self.name,
+            Namespace=self.namespace,
+            TypeRef=type_translation[self.type],
+            Min=self.min_value,
+            Max=self.max_value,
+        )
 
 
 class StructType(BaseType):
@@ -93,9 +112,16 @@ class StructType(BaseType):
         super().__init__(name, namespace)
         self.subelements: list[BaseType] = []
 
-    def getTypeRefStr(self) -> str:
-        """Returns the VAF TypeRef for this StructType"""
-        return self.name
+    def add_subelement(self, name: str, datatype: BaseType) -> None:
+        """Adds a subelement to the struct.
+
+        Args:
+            name (str): Name of the subelement.
+            datatype (BaseType): Datatype of the subelement.
+        """
+        datatype.name = name
+        datatype.namespace = self.namespace
+        self.subelements.append(datatype)
 
     def export(self) -> vafmodel.Struct:
         """Exports VSS struct to VAF model struct
@@ -108,38 +134,12 @@ class StructType(BaseType):
         """
         subelements = []
         for subelement in self.subelements:
-            if isinstance(subelement, (StructType, EnumType)):
-                subelements.append(
-                    vafmodel.SubElement(
-                        Name=subelement.name,
-                        TypeRef=vafmodel.DataType(Name=subelement.name, Namespace=subelement.namespace),
-                    )
-                )
-            elif isinstance(subelement, (ArrayType, VectorType)):
-                subelements.append(
-                    vafmodel.SubElement(
-                        Name=subelement.name,
-                        TypeRef=vafmodel.DataType(Name=subelement.getTypeRefStr(), Namespace="vss"),
-                    )
-                )
-            elif isinstance(subelement, PrimitiveType):
-                type_ref = type_translation.get(subelement.type)
-                if type_ref is None:
-                    raise ValueError(f"Unsupported type '{subelement.type}' for subelement '{subelement.name}'")
-                subelement_data = vafmodel.SubElement(
+            subelements.append(
+                vafmodel.SubElement(
                     Name=subelement.name,
-                    TypeRef=type_ref,
+                    TypeRef=vafmodel.DataType(Name=subelement.name, Namespace=subelement.namespace),
                 )
-
-                # Include min and max values if defined
-                if subelement.min_value is not None:
-                    subelement_data.Min = subelement.min_value
-                if subelement.max_value is not None:
-                    subelement_data.Max = subelement.max_value
-
-                subelements.append(subelement_data)
-            else:
-                raise ValueError("Subelement has no valid Datatype set.")
+            )
         return vafmodel.Struct(Name=self.name, Namespace=self.namespace, SubElements=subelements)
 
 
@@ -147,26 +147,15 @@ class StructType(BaseType):
 class ArrayType(BaseType):
     """Array type used in VSS catalog"""
 
-    def __init__(self, name: str, type_name: str, array_size: int) -> None:
-        super().__init__(name, "vss", type_name)
+    def __init__(self, name: str, namespace: str, type_name: str, array_size: int) -> None:
+        super().__init__(name, namespace)
+        self.type: str = type_name
         self.array_size = array_size
-
-    def __hash__(self) -> int:
-        return hash((self.type, self.array_size))
-
-    def __eq__(self, other: object) -> bool | NotImplementedType:
-        if not isinstance(other, ArrayType):
-            return NotImplemented
-        return self.type == other.type and self.array_size == other.array_size
-
-    def getTypeRefStr(self) -> str:
-        """Returns the VAF TypeRef for this ArrayType"""
-        return f"{self.type}ArraySize{self.array_size}"
 
     def export(self) -> vafmodel.Array:
         """Exports a fixed-size array to a VAF model array"""
         array = vafmodel.Array(
-            Name=self.getTypeRefStr(),
+            Name=self.name,
             Namespace=self.namespace,
             TypeRef=type_translation[self.type],
             Size=self.array_size,
@@ -177,25 +166,14 @@ class ArrayType(BaseType):
 class VectorType(BaseType):
     """Vector type used in VSS catalog"""
 
-    def __init__(self, name: str, type_name: str) -> None:
-        super().__init__(name, "vss", type_name)
-
-    def __hash__(self) -> int:
-        return hash(self.type)
-
-    def __eq__(self, other: object) -> bool | NotImplementedType:
-        if not isinstance(other, VectorType):
-            return NotImplemented
-        return self.type == other.type
-
-    def getTypeRefStr(self) -> str:
-        """Returns the VAF TypeRef for this VectorType"""
-        return f"{self.type}Vector"
+    def __init__(self, name: str, namespace: str, type_name: str) -> None:
+        super().__init__(name, namespace)
+        self.type: str = type_name
 
     def export(self) -> vafmodel.Vector:
         """Exports a dynamic vector to a VAF model vector"""
         vec = vafmodel.Vector(
-            Name=self.getTypeRefStr(),
+            Name=self.name,
             Namespace=self.namespace,
             TypeRef=type_translation[self.type],
         )

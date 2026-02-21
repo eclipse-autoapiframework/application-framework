@@ -2053,15 +2053,11 @@
           },
           {
             "Name": "Humidity",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           },
           {
             "Name": "LightIntensity",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           }
         ]
       },
@@ -2091,9 +2087,7 @@
           },
           {
             "Name": "PowerOptimizeLevel",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 10.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Range",
@@ -2147,9 +2141,7 @@
           },
           {
             "Name": "PowerOptimizeLevel",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 10.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Raindetection",
@@ -2157,9 +2149,7 @@
           },
           {
             "Name": "RearMainSpoilerPosition",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           },
           {
             "Name": "RefuelPosition",
@@ -2253,9 +2243,7 @@
           },
           {
             "Name": "Heading",
-            "TypeRef": "double",
-            "Min": 0.0,
-            "Max": 360.0
+            "TypeRef": "double"
           },
           {
             "Name": "HorizontalAccuracy",
@@ -2263,15 +2251,11 @@
           },
           {
             "Name": "Latitude",
-            "TypeRef": "double",
-            "Min": -90.0,
-            "Max": 90.0
+            "TypeRef": "double"
           },
           {
             "Name": "Longitude",
-            "TypeRef": "double",
-            "Min": -180.0,
-            "Max": 180.0
+            "TypeRef": "double"
           },
           {
             "Name": "Timestamp",
@@ -2325,9 +2309,7 @@
           },
           {
             "Name": "PowerOptimizeLevel",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 10.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "RearShade",
@@ -2361,21 +2343,15 @@
         "SubElements": [
           {
             "Name": "AttentiveProbability",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           },
           {
             "Name": "DistractionLevel",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           },
           {
             "Name": "FatigueLevel",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           },
           {
             "Name": "HeartRate",
@@ -2451,9 +2427,7 @@
           },
           {
             "Name": "PowerOptimizeLevel",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 10.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "SupportedAutonomyLevel",
@@ -2707,9 +2681,7 @@
           },
           {
             "Name": "FuelType",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 23.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "HybridBatteryRemaining",
@@ -2903,8 +2875,7 @@
           },
           {
             "Name": "CargoVolume",
-            "TypeRef": "float",
-            "Min": 0.0
+            "TypeRef": "float"
           },
           {
             "Name": "Chassis",
@@ -2992,9 +2963,7 @@
           },
           {
             "Name": "PowerOptimizeLevel",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 10.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Powertrain",
@@ -3246,21 +3215,15 @@
         "SubElements": [
           {
             "Name": "LowerBound",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           },
           {
             "Name": "MostProbable",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           },
           {
             "Name": "UpperBound",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           }
         ]
       },
@@ -3334,8 +3297,7 @@
         "SubElements": [
           {
             "Name": "Intensity",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -3359,9 +3321,7 @@
           },
           {
             "Name": "Position",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Switch",
@@ -3625,15 +3585,11 @@
           },
           {
             "Name": "Pan",
-            "TypeRef": "int8_t",
-            "Min": -100.0,
-            "Max": 100.0
+            "TypeRef": "int8_t"
           },
           {
             "Name": "Tilt",
-            "TypeRef": "int8_t",
-            "Min": -100.0,
-            "Max": 100.0
+            "TypeRef": "int8_t"
           }
         ]
       },
@@ -3655,15 +3611,11 @@
           },
           {
             "Name": "Pan",
-            "TypeRef": "int8_t",
-            "Min": -100.0,
-            "Max": 100.0
+            "TypeRef": "int8_t"
           },
           {
             "Name": "Tilt",
-            "TypeRef": "int8_t",
-            "Min": -100.0,
-            "Max": 100.0
+            "TypeRef": "int8_t"
           }
         ]
       },
@@ -3685,9 +3637,7 @@
           },
           {
             "Name": "Position",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Switch",
@@ -3713,9 +3663,7 @@
           },
           {
             "Name": "Position",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Switch",
@@ -3769,8 +3717,7 @@
           },
           {
             "Name": "Level",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -3796,8 +3743,7 @@
           },
           {
             "Name": "WiperWear",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -3861,8 +3807,7 @@
           },
           {
             "Name": "Level",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -3888,8 +3833,7 @@
           },
           {
             "Name": "WiperWear",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -3965,9 +3909,7 @@
           },
           {
             "Name": "PowerOptimizeLevel",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 10.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "SmartphoneProjection",
@@ -4033,9 +3975,7 @@
           },
           {
             "Name": "PowerOptimizeLevel",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 10.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Station",
@@ -4065,9 +4005,7 @@
           },
           {
             "Name": "PerceivedAmbientLight",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Spotlight",
@@ -4081,9 +4019,7 @@
         "SubElements": [
           {
             "Name": "Position",
-            "TypeRef": "int8_t",
-            "Min": -100.0,
-            "Max": 100.0
+            "TypeRef": "int8_t"
           },
           {
             "Name": "Shade",
@@ -4101,8 +4037,7 @@
         "SubElements": [
           {
             "Name": "DimmingLevel",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -4116,9 +4051,7 @@
           },
           {
             "Name": "Position",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Switch",
@@ -4178,9 +4111,7 @@
           },
           {
             "Name": "Position",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Switch",
@@ -4198,9 +4129,7 @@
           },
           {
             "Name": "Position",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Switch",
@@ -4226,9 +4155,7 @@
           },
           {
             "Name": "Position",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Shade",
@@ -4262,9 +4189,7 @@
           },
           {
             "Name": "Position",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Shade",
@@ -4290,9 +4215,7 @@
           },
           {
             "Name": "Position",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Switch",
@@ -4310,9 +4233,7 @@
           },
           {
             "Name": "Position",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Switch",
@@ -4330,9 +4251,7 @@
           },
           {
             "Name": "Position",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Switch",
@@ -4350,9 +4269,7 @@
           },
           {
             "Name": "Position",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Switch",
@@ -4378,9 +4295,7 @@
           },
           {
             "Name": "Position",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Shade",
@@ -4414,9 +4329,7 @@
           },
           {
             "Name": "Position",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Shade",
@@ -4442,9 +4355,7 @@
           },
           {
             "Name": "Position",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Switch",
@@ -4462,9 +4373,7 @@
           },
           {
             "Name": "Position",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Switch",
@@ -4560,9 +4469,7 @@
           },
           {
             "Name": "FanSpeed",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Temperature",
@@ -4580,9 +4487,7 @@
           },
           {
             "Name": "FanSpeed",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Temperature",
@@ -4600,9 +4505,7 @@
           },
           {
             "Name": "FanSpeed",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Temperature",
@@ -4620,9 +4523,7 @@
           },
           {
             "Name": "FanSpeed",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Temperature",
@@ -4640,9 +4541,7 @@
           },
           {
             "Name": "FanSpeed",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Temperature",
@@ -4660,9 +4559,7 @@
           },
           {
             "Name": "FanSpeed",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Temperature",
@@ -4680,9 +4577,7 @@
           },
           {
             "Name": "FanSpeed",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Temperature",
@@ -4700,9 +4595,7 @@
           },
           {
             "Name": "FanSpeed",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Temperature",
@@ -4732,9 +4625,7 @@
           },
           {
             "Name": "Volume",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -4760,9 +4651,7 @@
           },
           {
             "Name": "Volume",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -4804,9 +4693,7 @@
         "SubElements": [
           {
             "Name": "Brightness",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           },
           {
             "Name": "CurrentLanguage",
@@ -4920,15 +4807,11 @@
         "SubElements": [
           {
             "Name": "Latitude",
-            "TypeRef": "double",
-            "Min": -90.0,
-            "Max": 90.0
+            "TypeRef": "double"
           },
           {
             "Name": "Longitude",
-            "TypeRef": "double",
-            "Min": -180.0,
-            "Max": 180.0
+            "TypeRef": "double"
           }
         ]
       },
@@ -4968,9 +4851,7 @@
           },
           {
             "Name": "Intensity",
-            "TypeRef": "uint8_t",
-            "Min": 1.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "IsLightOn",
@@ -5030,9 +4911,7 @@
           },
           {
             "Name": "Intensity",
-            "TypeRef": "uint8_t",
-            "Min": 1.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "IsLightOn",
@@ -5050,9 +4929,7 @@
           },
           {
             "Name": "Intensity",
-            "TypeRef": "uint8_t",
-            "Min": 1.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "IsLightOn",
@@ -5070,9 +4947,7 @@
           },
           {
             "Name": "Intensity",
-            "TypeRef": "uint8_t",
-            "Min": 1.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "IsLightOn",
@@ -5090,9 +4965,7 @@
           },
           {
             "Name": "Intensity",
-            "TypeRef": "uint8_t",
-            "Min": 1.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "IsLightOn",
@@ -5166,9 +5039,7 @@
           },
           {
             "Name": "Intensity",
-            "TypeRef": "uint8_t",
-            "Min": 1.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "IsLightOn",
@@ -5186,9 +5057,7 @@
           },
           {
             "Name": "Intensity",
-            "TypeRef": "uint8_t",
-            "Min": 1.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "IsLightOn",
@@ -5206,9 +5075,7 @@
           },
           {
             "Name": "Intensity",
-            "TypeRef": "uint8_t",
-            "Min": 1.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "IsLightOn",
@@ -5226,9 +5093,7 @@
           },
           {
             "Name": "Intensity",
-            "TypeRef": "uint8_t",
-            "Min": 1.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "IsLightOn",
@@ -5246,9 +5111,7 @@
           },
           {
             "Name": "Intensity",
-            "TypeRef": "uint8_t",
-            "Min": 1.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "IsLightOn",
@@ -5266,9 +5129,7 @@
           },
           {
             "Name": "Intensity",
-            "TypeRef": "uint8_t",
-            "Min": 1.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "IsLightOn",
@@ -5286,9 +5147,7 @@
           },
           {
             "Name": "Intensity",
-            "TypeRef": "uint8_t",
-            "Min": 1.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "IsLightOn",
@@ -5306,9 +5165,7 @@
           },
           {
             "Name": "Intensity",
-            "TypeRef": "uint8_t",
-            "Min": 1.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "IsLightOn",
@@ -5370,20 +5227,15 @@
           },
           {
             "Name": "Heating",
-            "TypeRef": "int8_t",
-            "Min": -100.0,
-            "Max": 100.0
+            "TypeRef": "int8_t"
           },
           {
             "Name": "HeatingCooling",
-            "TypeRef": "int8_t",
-            "Min": -100.0,
-            "Max": 100.0
+            "TypeRef": "int8_t"
           },
           {
             "Name": "Height",
-            "TypeRef": "uint16_t",
-            "Min": 0.0
+            "TypeRef": "uint16_t"
           },
           {
             "Name": "IsBelted",
@@ -5395,9 +5247,7 @@
           },
           {
             "Name": "Massage",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Occupant",
@@ -5405,8 +5255,7 @@
           },
           {
             "Name": "Position",
-            "TypeRef": "uint16_t",
-            "Min": 0.0
+            "TypeRef": "uint16_t"
           },
           {
             "Name": "SeatBeltHeight",
@@ -5444,20 +5293,15 @@
           },
           {
             "Name": "Heating",
-            "TypeRef": "int8_t",
-            "Min": -100.0,
-            "Max": 100.0
+            "TypeRef": "int8_t"
           },
           {
             "Name": "HeatingCooling",
-            "TypeRef": "int8_t",
-            "Min": -100.0,
-            "Max": 100.0
+            "TypeRef": "int8_t"
           },
           {
             "Name": "Height",
-            "TypeRef": "uint16_t",
-            "Min": 0.0
+            "TypeRef": "uint16_t"
           },
           {
             "Name": "IsBelted",
@@ -5469,9 +5313,7 @@
           },
           {
             "Name": "Massage",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Occupant",
@@ -5479,8 +5321,7 @@
           },
           {
             "Name": "Position",
-            "TypeRef": "uint16_t",
-            "Min": 0.0
+            "TypeRef": "uint16_t"
           },
           {
             "Name": "SeatBeltHeight",
@@ -5518,20 +5359,15 @@
           },
           {
             "Name": "Heating",
-            "TypeRef": "int8_t",
-            "Min": -100.0,
-            "Max": 100.0
+            "TypeRef": "int8_t"
           },
           {
             "Name": "HeatingCooling",
-            "TypeRef": "int8_t",
-            "Min": -100.0,
-            "Max": 100.0
+            "TypeRef": "int8_t"
           },
           {
             "Name": "Height",
-            "TypeRef": "uint16_t",
-            "Min": 0.0
+            "TypeRef": "uint16_t"
           },
           {
             "Name": "IsBelted",
@@ -5543,9 +5379,7 @@
           },
           {
             "Name": "Massage",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Occupant",
@@ -5553,8 +5387,7 @@
           },
           {
             "Name": "Position",
-            "TypeRef": "uint16_t",
-            "Min": 0.0
+            "TypeRef": "uint16_t"
           },
           {
             "Name": "SeatBeltHeight",
@@ -5584,8 +5417,7 @@
           },
           {
             "Name": "Height",
-            "TypeRef": "uint8_t",
-            "Min": 0.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -5595,8 +5427,7 @@
         "SubElements": [
           {
             "Name": "Length",
-            "TypeRef": "uint16_t",
-            "Min": 0.0
+            "TypeRef": "uint16_t"
           }
         ]
       },
@@ -5698,9 +5529,7 @@
         "SubElements": [
           {
             "Name": "Support",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           }
         ]
       },
@@ -5710,14 +5539,11 @@
         "SubElements": [
           {
             "Name": "Height",
-            "TypeRef": "uint8_t",
-            "Min": 0.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Support",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           }
         ]
       },
@@ -5853,8 +5679,7 @@
           },
           {
             "Name": "Height",
-            "TypeRef": "uint8_t",
-            "Min": 0.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -5874,8 +5699,7 @@
         "SubElements": [
           {
             "Name": "Length",
-            "TypeRef": "uint16_t",
-            "Min": 0.0
+            "TypeRef": "uint16_t"
           }
         ]
       },
@@ -5967,9 +5791,7 @@
         "SubElements": [
           {
             "Name": "Support",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           }
         ]
       },
@@ -5979,14 +5801,11 @@
         "SubElements": [
           {
             "Name": "Height",
-            "TypeRef": "uint8_t",
-            "Min": 0.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Support",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           }
         ]
       },
@@ -6214,8 +6033,7 @@
           },
           {
             "Name": "Height",
-            "TypeRef": "uint8_t",
-            "Min": 0.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -6225,8 +6043,7 @@
         "SubElements": [
           {
             "Name": "Length",
-            "TypeRef": "uint16_t",
-            "Min": 0.0
+            "TypeRef": "uint16_t"
           }
         ]
       },
@@ -6236,14 +6053,11 @@
         "SubElements": [
           {
             "Name": "Height",
-            "TypeRef": "uint8_t",
-            "Min": 0.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Support",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           }
         ]
       },
@@ -6253,9 +6067,7 @@
         "SubElements": [
           {
             "Name": "Support",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           }
         ]
       },
@@ -6399,20 +6211,15 @@
           },
           {
             "Name": "Heating",
-            "TypeRef": "int8_t",
-            "Min": -100.0,
-            "Max": 100.0
+            "TypeRef": "int8_t"
           },
           {
             "Name": "HeatingCooling",
-            "TypeRef": "int8_t",
-            "Min": -100.0,
-            "Max": 100.0
+            "TypeRef": "int8_t"
           },
           {
             "Name": "Height",
-            "TypeRef": "uint16_t",
-            "Min": 0.0
+            "TypeRef": "uint16_t"
           },
           {
             "Name": "IsBelted",
@@ -6424,9 +6231,7 @@
           },
           {
             "Name": "Massage",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Occupant",
@@ -6434,8 +6239,7 @@
           },
           {
             "Name": "Position",
-            "TypeRef": "uint16_t",
-            "Min": 0.0
+            "TypeRef": "uint16_t"
           },
           {
             "Name": "SeatBeltHeight",
@@ -6473,20 +6277,15 @@
           },
           {
             "Name": "Heating",
-            "TypeRef": "int8_t",
-            "Min": -100.0,
-            "Max": 100.0
+            "TypeRef": "int8_t"
           },
           {
             "Name": "HeatingCooling",
-            "TypeRef": "int8_t",
-            "Min": -100.0,
-            "Max": 100.0
+            "TypeRef": "int8_t"
           },
           {
             "Name": "Height",
-            "TypeRef": "uint16_t",
-            "Min": 0.0
+            "TypeRef": "uint16_t"
           },
           {
             "Name": "IsBelted",
@@ -6498,9 +6297,7 @@
           },
           {
             "Name": "Massage",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Occupant",
@@ -6508,8 +6305,7 @@
           },
           {
             "Name": "Position",
-            "TypeRef": "uint16_t",
-            "Min": 0.0
+            "TypeRef": "uint16_t"
           },
           {
             "Name": "SeatBeltHeight",
@@ -6547,20 +6343,15 @@
           },
           {
             "Name": "Heating",
-            "TypeRef": "int8_t",
-            "Min": -100.0,
-            "Max": 100.0
+            "TypeRef": "int8_t"
           },
           {
             "Name": "HeatingCooling",
-            "TypeRef": "int8_t",
-            "Min": -100.0,
-            "Max": 100.0
+            "TypeRef": "int8_t"
           },
           {
             "Name": "Height",
-            "TypeRef": "uint16_t",
-            "Min": 0.0
+            "TypeRef": "uint16_t"
           },
           {
             "Name": "IsBelted",
@@ -6572,9 +6363,7 @@
           },
           {
             "Name": "Massage",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Occupant",
@@ -6582,8 +6371,7 @@
           },
           {
             "Name": "Position",
-            "TypeRef": "uint16_t",
-            "Min": 0.0
+            "TypeRef": "uint16_t"
           },
           {
             "Name": "SeatBeltHeight",
@@ -6705,8 +6493,7 @@
           },
           {
             "Name": "Height",
-            "TypeRef": "uint8_t",
-            "Min": 0.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -6716,8 +6503,7 @@
         "SubElements": [
           {
             "Name": "Length",
-            "TypeRef": "uint16_t",
-            "Min": 0.0
+            "TypeRef": "uint16_t"
           }
         ]
       },
@@ -6727,14 +6513,11 @@
         "SubElements": [
           {
             "Name": "Height",
-            "TypeRef": "uint8_t",
-            "Min": 0.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Support",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           }
         ]
       },
@@ -6744,9 +6527,7 @@
         "SubElements": [
           {
             "Name": "Support",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           }
         ]
       },
@@ -6964,8 +6745,7 @@
           },
           {
             "Name": "Height",
-            "TypeRef": "uint8_t",
-            "Min": 0.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -6975,8 +6755,7 @@
         "SubElements": [
           {
             "Name": "Length",
-            "TypeRef": "uint16_t",
-            "Min": 0.0
+            "TypeRef": "uint16_t"
           }
         ]
       },
@@ -6996,9 +6775,7 @@
         "SubElements": [
           {
             "Name": "Support",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           }
         ]
       },
@@ -7008,14 +6785,11 @@
         "SubElements": [
           {
             "Name": "Height",
-            "TypeRef": "uint8_t",
-            "Min": 0.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Support",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           }
         ]
       },
@@ -7233,8 +7007,7 @@
           },
           {
             "Name": "Height",
-            "TypeRef": "uint8_t",
-            "Min": 0.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -7244,8 +7017,7 @@
         "SubElements": [
           {
             "Name": "Length",
-            "TypeRef": "uint16_t",
-            "Min": 0.0
+            "TypeRef": "uint16_t"
           }
         ]
       },
@@ -7265,9 +7037,7 @@
         "SubElements": [
           {
             "Name": "Support",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           }
         ]
       },
@@ -7277,14 +7047,11 @@
         "SubElements": [
           {
             "Name": "Height",
-            "TypeRef": "uint8_t",
-            "Min": 0.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Support",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           }
         ]
       },
@@ -7420,9 +7187,7 @@
           },
           {
             "Name": "Position",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Switch",
@@ -7436,9 +7201,7 @@
         "SubElements": [
           {
             "Name": "PedalPosition",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -7452,21 +7215,15 @@
           },
           {
             "Name": "Extension",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "HeatingCooling",
-            "TypeRef": "int8_t",
-            "Min": -100.0,
-            "Max": 100.0
+            "TypeRef": "int8_t"
           },
           {
             "Name": "Tilt",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -7494,9 +7251,7 @@
           },
           {
             "Name": "PedalPosition",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -7696,8 +7451,7 @@
         "SubElements": [
           {
             "Name": "FluidLevel",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "IsBrakesWorn",
@@ -7709,8 +7463,7 @@
           },
           {
             "Name": "PadWear",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -7720,8 +7473,7 @@
         "SubElements": [
           {
             "Name": "FluidLevel",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "IsBrakesWorn",
@@ -7733,8 +7485,7 @@
           },
           {
             "Name": "PadWear",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -7838,8 +7589,7 @@
         "SubElements": [
           {
             "Name": "FluidLevel",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "IsBrakesWorn",
@@ -7851,8 +7601,7 @@
           },
           {
             "Name": "PadWear",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -7880,8 +7629,7 @@
         "SubElements": [
           {
             "Name": "FluidLevel",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "IsBrakesWorn",
@@ -7893,8 +7641,7 @@
           },
           {
             "Name": "PadWear",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -8464,15 +8211,11 @@
         "SubElements": [
           {
             "Name": "Azimuth",
-            "TypeRef": "float",
-            "Min": -180.0,
-            "Max": 180.0
+            "TypeRef": "float"
           },
           {
             "Name": "Elevation",
-            "TypeRef": "float",
-            "Min": -90.0,
-            "Max": 90.0
+            "TypeRef": "float"
           }
         ]
       },
@@ -8482,15 +8225,11 @@
         "SubElements": [
           {
             "Name": "Pitch",
-            "TypeRef": "float",
-            "Min": -90.0,
-            "Max": 90.0
+            "TypeRef": "float"
           },
           {
             "Name": "Roll",
-            "TypeRef": "float",
-            "Min": -180.0,
-            "Max": 180.0
+            "TypeRef": "float"
           },
           {
             "Name": "X",
@@ -8502,9 +8241,7 @@
           },
           {
             "Name": "Yaw",
-            "TypeRef": "float",
-            "Min": -180.0,
-            "Max": 180.0
+            "TypeRef": "float"
           },
           {
             "Name": "Z",
@@ -8518,15 +8255,11 @@
         "SubElements": [
           {
             "Name": "Pitch",
-            "TypeRef": "float",
-            "Min": -90.0,
-            "Max": 90.0
+            "TypeRef": "float"
           },
           {
             "Name": "Roll",
-            "TypeRef": "float",
-            "Min": -180.0,
-            "Max": 180.0
+            "TypeRef": "float"
           },
           {
             "Name": "X",
@@ -8538,9 +8271,7 @@
           },
           {
             "Name": "Yaw",
-            "TypeRef": "float",
-            "Min": -180.0,
-            "Max": 180.0
+            "TypeRef": "float"
           },
           {
             "Name": "Z",
@@ -8554,15 +8285,11 @@
         "SubElements": [
           {
             "Name": "Azimuth",
-            "TypeRef": "float",
-            "Min": -180.0,
-            "Max": 180.0
+            "TypeRef": "float"
           },
           {
             "Name": "Elevation",
-            "TypeRef": "float",
-            "Min": -90.0,
-            "Max": 90.0
+            "TypeRef": "float"
           }
         ]
       },
@@ -8586,15 +8313,11 @@
         "SubElements": [
           {
             "Name": "Pitch",
-            "TypeRef": "float",
-            "Min": -90.0,
-            "Max": 90.0
+            "TypeRef": "float"
           },
           {
             "Name": "Roll",
-            "TypeRef": "float",
-            "Min": -180.0,
-            "Max": 180.0
+            "TypeRef": "float"
           },
           {
             "Name": "X",
@@ -8606,9 +8329,7 @@
           },
           {
             "Name": "Yaw",
-            "TypeRef": "float",
-            "Min": -180.0,
-            "Max": 180.0
+            "TypeRef": "float"
           },
           {
             "Name": "Z",
@@ -8636,15 +8357,11 @@
         "SubElements": [
           {
             "Name": "Azimuth",
-            "TypeRef": "float",
-            "Min": -180.0,
-            "Max": 180.0
+            "TypeRef": "float"
           },
           {
             "Name": "Elevation",
-            "TypeRef": "float",
-            "Min": -90.0,
-            "Max": 90.0
+            "TypeRef": "float"
           }
         ]
       },
@@ -8708,15 +8425,11 @@
         "SubElements": [
           {
             "Name": "Azimuth",
-            "TypeRef": "float",
-            "Min": -180.0,
-            "Max": 180.0
+            "TypeRef": "float"
           },
           {
             "Name": "Elevation",
-            "TypeRef": "float",
-            "Min": -90.0,
-            "Max": 90.0
+            "TypeRef": "float"
           }
         ]
       },
@@ -8726,15 +8439,11 @@
         "SubElements": [
           {
             "Name": "Pitch",
-            "TypeRef": "float",
-            "Min": -90.0,
-            "Max": 90.0
+            "TypeRef": "float"
           },
           {
             "Name": "Roll",
-            "TypeRef": "float",
-            "Min": -180.0,
-            "Max": 180.0
+            "TypeRef": "float"
           },
           {
             "Name": "X",
@@ -8746,9 +8455,7 @@
           },
           {
             "Name": "Yaw",
-            "TypeRef": "float",
-            "Min": -180.0,
-            "Max": 180.0
+            "TypeRef": "float"
           },
           {
             "Name": "Z",
@@ -8790,15 +8497,11 @@
         "SubElements": [
           {
             "Name": "Azimuth",
-            "TypeRef": "float",
-            "Min": -180.0,
-            "Max": 180.0
+            "TypeRef": "float"
           },
           {
             "Name": "Elevation",
-            "TypeRef": "float",
-            "Min": -90.0,
-            "Max": 90.0
+            "TypeRef": "float"
           }
         ]
       },
@@ -8808,15 +8511,11 @@
         "SubElements": [
           {
             "Name": "Pitch",
-            "TypeRef": "float",
-            "Min": -90.0,
-            "Max": 90.0
+            "TypeRef": "float"
           },
           {
             "Name": "Roll",
-            "TypeRef": "float",
-            "Min": -180.0,
-            "Max": 180.0
+            "TypeRef": "float"
           },
           {
             "Name": "X",
@@ -8828,9 +8527,7 @@
           },
           {
             "Name": "Yaw",
-            "TypeRef": "float",
-            "Min": -180.0,
-            "Max": 180.0
+            "TypeRef": "float"
           },
           {
             "Name": "Z",
@@ -8844,15 +8541,11 @@
         "SubElements": [
           {
             "Name": "Pitch",
-            "TypeRef": "float",
-            "Min": -90.0,
-            "Max": 90.0
+            "TypeRef": "float"
           },
           {
             "Name": "Roll",
-            "TypeRef": "float",
-            "Min": -180.0,
-            "Max": 180.0
+            "TypeRef": "float"
           },
           {
             "Name": "X",
@@ -8864,9 +8557,7 @@
           },
           {
             "Name": "Yaw",
-            "TypeRef": "float",
-            "Min": -180.0,
-            "Max": 180.0
+            "TypeRef": "float"
           },
           {
             "Name": "Z",
@@ -8894,15 +8585,11 @@
         "SubElements": [
           {
             "Name": "Azimuth",
-            "TypeRef": "float",
-            "Min": -180.0,
-            "Max": 180.0
+            "TypeRef": "float"
           },
           {
             "Name": "Elevation",
-            "TypeRef": "float",
-            "Min": -90.0,
-            "Max": 90.0
+            "TypeRef": "float"
           }
         ]
       },
@@ -9028,8 +8715,7 @@
           },
           {
             "Name": "TPS",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Torque",
@@ -9047,8 +8733,7 @@
           },
           {
             "Name": "AverageConsumption",
-            "TypeRef": "float",
-            "Min": 0.0
+            "TypeRef": "float"
           },
           {
             "Name": "ConsumptionSinceStart",
@@ -9060,8 +8745,7 @@
           },
           {
             "Name": "InstantConsumption",
-            "TypeRef": "float",
-            "Min": 0.0
+            "TypeRef": "float"
           },
           {
             "Name": "IsEngineStopStartEnabled",
@@ -9085,9 +8769,7 @@
           },
           {
             "Name": "RelativeLevel",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "SupportedFuel",
@@ -9113,14 +8795,11 @@
         "SubElements": [
           {
             "Name": "ClutchEngagement",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           },
           {
             "Name": "ClutchWear",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "CurrentGear",
@@ -9128,15 +8807,11 @@
           },
           {
             "Name": "DiffLockFrontEngagement",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           },
           {
             "Name": "DiffLockRearEngagement",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           },
           {
             "Name": "DriveType",
@@ -9176,9 +8851,7 @@
           },
           {
             "Name": "TorqueDistribution",
-            "TypeRef": "float",
-            "Min": -100.0,
-            "Max": 100.0
+            "TypeRef": "float"
           },
           {
             "Name": "TravelledDistance",
@@ -9288,9 +8961,7 @@
           },
           {
             "Name": "StateOfHealth",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           },
           {
             "Name": "Temperature",
@@ -9370,9 +9041,7 @@
           },
           {
             "Name": "Level",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "Range",
@@ -9548,9 +9217,7 @@
         "SubElements": [
           {
             "Name": "Current",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           },
           {
             "Name": "CurrentEnergy",
@@ -9558,9 +9225,7 @@
           },
           {
             "Name": "Displayed",
-            "TypeRef": "float",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "float"
           }
         ]
       },
@@ -9592,9 +9257,7 @@
           },
           {
             "Name": "ChargeLimit",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "ChargePlugType",
@@ -9692,15 +9355,11 @@
           },
           {
             "Name": "Latitude",
-            "TypeRef": "double",
-            "Min": -90.0,
-            "Max": 90.0
+            "TypeRef": "double"
           },
           {
             "Name": "Longitude",
-            "TypeRef": "double",
-            "Min": -180.0,
-            "Max": 180.0
+            "TypeRef": "double"
           }
         ]
       },
@@ -9868,9 +9527,7 @@
         },
         {
           "Name": "PowerOptimizeLevel",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 10.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "SupportedAutonomyLevel",
@@ -10008,21 +9665,15 @@
       "DataElements": [
         {
           "Name": "LowerBound",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         },
         {
           "Name": "MostProbable",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         },
         {
           "Name": "UpperBound",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         }
       ]
     },
@@ -10150,9 +9801,7 @@
         },
         {
           "Name": "PowerOptimizeLevel",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 10.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Raindetection",
@@ -10160,9 +9809,7 @@
         },
         {
           "Name": "RearMainSpoilerPosition",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         },
         {
           "Name": "RefuelPosition",
@@ -10188,9 +9835,7 @@
         },
         {
           "Name": "Position",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Switch",
@@ -10500,15 +10145,11 @@
         },
         {
           "Name": "Pan",
-          "TypeRef": "int8_t",
-          "Min": -100.0,
-          "Max": 100.0
+          "TypeRef": "int8_t"
         },
         {
           "Name": "Tilt",
-          "TypeRef": "int8_t",
-          "Min": -100.0,
-          "Max": 100.0
+          "TypeRef": "int8_t"
         }
       ]
     },
@@ -10530,15 +10171,11 @@
         },
         {
           "Name": "Pan",
-          "TypeRef": "int8_t",
-          "Min": -100.0,
-          "Max": 100.0
+          "TypeRef": "int8_t"
         },
         {
           "Name": "Tilt",
-          "TypeRef": "int8_t",
-          "Min": -100.0,
-          "Max": 100.0
+          "TypeRef": "int8_t"
         }
       ]
     },
@@ -10548,8 +10185,7 @@
       "DataElements": [
         {
           "Name": "Intensity",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -10585,9 +10221,7 @@
         },
         {
           "Name": "Position",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Switch",
@@ -10613,9 +10247,7 @@
         },
         {
           "Name": "Position",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Switch",
@@ -10665,8 +10297,7 @@
         },
         {
           "Name": "Level",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -10692,8 +10323,7 @@
         },
         {
           "Name": "WiperWear",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -10775,8 +10405,7 @@
         },
         {
           "Name": "Level",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -10802,8 +10431,7 @@
         },
         {
           "Name": "WiperWear",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -10899,9 +10527,7 @@
         },
         {
           "Name": "PowerOptimizeLevel",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 10.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "RearShade",
@@ -10985,9 +10611,7 @@
         },
         {
           "Name": "Position",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Shade",
@@ -11013,9 +10637,7 @@
         },
         {
           "Name": "Position",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Switch",
@@ -11033,9 +10655,7 @@
         },
         {
           "Name": "Position",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Switch",
@@ -11061,9 +10681,7 @@
         },
         {
           "Name": "Position",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Shade",
@@ -11089,9 +10707,7 @@
         },
         {
           "Name": "Position",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Switch",
@@ -11109,9 +10725,7 @@
         },
         {
           "Name": "Position",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Switch",
@@ -11151,9 +10765,7 @@
         },
         {
           "Name": "Position",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Shade",
@@ -11179,9 +10791,7 @@
         },
         {
           "Name": "Position",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Switch",
@@ -11199,9 +10809,7 @@
         },
         {
           "Name": "Position",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Switch",
@@ -11227,9 +10835,7 @@
         },
         {
           "Name": "Position",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Shade",
@@ -11255,9 +10861,7 @@
         },
         {
           "Name": "Position",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Switch",
@@ -11275,9 +10879,7 @@
         },
         {
           "Name": "Position",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Switch",
@@ -11315,9 +10917,7 @@
         },
         {
           "Name": "PowerOptimizeLevel",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 10.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Station",
@@ -11371,9 +10971,7 @@
         },
         {
           "Name": "FanSpeed",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Temperature",
@@ -11391,9 +10989,7 @@
         },
         {
           "Name": "FanSpeed",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Temperature",
@@ -11425,9 +11021,7 @@
         },
         {
           "Name": "FanSpeed",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Temperature",
@@ -11445,9 +11039,7 @@
         },
         {
           "Name": "FanSpeed",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Temperature",
@@ -11479,9 +11071,7 @@
         },
         {
           "Name": "FanSpeed",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Temperature",
@@ -11499,9 +11089,7 @@
         },
         {
           "Name": "FanSpeed",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Temperature",
@@ -11533,9 +11121,7 @@
         },
         {
           "Name": "FanSpeed",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Temperature",
@@ -11553,9 +11139,7 @@
         },
         {
           "Name": "FanSpeed",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Temperature",
@@ -11585,9 +11169,7 @@
         },
         {
           "Name": "PowerOptimizeLevel",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 10.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "SmartphoneProjection",
@@ -11605,9 +11187,7 @@
       "DataElements": [
         {
           "Name": "Brightness",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         },
         {
           "Name": "CurrentLanguage",
@@ -11697,9 +11277,7 @@
         },
         {
           "Name": "Volume",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -11755,9 +11333,7 @@
         },
         {
           "Name": "Volume",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -11767,15 +11343,11 @@
       "DataElements": [
         {
           "Name": "Latitude",
-          "TypeRef": "double",
-          "Min": -90.0,
-          "Max": 90.0
+          "TypeRef": "double"
         },
         {
           "Name": "Longitude",
-          "TypeRef": "double",
-          "Min": -180.0,
-          "Max": 180.0
+          "TypeRef": "double"
         }
       ]
     },
@@ -11843,9 +11415,7 @@
         },
         {
           "Name": "PerceivedAmbientLight",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Spotlight",
@@ -11891,9 +11461,7 @@
         },
         {
           "Name": "Intensity",
-          "TypeRef": "uint8_t",
-          "Min": 1.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "IsLightOn",
@@ -11911,9 +11479,7 @@
         },
         {
           "Name": "Intensity",
-          "TypeRef": "uint8_t",
-          "Min": 1.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "IsLightOn",
@@ -11945,9 +11511,7 @@
         },
         {
           "Name": "Intensity",
-          "TypeRef": "uint8_t",
-          "Min": 1.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "IsLightOn",
@@ -11965,9 +11529,7 @@
         },
         {
           "Name": "Intensity",
-          "TypeRef": "uint8_t",
-          "Min": 1.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "IsLightOn",
@@ -11989,9 +11551,7 @@
         },
         {
           "Name": "Intensity",
-          "TypeRef": "uint8_t",
-          "Min": 1.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "IsLightOn",
@@ -12045,9 +11605,7 @@
         },
         {
           "Name": "Intensity",
-          "TypeRef": "uint8_t",
-          "Min": 1.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "IsLightOn",
@@ -12065,9 +11623,7 @@
         },
         {
           "Name": "Intensity",
-          "TypeRef": "uint8_t",
-          "Min": 1.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "IsLightOn",
@@ -12099,9 +11655,7 @@
         },
         {
           "Name": "Intensity",
-          "TypeRef": "uint8_t",
-          "Min": 1.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "IsLightOn",
@@ -12119,9 +11673,7 @@
         },
         {
           "Name": "Intensity",
-          "TypeRef": "uint8_t",
-          "Min": 1.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "IsLightOn",
@@ -12153,9 +11705,7 @@
         },
         {
           "Name": "Intensity",
-          "TypeRef": "uint8_t",
-          "Min": 1.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "IsLightOn",
@@ -12173,9 +11723,7 @@
         },
         {
           "Name": "Intensity",
-          "TypeRef": "uint8_t",
-          "Min": 1.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "IsLightOn",
@@ -12207,9 +11755,7 @@
         },
         {
           "Name": "Intensity",
-          "TypeRef": "uint8_t",
-          "Min": 1.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "IsLightOn",
@@ -12227,9 +11773,7 @@
         },
         {
           "Name": "Intensity",
-          "TypeRef": "uint8_t",
-          "Min": 1.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "IsLightOn",
@@ -12247,9 +11791,7 @@
         },
         {
           "Name": "Position",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Switch",
@@ -12263,8 +11805,7 @@
       "DataElements": [
         {
           "Name": "DimmingLevel",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -12318,20 +11859,15 @@
         },
         {
           "Name": "Heating",
-          "TypeRef": "int8_t",
-          "Min": -100.0,
-          "Max": 100.0
+          "TypeRef": "int8_t"
         },
         {
           "Name": "HeatingCooling",
-          "TypeRef": "int8_t",
-          "Min": -100.0,
-          "Max": 100.0
+          "TypeRef": "int8_t"
         },
         {
           "Name": "Height",
-          "TypeRef": "uint16_t",
-          "Min": 0.0
+          "TypeRef": "uint16_t"
         },
         {
           "Name": "IsBelted",
@@ -12343,9 +11879,7 @@
         },
         {
           "Name": "Massage",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Occupant",
@@ -12353,8 +11887,7 @@
         },
         {
           "Name": "Position",
-          "TypeRef": "uint16_t",
-          "Min": 0.0
+          "TypeRef": "uint16_t"
         },
         {
           "Name": "SeatBeltHeight",
@@ -12408,14 +11941,11 @@
       "DataElements": [
         {
           "Name": "Height",
-          "TypeRef": "uint8_t",
-          "Min": 0.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Support",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         }
       ]
     },
@@ -12425,9 +11955,7 @@
       "DataElements": [
         {
           "Name": "Support",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         }
       ]
     },
@@ -12441,8 +11969,7 @@
         },
         {
           "Name": "Height",
-          "TypeRef": "uint8_t",
-          "Min": 0.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -12476,8 +12003,7 @@
       "DataElements": [
         {
           "Name": "Length",
-          "TypeRef": "uint16_t",
-          "Min": 0.0
+          "TypeRef": "uint16_t"
         }
       ]
     },
@@ -12661,20 +12187,15 @@
         },
         {
           "Name": "Heating",
-          "TypeRef": "int8_t",
-          "Min": -100.0,
-          "Max": 100.0
+          "TypeRef": "int8_t"
         },
         {
           "Name": "HeatingCooling",
-          "TypeRef": "int8_t",
-          "Min": -100.0,
-          "Max": 100.0
+          "TypeRef": "int8_t"
         },
         {
           "Name": "Height",
-          "TypeRef": "uint16_t",
-          "Min": 0.0
+          "TypeRef": "uint16_t"
         },
         {
           "Name": "IsBelted",
@@ -12686,9 +12207,7 @@
         },
         {
           "Name": "Massage",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Occupant",
@@ -12696,8 +12215,7 @@
         },
         {
           "Name": "Position",
-          "TypeRef": "uint16_t",
-          "Min": 0.0
+          "TypeRef": "uint16_t"
         },
         {
           "Name": "SeatBeltHeight",
@@ -12751,14 +12269,11 @@
       "DataElements": [
         {
           "Name": "Height",
-          "TypeRef": "uint8_t",
-          "Min": 0.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Support",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         }
       ]
     },
@@ -12768,9 +12283,7 @@
       "DataElements": [
         {
           "Name": "Support",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         }
       ]
     },
@@ -12784,8 +12297,7 @@
         },
         {
           "Name": "Height",
-          "TypeRef": "uint8_t",
-          "Min": 0.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -12819,8 +12331,7 @@
       "DataElements": [
         {
           "Name": "Length",
-          "TypeRef": "uint16_t",
-          "Min": 0.0
+          "TypeRef": "uint16_t"
         }
       ]
     },
@@ -13004,20 +12515,15 @@
         },
         {
           "Name": "Heating",
-          "TypeRef": "int8_t",
-          "Min": -100.0,
-          "Max": 100.0
+          "TypeRef": "int8_t"
         },
         {
           "Name": "HeatingCooling",
-          "TypeRef": "int8_t",
-          "Min": -100.0,
-          "Max": 100.0
+          "TypeRef": "int8_t"
         },
         {
           "Name": "Height",
-          "TypeRef": "uint16_t",
-          "Min": 0.0
+          "TypeRef": "uint16_t"
         },
         {
           "Name": "IsBelted",
@@ -13029,9 +12535,7 @@
         },
         {
           "Name": "Massage",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Occupant",
@@ -13039,8 +12543,7 @@
         },
         {
           "Name": "Position",
-          "TypeRef": "uint16_t",
-          "Min": 0.0
+          "TypeRef": "uint16_t"
         },
         {
           "Name": "SeatBeltHeight",
@@ -13094,14 +12597,11 @@
       "DataElements": [
         {
           "Name": "Height",
-          "TypeRef": "uint8_t",
-          "Min": 0.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Support",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         }
       ]
     },
@@ -13111,9 +12611,7 @@
       "DataElements": [
         {
           "Name": "Support",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         }
       ]
     },
@@ -13127,8 +12625,7 @@
         },
         {
           "Name": "Height",
-          "TypeRef": "uint8_t",
-          "Min": 0.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -13162,8 +12659,7 @@
       "DataElements": [
         {
           "Name": "Length",
-          "TypeRef": "uint16_t",
-          "Min": 0.0
+          "TypeRef": "uint16_t"
         }
       ]
     },
@@ -13365,20 +12861,15 @@
         },
         {
           "Name": "Heating",
-          "TypeRef": "int8_t",
-          "Min": -100.0,
-          "Max": 100.0
+          "TypeRef": "int8_t"
         },
         {
           "Name": "HeatingCooling",
-          "TypeRef": "int8_t",
-          "Min": -100.0,
-          "Max": 100.0
+          "TypeRef": "int8_t"
         },
         {
           "Name": "Height",
-          "TypeRef": "uint16_t",
-          "Min": 0.0
+          "TypeRef": "uint16_t"
         },
         {
           "Name": "IsBelted",
@@ -13390,9 +12881,7 @@
         },
         {
           "Name": "Massage",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Occupant",
@@ -13400,8 +12889,7 @@
         },
         {
           "Name": "Position",
-          "TypeRef": "uint16_t",
-          "Min": 0.0
+          "TypeRef": "uint16_t"
         },
         {
           "Name": "SeatBeltHeight",
@@ -13455,14 +12943,11 @@
       "DataElements": [
         {
           "Name": "Height",
-          "TypeRef": "uint8_t",
-          "Min": 0.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Support",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         }
       ]
     },
@@ -13472,9 +12957,7 @@
       "DataElements": [
         {
           "Name": "Support",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         }
       ]
     },
@@ -13488,8 +12971,7 @@
         },
         {
           "Name": "Height",
-          "TypeRef": "uint8_t",
-          "Min": 0.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -13523,8 +13005,7 @@
       "DataElements": [
         {
           "Name": "Length",
-          "TypeRef": "uint16_t",
-          "Min": 0.0
+          "TypeRef": "uint16_t"
         }
       ]
     },
@@ -13708,20 +13189,15 @@
         },
         {
           "Name": "Heating",
-          "TypeRef": "int8_t",
-          "Min": -100.0,
-          "Max": 100.0
+          "TypeRef": "int8_t"
         },
         {
           "Name": "HeatingCooling",
-          "TypeRef": "int8_t",
-          "Min": -100.0,
-          "Max": 100.0
+          "TypeRef": "int8_t"
         },
         {
           "Name": "Height",
-          "TypeRef": "uint16_t",
-          "Min": 0.0
+          "TypeRef": "uint16_t"
         },
         {
           "Name": "IsBelted",
@@ -13733,9 +13209,7 @@
         },
         {
           "Name": "Massage",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Occupant",
@@ -13743,8 +13217,7 @@
         },
         {
           "Name": "Position",
-          "TypeRef": "uint16_t",
-          "Min": 0.0
+          "TypeRef": "uint16_t"
         },
         {
           "Name": "SeatBeltHeight",
@@ -13798,14 +13271,11 @@
       "DataElements": [
         {
           "Name": "Height",
-          "TypeRef": "uint8_t",
-          "Min": 0.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Support",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         }
       ]
     },
@@ -13815,9 +13285,7 @@
       "DataElements": [
         {
           "Name": "Support",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         }
       ]
     },
@@ -13831,8 +13299,7 @@
         },
         {
           "Name": "Height",
-          "TypeRef": "uint8_t",
-          "Min": 0.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -13866,8 +13333,7 @@
       "DataElements": [
         {
           "Name": "Length",
-          "TypeRef": "uint16_t",
-          "Min": 0.0
+          "TypeRef": "uint16_t"
         }
       ]
     },
@@ -14051,20 +13517,15 @@
         },
         {
           "Name": "Heating",
-          "TypeRef": "int8_t",
-          "Min": -100.0,
-          "Max": 100.0
+          "TypeRef": "int8_t"
         },
         {
           "Name": "HeatingCooling",
-          "TypeRef": "int8_t",
-          "Min": -100.0,
-          "Max": 100.0
+          "TypeRef": "int8_t"
         },
         {
           "Name": "Height",
-          "TypeRef": "uint16_t",
-          "Min": 0.0
+          "TypeRef": "uint16_t"
         },
         {
           "Name": "IsBelted",
@@ -14076,9 +13537,7 @@
         },
         {
           "Name": "Massage",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Occupant",
@@ -14086,8 +13545,7 @@
         },
         {
           "Name": "Position",
-          "TypeRef": "uint16_t",
-          "Min": 0.0
+          "TypeRef": "uint16_t"
         },
         {
           "Name": "SeatBeltHeight",
@@ -14141,14 +13599,11 @@
       "DataElements": [
         {
           "Name": "Height",
-          "TypeRef": "uint8_t",
-          "Min": 0.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Support",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         }
       ]
     },
@@ -14158,9 +13613,7 @@
       "DataElements": [
         {
           "Name": "Support",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         }
       ]
     },
@@ -14174,8 +13627,7 @@
         },
         {
           "Name": "Height",
-          "TypeRef": "uint8_t",
-          "Min": 0.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -14209,8 +13661,7 @@
       "DataElements": [
         {
           "Name": "Length",
-          "TypeRef": "uint16_t",
-          "Min": 0.0
+          "TypeRef": "uint16_t"
         }
       ]
     },
@@ -14382,9 +13833,7 @@
       "DataElements": [
         {
           "Name": "Position",
-          "TypeRef": "int8_t",
-          "Min": -100.0,
-          "Max": 100.0
+          "TypeRef": "int8_t"
         },
         {
           "Name": "Shade",
@@ -14406,9 +13855,7 @@
         },
         {
           "Name": "Position",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Switch",
@@ -14456,9 +13903,7 @@
       "DataElements": [
         {
           "Name": "PedalPosition",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -14568,8 +14013,7 @@
       "DataElements": [
         {
           "Name": "FluidLevel",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "IsBrakesWorn",
@@ -14581,8 +14025,7 @@
         },
         {
           "Name": "PadWear",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -14632,8 +14075,7 @@
       "DataElements": [
         {
           "Name": "FluidLevel",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "IsBrakesWorn",
@@ -14645,8 +14087,7 @@
         },
         {
           "Name": "PadWear",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -14760,8 +14201,7 @@
       "DataElements": [
         {
           "Name": "FluidLevel",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "IsBrakesWorn",
@@ -14773,8 +14213,7 @@
         },
         {
           "Name": "PadWear",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -14824,8 +14263,7 @@
       "DataElements": [
         {
           "Name": "FluidLevel",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "IsBrakesWorn",
@@ -14837,8 +14275,7 @@
         },
         {
           "Name": "PadWear",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -14870,9 +14307,7 @@
         },
         {
           "Name": "PedalPosition",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -14900,21 +14335,15 @@
         },
         {
           "Name": "Extension",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "HeatingCooling",
-          "TypeRef": "int8_t",
-          "Min": -100.0,
-          "Max": 100.0
+          "TypeRef": "int8_t"
         },
         {
           "Name": "Tilt",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -14942,9 +14371,7 @@
         },
         {
           "Name": "Heading",
-          "TypeRef": "double",
-          "Min": 0.0,
-          "Max": 360.0
+          "TypeRef": "double"
         },
         {
           "Name": "HorizontalAccuracy",
@@ -14952,15 +14379,11 @@
         },
         {
           "Name": "Latitude",
-          "TypeRef": "double",
-          "Min": -90.0,
-          "Max": 90.0
+          "TypeRef": "double"
         },
         {
           "Name": "Longitude",
-          "TypeRef": "double",
-          "Min": -180.0,
-          "Max": 180.0
+          "TypeRef": "double"
         },
         {
           "Name": "Timestamp",
@@ -15028,21 +14451,15 @@
         },
         {
           "Name": "AttentiveProbability",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         },
         {
           "Name": "DistractionLevel",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         },
         {
           "Name": "FatigueLevel",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         },
         {
           "Name": "HeartRate",
@@ -15086,15 +14503,11 @@
         },
         {
           "Name": "Humidity",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         },
         {
           "Name": "LightIntensity",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         }
       ]
     },
@@ -15258,9 +14671,7 @@
         },
         {
           "Name": "FuelType",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 23.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "HybridBatteryRemaining",
@@ -15890,15 +15301,11 @@
       "DataElements": [
         {
           "Name": "Pitch",
-          "TypeRef": "float",
-          "Min": -90.0,
-          "Max": 90.0
+          "TypeRef": "float"
         },
         {
           "Name": "Roll",
-          "TypeRef": "float",
-          "Min": -180.0,
-          "Max": 180.0
+          "TypeRef": "float"
         },
         {
           "Name": "X",
@@ -15910,9 +15317,7 @@
         },
         {
           "Name": "Yaw",
-          "TypeRef": "float",
-          "Min": -180.0,
-          "Max": 180.0
+          "TypeRef": "float"
         },
         {
           "Name": "Z",
@@ -15940,15 +15345,11 @@
       "DataElements": [
         {
           "Name": "Azimuth",
-          "TypeRef": "float",
-          "Min": -180.0,
-          "Max": 180.0
+          "TypeRef": "float"
         },
         {
           "Name": "Elevation",
-          "TypeRef": "float",
-          "Min": -90.0,
-          "Max": 90.0
+          "TypeRef": "float"
         }
       ]
     },
@@ -15976,15 +15377,11 @@
       "DataElements": [
         {
           "Name": "Pitch",
-          "TypeRef": "float",
-          "Min": -90.0,
-          "Max": 90.0
+          "TypeRef": "float"
         },
         {
           "Name": "Roll",
-          "TypeRef": "float",
-          "Min": -180.0,
-          "Max": 180.0
+          "TypeRef": "float"
         },
         {
           "Name": "X",
@@ -15996,9 +15393,7 @@
         },
         {
           "Name": "Yaw",
-          "TypeRef": "float",
-          "Min": -180.0,
-          "Max": 180.0
+          "TypeRef": "float"
         },
         {
           "Name": "Z",
@@ -16026,15 +15421,11 @@
       "DataElements": [
         {
           "Name": "Azimuth",
-          "TypeRef": "float",
-          "Min": -180.0,
-          "Max": 180.0
+          "TypeRef": "float"
         },
         {
           "Name": "Elevation",
-          "TypeRef": "float",
-          "Min": -90.0,
-          "Max": 90.0
+          "TypeRef": "float"
         }
       ]
     },
@@ -16062,15 +15453,11 @@
       "DataElements": [
         {
           "Name": "Pitch",
-          "TypeRef": "float",
-          "Min": -90.0,
-          "Max": 90.0
+          "TypeRef": "float"
         },
         {
           "Name": "Roll",
-          "TypeRef": "float",
-          "Min": -180.0,
-          "Max": 180.0
+          "TypeRef": "float"
         },
         {
           "Name": "X",
@@ -16082,9 +15469,7 @@
         },
         {
           "Name": "Yaw",
-          "TypeRef": "float",
-          "Min": -180.0,
-          "Max": 180.0
+          "TypeRef": "float"
         },
         {
           "Name": "Z",
@@ -16112,15 +15497,11 @@
       "DataElements": [
         {
           "Name": "Azimuth",
-          "TypeRef": "float",
-          "Min": -180.0,
-          "Max": 180.0
+          "TypeRef": "float"
         },
         {
           "Name": "Elevation",
-          "TypeRef": "float",
-          "Min": -90.0,
-          "Max": 90.0
+          "TypeRef": "float"
         }
       ]
     },
@@ -16166,15 +15547,11 @@
       "DataElements": [
         {
           "Name": "Pitch",
-          "TypeRef": "float",
-          "Min": -90.0,
-          "Max": 90.0
+          "TypeRef": "float"
         },
         {
           "Name": "Roll",
-          "TypeRef": "float",
-          "Min": -180.0,
-          "Max": 180.0
+          "TypeRef": "float"
         },
         {
           "Name": "X",
@@ -16186,9 +15563,7 @@
         },
         {
           "Name": "Yaw",
-          "TypeRef": "float",
-          "Min": -180.0,
-          "Max": 180.0
+          "TypeRef": "float"
         },
         {
           "Name": "Z",
@@ -16216,15 +15591,11 @@
       "DataElements": [
         {
           "Name": "Azimuth",
-          "TypeRef": "float",
-          "Min": -180.0,
-          "Max": 180.0
+          "TypeRef": "float"
         },
         {
           "Name": "Elevation",
-          "TypeRef": "float",
-          "Min": -90.0,
-          "Max": 90.0
+          "TypeRef": "float"
         }
       ]
     },
@@ -16252,15 +15623,11 @@
       "DataElements": [
         {
           "Name": "Pitch",
-          "TypeRef": "float",
-          "Min": -90.0,
-          "Max": 90.0
+          "TypeRef": "float"
         },
         {
           "Name": "Roll",
-          "TypeRef": "float",
-          "Min": -180.0,
-          "Max": 180.0
+          "TypeRef": "float"
         },
         {
           "Name": "X",
@@ -16272,9 +15639,7 @@
         },
         {
           "Name": "Yaw",
-          "TypeRef": "float",
-          "Min": -180.0,
-          "Max": 180.0
+          "TypeRef": "float"
         },
         {
           "Name": "Z",
@@ -16302,15 +15667,11 @@
       "DataElements": [
         {
           "Name": "Azimuth",
-          "TypeRef": "float",
-          "Min": -180.0,
-          "Max": 180.0
+          "TypeRef": "float"
         },
         {
           "Name": "Elevation",
-          "TypeRef": "float",
-          "Min": -90.0,
-          "Max": 90.0
+          "TypeRef": "float"
         }
       ]
     },
@@ -16338,15 +15699,11 @@
       "DataElements": [
         {
           "Name": "Pitch",
-          "TypeRef": "float",
-          "Min": -90.0,
-          "Max": 90.0
+          "TypeRef": "float"
         },
         {
           "Name": "Roll",
-          "TypeRef": "float",
-          "Min": -180.0,
-          "Max": 180.0
+          "TypeRef": "float"
         },
         {
           "Name": "X",
@@ -16358,9 +15715,7 @@
         },
         {
           "Name": "Yaw",
-          "TypeRef": "float",
-          "Min": -180.0,
-          "Max": 180.0
+          "TypeRef": "float"
         },
         {
           "Name": "Z",
@@ -16388,15 +15743,11 @@
       "DataElements": [
         {
           "Name": "Azimuth",
-          "TypeRef": "float",
-          "Min": -180.0,
-          "Max": 180.0
+          "TypeRef": "float"
         },
         {
           "Name": "Elevation",
-          "TypeRef": "float",
-          "Min": -90.0,
-          "Max": 90.0
+          "TypeRef": "float"
         }
       ]
     },
@@ -16426,9 +15777,7 @@
         },
         {
           "Name": "PowerOptimizeLevel",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 10.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Range",
@@ -16574,8 +15923,7 @@
         },
         {
           "Name": "TPS",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Torque",
@@ -16597,9 +15945,7 @@
         },
         {
           "Name": "Level",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "Range",
@@ -16755,8 +16101,7 @@
         },
         {
           "Name": "AverageConsumption",
-          "TypeRef": "float",
-          "Min": 0.0
+          "TypeRef": "float"
         },
         {
           "Name": "ConsumptionSinceStart",
@@ -16768,8 +16113,7 @@
         },
         {
           "Name": "InstantConsumption",
-          "TypeRef": "float",
-          "Min": 0.0
+          "TypeRef": "float"
         },
         {
           "Name": "IsEngineStopStartEnabled",
@@ -16793,9 +16137,7 @@
         },
         {
           "Name": "RelativeLevel",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "SupportedFuel",
@@ -16913,9 +16255,7 @@
         },
         {
           "Name": "StateOfHealth",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         },
         {
           "Name": "Temperature",
@@ -16997,9 +16337,7 @@
         },
         {
           "Name": "ChargeLimit",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "ChargePlugType",
@@ -17141,15 +16479,11 @@
         },
         {
           "Name": "Latitude",
-          "TypeRef": "double",
-          "Min": -90.0,
-          "Max": 90.0
+          "TypeRef": "double"
         },
         {
           "Name": "Longitude",
-          "TypeRef": "double",
-          "Min": -180.0,
-          "Max": 180.0
+          "TypeRef": "double"
         }
       ]
     },
@@ -17209,9 +16543,7 @@
       "DataElements": [
         {
           "Name": "Current",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         },
         {
           "Name": "CurrentEnergy",
@@ -17219,9 +16551,7 @@
         },
         {
           "Name": "Displayed",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         }
       ]
     },
@@ -17253,14 +16583,11 @@
       "DataElements": [
         {
           "Name": "ClutchEngagement",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         },
         {
           "Name": "ClutchWear",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "CurrentGear",
@@ -17268,15 +16595,11 @@
         },
         {
           "Name": "DiffLockFrontEngagement",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         },
         {
           "Name": "DiffLockRearEngagement",
-          "TypeRef": "float",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "float"
         },
         {
           "Name": "DriveType",
@@ -17316,9 +16639,7 @@
         },
         {
           "Name": "TorqueDistribution",
-          "TypeRef": "float",
-          "Min": -100.0,
-          "Max": 100.0
+          "TypeRef": "float"
         },
         {
           "Name": "TravelledDistance",

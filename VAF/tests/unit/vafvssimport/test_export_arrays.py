@@ -78,19 +78,19 @@ class TestExportArrays(unittest.TestCase):
     def test_export_fixed_size_arrays(self) -> None:
         """Test that fixed-size arrays are correctly exported."""
         expected_arrays = {
-            "uint8ArraySize5": {
+            "SeatRowCounts": {
                 "size": 5,
                 "type": vafpy.BaseTypes.UINT8_T.TypeRef,
                 "passed": False,
             },
-            "floatArraySize10": {
+            "TemperatureLevels": {
                 "size": 10,
                 "type": vafpy.BaseTypes.FLOAT.TypeRef,
                 "passed": False,
             },
         }
         expected_vectors = {
-            "int32Vector": {"type": vafpy.BaseTypes.INT32_T.TypeRef, "passed": False},
+            "DynamicArray": {"type": vafpy.BaseTypes.INT32_T.TypeRef, "passed": False},
         }
 
         vss_model = VSS(self.mock_vss_data)
@@ -111,32 +111,36 @@ class TestExportArrays(unittest.TestCase):
     def test_export_duplicated_arrays(self) -> None:
         """Test that duplicated arrays and vectors are correctly only exported once."""
         expected_arrays = {
-            "floatArraySize10": {
+            "TemperatureLevels": {
                 "size": 10,
                 "type": vafpy.BaseTypes.FLOAT.TypeRef,
                 "passed": False,
             },
-            "floatArraySize5": {
-                "size": 5,
+            "DuplicateArr": {
+                "size": 10,
                 "type": vafpy.BaseTypes.FLOAT.TypeRef,
                 "passed": False,
             },
         }
         expected_vectors = {
-            "int32Vector": {"type": vafpy.BaseTypes.INT32_T.TypeRef, "passed": False},
+            "DynamicArray": {"type": vafpy.BaseTypes.INT32_T.TypeRef, "passed": False},
         }
 
         vss_model = VSS(self.mock_vss_data_duplicates)
         derived_model = vss_model.export()
 
         for array in derived_model.DataTypeDefinitions.Arrays:
-            if array.Namespace == "vss":
+            if array.Namespace == "vss::seatconfiguration" and array.Name == "TemperatureLevels":
+                self.assertEqual(array.Size, expected_arrays[array.Name]["size"])
+                self.assertEqual(array.TypeRef, expected_arrays[array.Name]["type"])
+                expected_arrays[array.Name]["passed"] = True
+            if array.Namespace == "vss::seatconfiguration" and array.Name == "DuplicateArr":
                 self.assertEqual(array.Size, expected_arrays[array.Name]["size"])
                 self.assertEqual(array.TypeRef, expected_arrays[array.Name]["type"])
                 expected_arrays[array.Name]["passed"] = True
 
         for vector in derived_model.DataTypeDefinitions.Vectors:
-            if vector.Namespace == "vss":
+            if vector.Namespace == "vss::seatconfiguration" and vector.Name == "DynamicArray":
                 self.assertEqual(vector.TypeRef, expected_vectors[vector.Name]["type"])
                 expected_vectors[vector.Name]["passed"] = True
 

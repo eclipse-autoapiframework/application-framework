@@ -97,56 +97,52 @@ class TestExportStringEnums(unittest.TestCase):
     def test_create_and_export_structs(self) -> None:
         """Test that structs are correctly created and exported."""
 
-        expected_data_elements = {
-            "NonPercentField": vafmodel.DataType(Name="float", Namespace=""),
-            "NonLimitField": vafmodel.DataType(Name="float", Namespace=""),
+        expected_struct_childs = {
+            "NonPercentField": vafmodel.DataType(Name="NonPercentField", Namespace="vss::seatconfiguration"),
+            "NonLimitField": vafmodel.DataType(Name="NonLimitField", Namespace="vss::seatconfiguration"),
             "Mode": vafmodel.DataType(Name="Mode", Namespace="vss::seatconfiguration"),
         }
 
         vss_model = VSS(self.mock_vss_data_simple)
         derived_model = vss_model.export()
-        data_elements = derived_model.ModuleInterfaces[0].DataElements
+        struct: vafmodel.Struct = derived_model.DataTypeDefinitions.Structs[0]
 
         # Assertions for data_elements
-        self.assertEqual(len(data_elements), len(expected_data_elements))
-        for de in data_elements:
-            self.assertEqual(expected_data_elements[de.Name], de.TypeRef)
+        self.assertEqual(len(struct.SubElements), len(expected_struct_childs))
+        for subelement in struct.SubElements:
+            self.assertEqual(expected_struct_childs[subelement.Name], subelement.TypeRef)
 
     def test_create_and_export_nested_structs(self) -> None:
         """Test that nested structs are correctly created and exported."""
 
-        expected_outer_de = {
-            "NonPercentField": vafmodel.DataType(Name="float", Namespace=""),
-            "NonLimitField": vafmodel.DataType(Name="float", Namespace=""),
+        expected_outer_struct = {
+            "NonPercentField": vafmodel.DataType(Name="NonPercentField", Namespace="vss::seatconfiguration"),
+            "NonLimitField": vafmodel.DataType(Name="NonLimitField", Namespace="vss::seatconfiguration"),
             "Mode": vafmodel.DataType(Name="Mode", Namespace="vss::seatconfiguration"),
             "Acceleration": vafmodel.DataType(Name="Acceleration", Namespace="vss::seatconfiguration"),
         }
 
-        expected_inner_de = {
-            "Lateral": vafmodel.DataType(Name="float", Namespace=""),
-            "Longitudinal": vafmodel.DataType(Name="float", Namespace=""),
-            "Vertical": vafmodel.DataType(Name="float", Namespace=""),
+        expected_inner_struct = {
+            "Lateral": vafmodel.DataType(Name="Lateral", Namespace="vss::seatconfiguration::acceleration"),
+            "Longitudinal": vafmodel.DataType(Name="Longitudinal", Namespace="vss::seatconfiguration::acceleration"),
+            "Vertical": vafmodel.DataType(Name="Vertical", Namespace="vss::seatconfiguration::acceleration"),
         }
 
         vss_model = VSS(self.mock_vss_data_nested)
         derived_model = vss_model.export()
 
-        # Assertions for outer struct
-        data_elements = derived_model.ModuleInterfaces[0].DataElements
-        self.assertEqual(len(data_elements), len(expected_outer_de))
-        for de in data_elements:
-            self.assertEqual(expected_outer_de[de.Name], de.TypeRef)
-        # assert setter callback for actuator
-        self.assertEqual(
-            derived_model.ModuleInterfaces[0].Operations[0].Name,
-            "Mode_Setter_Callback",
-        )
-
-        # Assertions for inner struct
-        data_elements = derived_model.ModuleInterfaces[1].DataElements
-        self.assertEqual(len(data_elements), len(expected_inner_de))
-        for de in data_elements:
-            self.assertEqual(expected_inner_de[de.Name], de.TypeRef)
+        structs = derived_model.DataTypeDefinitions.Structs
+        for struct in structs:
+            if struct.Name == "SeatConfiguration":
+                self.assertEqual(len(struct.SubElements), len(expected_outer_struct))
+                for subelement in struct.SubElements:
+                    self.assertEqual(expected_outer_struct[subelement.Name], subelement.TypeRef)
+            elif struct.Name == "Acceleration":
+                self.assertEqual(len(struct.SubElements), len(expected_inner_struct))
+                for subelement in struct.SubElements:
+                    self.assertEqual(expected_inner_struct[subelement.Name], subelement.TypeRef)
+            else:
+                self.assertEqual(1, 0)
 
 
 if __name__ == "__main__":

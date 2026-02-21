@@ -13,8 +13,9 @@ import inspect
 import sys
 from pathlib import Path
 
+from vaf.core.common.utils import ProjectType
 from vaf.vafgeneration import vaf_cac_support
-from vaf.vafpy import ModuleInterface
+from vaf.vafmodel import vafmodel
 from vaf.vafvssimport import vss_import
 
 
@@ -25,7 +26,13 @@ class TestIntegration:
         """Basic test for VSS generation"""
         vss_input = Path(__file__).parent / "vss/seat_vss.json"
         vss_import.run_import(str(tmp_path), str(vss_input))
-        vaf_cac_support.generate(tmp_path, "vss-derived-model.json", "vss", Path(tmp_path))
+        vaf_cac_support.generate(
+            tmp_path,
+            "vss-derived-model.json",
+            "vss",
+            Path(tmp_path),
+            project_type=ProjectType.INTERFACE,
+        )
 
         # try to import the vss
         spec = importlib.util.spec_from_file_location("vss", tmp_path / "vss.py")
@@ -35,16 +42,9 @@ class TestIntegration:
 
         assert inspect.isclass(module.Vss)
         assert inspect.isclass(module.Vss.Vehicle)
-        assert isinstance(module.Vss.vehicle_if, ModuleInterface)
         assert inspect.isclass(module.Vss.Vehicle.Cabin.Seat.Row1.Driverside)
-        assert isinstance(module.Vss.Vehicle.Cabin.Seat.Row1.driver_side_if, ModuleInterface)
+        assert isinstance(module.Vss.Vehicle.Cabin.seat, vafmodel.Struct)
         assert inspect.isclass(module.Vss.Vehicle.Cabin.Seat.Row1.Driverside.Backrest)
+        assert isinstance(module.Vss.Vehicle.Cabin.Seat.Row1.Driverside.backrest, vafmodel.Struct)
         assert inspect.isclass(module.Vss.Vehicle.Cabin.Seat.Row2.Driverside.Backrest)
-        assert isinstance(
-            module.Vss.Vehicle.Cabin.Seat.Row1.Driverside.Backrest.lumbar_if,
-            ModuleInterface,
-        )
-        assert isinstance(
-            module.Vss.Vehicle.Cabin.Seat.Row2.Driverside.Backrest.lumbar_if,
-            ModuleInterface,
-        )
+        assert isinstance(module.Vss.Vehicle.Cabin.Seat.Row2.Driverside.backrest, vafmodel.Struct)

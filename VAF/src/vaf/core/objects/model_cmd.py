@@ -80,7 +80,9 @@ class ModelCmd:  # pylint: disable=too-few-public-methods
         if model_dir is not None:
             vss_import.run_import(model_dir, input_file)
             # Generate the initial model Python helper
-            generate_cac_support(Path(model_dir), "vss-derived-model.json", "vss", Path(model_dir))
+            generate_cac_support(
+                Path(model_dir), "vss-derived-model.json", "vss", Path(model_dir), project_type=ProjectType.INTERFACE
+            )
         else:
             print("Importing VSS fail! Define -m or --model-dir!")
 

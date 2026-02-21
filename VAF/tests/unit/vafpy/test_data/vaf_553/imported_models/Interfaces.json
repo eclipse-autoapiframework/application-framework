@@ -134,9 +134,7 @@
         "SubElements": [
           {
             "Name": "PedalPosition",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -164,9 +162,7 @@
           },
           {
             "Name": "PedalPosition",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -180,21 +176,15 @@
           },
           {
             "Name": "Extension",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "HeatingCooling",
-            "TypeRef": "int8_t",
-            "Min": -100.0,
-            "Max": 100.0
+            "TypeRef": "int8_t"
           },
           {
             "Name": "Tilt",
-            "TypeRef": "uint8_t",
-            "Min": 0.0,
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -394,8 +384,7 @@
         "SubElements": [
           {
             "Name": "FluidLevel",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "IsBrakesWorn",
@@ -407,8 +396,7 @@
           },
           {
             "Name": "PadWear",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -436,8 +424,7 @@
         "SubElements": [
           {
             "Name": "FluidLevel",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "IsBrakesWorn",
@@ -449,8 +436,7 @@
           },
           {
             "Name": "PadWear",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -518,8 +504,7 @@
         "SubElements": [
           {
             "Name": "FluidLevel",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "IsBrakesWorn",
@@ -531,8 +516,7 @@
           },
           {
             "Name": "PadWear",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           }
         ]
       },
@@ -578,8 +562,7 @@
         "SubElements": [
           {
             "Name": "FluidLevel",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           },
           {
             "Name": "IsBrakesWorn",
@@ -591,8 +574,7 @@
           },
           {
             "Name": "PadWear",
-            "TypeRef": "uint8_t",
-            "Max": 100.0
+            "TypeRef": "uint8_t"
           }
         ]
       }
@@ -783,9 +765,7 @@
       "DataElements": [
         {
           "Name": "PedalPosition",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -895,8 +875,7 @@
       "DataElements": [
         {
           "Name": "FluidLevel",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "IsBrakesWorn",
@@ -908,8 +887,7 @@
         },
         {
           "Name": "PadWear",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -959,8 +937,7 @@
       "DataElements": [
         {
           "Name": "FluidLevel",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "IsBrakesWorn",
@@ -972,8 +949,7 @@
         },
         {
           "Name": "PadWear",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -1087,8 +1063,7 @@
       "DataElements": [
         {
           "Name": "FluidLevel",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "IsBrakesWorn",
@@ -1100,8 +1075,7 @@
         },
         {
           "Name": "PadWear",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -1151,8 +1125,7 @@
       "DataElements": [
         {
           "Name": "FluidLevel",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "IsBrakesWorn",
@@ -1164,8 +1137,7 @@
         },
         {
           "Name": "PadWear",
-          "TypeRef": "uint8_t",
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -1197,9 +1169,7 @@
         },
         {
           "Name": "PedalPosition",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         }
       ]
     },
@@ -1227,21 +1197,15 @@
         },
         {
           "Name": "Extension",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         },
         {
           "Name": "HeatingCooling",
-          "TypeRef": "int8_t",
-          "Min": -100.0,
-          "Max": 100.0
+          "TypeRef": "int8_t"
         },
         {
           "Name": "Tilt",
-          "TypeRef": "uint8_t",
-          "Min": 0.0,
-          "Max": 100.0
+          "TypeRef": "uint8_t"
         }
       ]
     },

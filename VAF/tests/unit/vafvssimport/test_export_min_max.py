@@ -48,7 +48,7 @@ class TestExportMinMaxForPercent(unittest.TestCase):
         """Test that min and max values for percent-based fields are correctly exported."""
         vss_model = VSS(self.mock_vss_data)
         derived_model = vss_model.export()
-        elements = [element for struct in derived_model.DataTypeDefinitions.Structs for element in struct.SubElements]
+        elements = derived_model.DataTypeDefinitions.TypeRefs
 
         expected_elements: dict[str, Any] = {
             "LowerBound": {"min": 0, "max": 100, "passed": False},
