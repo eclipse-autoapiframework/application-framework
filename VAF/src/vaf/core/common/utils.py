@@ -229,6 +229,45 @@ def get_kwargs_from_local_variables(
     return {key: value for key, value in local_vars.items() if key in function_varnames}
 
 
+python_keywords: list[str] = [
+    "and",
+    "as",
+    "assert",
+    "async",
+    "await",
+    "break",
+    "class",
+    "continue",
+    "def",
+    "del",
+    "elif",
+    "else",
+    "except",
+    "finally",
+    "for",
+    "from",
+    "global",
+    "if",
+    "import",
+    "in",
+    "is",
+    "lambda",
+    "nonlocal",
+    "not",
+    "or",
+    "pass",
+    "raise",
+    "return",
+    "try",
+    "while",
+    "with",
+    "yield",
+    "True",
+    "False",
+    "None",
+]
+
+
 def to_snake_case(s: str) -> str:
     """Converts a string to snake case
 
@@ -238,12 +277,17 @@ def to_snake_case(s: str) -> str:
     Returns:
         str: The string converted to snake case
     """
-    return (
+    result: str = (
         "_".join(re.sub("([A-Z][a-z]+)", r" \1", re.sub("([A-Z]+)", r" \1", s.replace("-", " "))).split())
         .lower()
         .replace(" ", "")
         .replace("__", "_")
     )
+
+    if result in python_keywords:
+        result += "_"
+
+    return result
 
 
 def to_camel_case(s: str) -> str:
@@ -257,4 +301,9 @@ def to_camel_case(s: str) -> str:
     """
     pattern = re.compile(r"(?<!^)(?=[A-Z])")
     tmp = pattern.sub(" ", s)
-    return re.sub(r"(_|-)+", " ", tmp).title().replace(" ", "")
+    result: str = re.sub(r"(_|-)+", " ", tmp).title().replace(" ", "")
+
+    if result in python_keywords:
+        result += "_"
+
+    return result

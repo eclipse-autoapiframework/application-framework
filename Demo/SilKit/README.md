@@ -56,7 +56,7 @@ Enter your workspace name: <your-workspace-name>
 bash
 ```
 
-Next, switch folders to this workspace. Ideally, open this folder directly in VS Code and select
+Next, switch folders to this workspace. Ideally, you open this folder directly in VS Code and select
 `Reopen folder in Container`.
 
 ## AdasExecutable (app)
@@ -288,7 +288,7 @@ overwritten in case of re-generation.
 The entry file for the user to add own code is located in `./implementation/src/sensor_fusion.cpp`
 and `./implementation/src/collision_detection.cpp` respectively. Corresponding headers are located
 in `./implementation/include/` subdirectories. Some sample code for reference is shipped as part of
-the container and located in: `/opt/vaf/Demo/AdasDemo/SilKit/app-centric/app`.
+the container and located in: `/opt/vaf/Demo/SilKit/app/src`.
 
 The application module project is also ready to be built as library. To do so and in order to check
 if added code passes the compiler checks, execute the following two steps. First, start preset to
@@ -453,7 +453,7 @@ built with the same workflow as described above for the AdasExecutable.
 > integration project, the app-module will live as local copy in `./src/application_modules`.
 
 The VAF configuration and source code samples are provided in:
-`/opt/vaf/Demo/AdasDemo/SilKit/app-centric/test-app`.
+`/opt/vaf/Demo/SilKit/test-app`.
 
 ## Running the ADAS application
 

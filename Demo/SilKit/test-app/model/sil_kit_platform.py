@@ -1,7 +1,6 @@
 from datetime import timedelta
 from vaf import vafpy, BaseTypes
 
-# TODO: Import the CaC support from platform derive or interface import
 from .imported_models import *
 
 sil_kit_platform = vafpy.ApplicationModule(name="SilKitPlatform", namespace="NsApplicationUnit::NsSilKitPlatform")

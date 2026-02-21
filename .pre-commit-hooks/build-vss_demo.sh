@@ -23,6 +23,13 @@ fi
 
 #################################### VSS DEMO PROJECT #############################################################
 
+# Interface project
+vaf project init interface --name VssInterfaces --project-dir "$PROJECT_PATH"
+cd "$PROJECT_PATH"/VssInterfaces
+vaf model import vss --input-file "$DEMO_SRC_PATH"/model/vss/vss.json
+cp "$DEMO_SRC_PATH"/model/vaf/vss_interfaces.py .
+vaf model generate --model-dir . --mode all
+
 # Integration project (part 1)
 vaf project init integration --name DemoExecutable --project-dir "$PROJECT_PATH" --template ""
 cd "$PROJECT_PATH"/DemoExecutable
@@ -30,7 +37,7 @@ cd "$PROJECT_PATH"/DemoExecutable
 # VSS Provider
 vaf project create app-module --name VssProvider --namespace demo --project-dir .
 cd "$PROJECT_PATH"/DemoExecutable/src/application_modules/vss_provider
-vaf model import vss --input-file "$DEMO_SRC_PATH"/model/vss/vss.json
+vaf project import --input-file "$PROJECT_PATH"/VssInterfaces/export/VssInterfaces.json --model-dir model
 cp "$DEMO_SRC_PATH"/model/vaf/vss_provider.py ./model/
 vaf project generate --mode prj --project-dir . --type-variant std --skip-make-preset
 cp -r "$DEMO_SRC_PATH"/src/vss_provider/* ./implementation/
@@ -39,7 +46,7 @@ cd "$PROJECT_PATH"/DemoExecutable
 # VSS Consumer
 vaf project create app-module --name VssConsumer --namespace demo --project-dir .
 cd "$PROJECT_PATH"/DemoExecutable/src/application_modules/vss_consumer
-vaf model import vss --input-file "$DEMO_SRC_PATH"/model/vss/vss.json
+vaf project import --input-file "$PROJECT_PATH"/VssInterfaces/export/VssInterfaces.json --model-dir model
 cp "$DEMO_SRC_PATH"/model/vaf/vss_consumer.py ./model/
 vaf project generate --mode prj --project-dir . --type-variant std --skip-make-preset
 cp -r "$DEMO_SRC_PATH"/src/vss_consumer/* ./implementation/

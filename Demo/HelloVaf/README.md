@@ -36,7 +36,7 @@ Enter your workspace name: <your-workspace-name>
 bash
 ```
 
-Next, switch folders to this workspace. Ideally, open this folder directly in VS Code and select
+Next, switch folders to this workspace. Ideally, you open this folder directly in VS Code and select
 `Reopen folder in Container`.
 
 Then start this tutorial by creating an integration project. This project type defines the

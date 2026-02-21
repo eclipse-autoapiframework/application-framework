@@ -1,8 +1,8 @@
 # Vehicle Application Framework - using the COVESA VSS catalog
 
-The following tutorial guides you through an example with the **Vehicle Application Framework (VAF)**
-that illustrates how interfaces from the COVESA Vehicle Signal Specification (VSS) can be derived
-and used.
+The following tutorial guides you through an example with the **Vehicle Application Framework
+(VAF)** that illustrates how interfaces from the [COVESA Vehicle Signal Specification
+(VSS)](https://covesa.global/project/vehicle-signal-specification/) can be derived and used.
 
 ## Project setup
 Make sure you have built the VAF Docker container image as described in the getting started section
@@ -22,10 +22,10 @@ Enter your workspace name: <your-workspace-name>
 bash
 ```
 
-Next, switch folders to this workspace. Ideally, open this folder directly in VS Code and select
+Next, switch folders to this workspace. Ideally, you open this folder directly in VS Code and select
 `Reopen folder in Container`.
 
-## DemoExecutable
+## Overview
 Plan in this demo is to develop one executable with two application modules. The example does not
 use a platform for communication, the app-modules only communicate directly. That means, they share
 an internal communication channel, which is based on VSS. A high-level illustration of this setup is
@@ -33,7 +33,66 @@ given below:
 
 ![vss](../figures/vss.drawio.svg)
 
-To get started, first create a new integration project using the VAF command line tool:
+## Definition of interfaces
+
+First step in this demo is the modeling of interfaces based on datatype and signal descriptions as
+imported from a catalogue in VSS format. Those interfaces are later used for data exchange between
+the application modules.
+
+Create a new interface project for that purpose using the VAF command line tool:
+
+``` bash
+vaf project init interface
+Enter the name of the project: VssInterfaces
+Enter the directory to store your project in: .
+```
+
+Next, switch to the just created project directory.
+
+``` bash
+cd VssInterfaces
+```
+
+Then, import a VSS data catalogue to the project. The [VSS catalogue as provided on
+GitHub](https://github.com/COVESA/vehicle_signal_specification) is provided as JSON file and part of the container. It is located in: `/opt/vaf/Demo/Vss/model/vss/vss.json`.
+``` bash
+vaf model import vss
+Enter the path to the VSS catalogue file in JSON format /opt/vaf/Demo/Vss/model/vss/vss.json
+```
+
+Open the template file `vss_interfaces.py` within the newly created interface project. Import the
+VSS content from the previous step and define the interfaces for this demo using this input:
+
+``` python
+from .vss import *
+
+acceleration_if = vafpy.ModuleInterface(name="Acceleration_If", namespace="demo")
+acceleration_if.add_data_element(name="Lateral", datatype=Vss.Vehicle.Acceleration.lateral)
+acceleration_if.add_data_element(name="Longitudinal", datatype=Vss.Vehicle.Acceleration.longitudinal)
+acceleration_if.add_data_element(name="Vertical", datatype=Vss.Vehicle.Acceleration.vertical)
+
+driver_if = vafpy.ModuleInterface(name="Driver_If", namespace="demo")
+driver_if.add_data_element(name="Identifier", datatype=Vss.Vehicle.Driver.identifier)
+driver_if.add_data_element(name="IsEyesOnRoad", datatype=Vss.Vehicle.Driver.is_eyes_on_road)
+```
+
+Once complete, the configuration needs to be exported to JSON by using the following command:
+
+``` bash
+vaf model generate
+```
+
+The exported JSON file gets stored to the subdirectory `./export` by default, along with its CaC
+support file for later use in application module projects.
+
+Before the next step, switch folders to the workspace again.
+``` bash
+cd ..
+```
+
+## DemoExecutable
+
+Create a new integration project using the VAF command line tool:
 
 ``` bash
 vaf project init integration
@@ -64,23 +123,21 @@ Next, switch folders accordingly:
 cd src/application_modules/vss_<consumer/provider>
 ```
 
-Then, import the VSS data catalogue to the project. The sample VSS catalogue is shipped as JSON file
-and is part of the container. It is located in: `/opt/vaf/Demo/VssDemo/model/vss/vss.json`.
+Then, import the outcome from the previously completed Interface project.
 ``` bash
-vaf model import vss
-Enter the path to the VSS catalogue file in JSON format /opt/vaf/Demo/VssDemo/model/vss/vss.json
+vaf project import
+Please provide the path to the exported VAF model JSON file ../../../../VssInterfaces/export/VssInterfaces.json
 ```
 
-Two new files are added to the project folder by this command. `vss-derived-model.json` is the VAF
-model file in JSON format. It contains all relevant information as imported from the VSS catalogue.
-`vss.py` is the Configuration as Code (CaC) support, which is needed to access the model artifacts
-from the Python configuration.
+Two new files are added to the `model/imported_models` folder by this command. `VssInterfaces.json`
+is the VAF model file in JSON format. `vss_interfaces.py` is the Configuration as Code (CaC)
+support, which is needed to access the model artifacts from the Python configuration.
 
 Next step is the configuration of the app-module in `./model/vss_<consumer/provider>.py`. 
 
-To import the interfaces from the previous step, write:
+To use the just imported content from the previous step, uncomment the following line:
 ``` python
-from .vss import *
+from .imported_models import *
 ```
 
 The app-module configuration template already contains the app-module object and a default task. On
@@ -90,8 +147,8 @@ For the VssConsumer use:
 ``` python
 vss_consumer = vafpy.ApplicationModule(name="VssConsumer", namespace="demo")
 
-vss_consumer.add_consumed_interface("AccelerationConsumer", interface=Vss.Vehicle.acceleration_if)
-vss_consumer.add_consumed_interface("DriverConsumer", interface=Vss.Vehicle.driver_if)
+vss_consumer.add_consumed_interface("AccelerationConsumer", interface=vss_interfaces.Demo.acceleration_if)
+vss_consumer.add_consumed_interface("DriverConsumer", interface=vss_interfaces.Demo.driver_if)
 
 periodic_task = vafpy.Task(name="PeriodicTask", period=timedelta(milliseconds=200))
 vss_consumer.add_task(task=periodic_task)
@@ -101,8 +158,8 @@ For the VssProvider use:
 ``` python
 vss_provider = vafpy.ApplicationModule(name="VssProvider", namespace="demo")
 
-vss_provider.add_provided_interface("AccelerationProvider", interface=Vss.Vehicle.acceleration_if)
-vss_provider.add_provided_interface("DriverProvider", interface=Vss.Vehicle.driver_if)
+vss_provider.add_provided_interface("AccelerationProvider", interface=vss_interfaces.Demo.acceleration_if)
+vss_provider.add_provided_interface("DriverProvider", interface=vss_interfaces.Demo.driver_if)
 
 periodic_task = vafpy.Task(name="PeriodicTask", period=timedelta(milliseconds=200))
 vss_provider.add_task(task=periodic_task)
@@ -113,7 +170,7 @@ Continue from here with model and code generation:
 vaf project generate
 ```
 
-Some sample code for the app-modules is provided for reference in: `/opt/vaf/Demo/VssDemo/src/vss_<consumer/provider>/vss_<consumer/provider>.cpp`.
+Some sample code for the app-modules is provided for reference in: `/opt/vaf/Demo/Vss/src/vss_<consumer/provider>/src/vss_<consumer/provider>.cpp`.
 Feel free to copy it to the generated implementation stubs in: `./implementation/src/vss_<consumer/provider>.cpp`
 
 Finally, check if the app-module library compiles using:
@@ -173,7 +230,8 @@ vaf make install
 ```
 
 ## Running the application
-The binary can be run from the `./build/Release/install/opt/DemoExecutable` directory:
+The binary can now be run from the `./build/Release/install/opt/DemoExecutable` directory. Change
+folders and execute:
 ``` bash
 ./bin/DemoExecutable
 ```
