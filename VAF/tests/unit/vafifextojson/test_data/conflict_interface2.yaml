@@ -1,0 +1,32 @@
+name: SensorService
+description: "Second sensor service with same name"
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Sensors
+    description: "Sensor interface namespace - same as first file"
+
+    structs:
+      - name: Pressure
+        description: "Pressure reading"
+        members:
+          - name: value
+            datatype: float
+          - name: timestamp
+            datatype: uint64
+
+    methods:
+      - name: GetPressure
+        input: []
+        output:
+          - name: pressure
+            datatype: Pressure
+
+      - name: Calibrate
+        input:
+          - name: reference
+            datatype: float
+        output:
+          - name: success
+            datatype: boolean

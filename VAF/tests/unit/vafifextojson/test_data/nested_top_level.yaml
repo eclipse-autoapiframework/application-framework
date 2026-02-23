@@ -1,0 +1,44 @@
+name: NestedTopLevel
+description: "Top-level service that uses nested derived types"
+major_version: 1
+minor_version: 0
+
+includes:
+  - file: nested_derived.yaml
+    description: "Import vehicle position types"
+
+namespaces:
+  - name: Navigation.Service
+    description: "Navigation service using nested types"
+
+    structs:
+      - name: Route
+        description: "Navigation route"
+        members:
+          - name: startLocation
+            datatype: Vehicle.Position.Location
+          - name: endLocation
+            datatype: Vehicle.Position.Location
+          - name: intermediatePoints
+            datatype: Common.Geometry.Point2D[]
+
+    methods:
+      - name: CalculateRoute
+        description: "Calculate navigation route"
+        input:
+          - name: start
+            datatype: Vehicle.Position.Location
+          - name: end
+            datatype: Vehicle.Position.Location
+        output:
+          - name: route
+            datatype: Route
+
+      - name: UpdatePosition
+        description: "Update current position"
+        input:
+          - name: position
+            datatype: Common.Geometry.Point3D
+        output:
+          - name: success
+            datatype: boolean

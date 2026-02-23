@@ -1,0 +1,87 @@
+name: VariantTestService
+description: "Test file for IFEX variant/union type support"
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: VariantTest
+    description: "Test namespace with variant types"
+
+    # Structs
+    structs:
+      - name: Position
+        description: "Position data"
+        members:
+          - name: x
+            datatype: float
+          - name: y
+            datatype: float
+
+      - name: Message
+        description: "Message with variant payload"
+        members:
+          - name: id
+            datatype: uint32
+          - name: payload
+            datatype: variant<int32, float, string>
+
+      - name: SensorData
+        description: "Sensor data with union type"
+        members:
+          - name: timestamp
+            datatype: uint64
+          - name: value
+            datatype: union<int32, float, Position>
+
+    # Typedefs with variant types
+    typedefs:
+      - name: SimpleVariant
+        datatype: variant<int32, float>
+
+      - name: StringOrNumber
+        datatype: union<string, int32, float>
+
+      - name: ComplexUnion
+        datatype: variant<int32, float, string, Position>
+
+    # Interface with variant types
+    methods:
+      - name: ProcessValue
+        description: "Process a variant value"
+        input:
+          - name: data
+            datatype: variant<int32, float, string>
+        output:
+          - name: result
+            datatype: boolean
+
+      - name: GetSensorReading
+        description: "Get sensor reading as variant"
+        input:
+          - name: sensorId
+            datatype: uint32
+        output:
+          - name: reading
+            datatype: union<int32, float, Position>
+
+    events:
+      - name: ValueChanged
+        description: "Emitted when value changes"
+        input:
+          - name: newValue
+            datatype: variant<int32, float, string>
+
+      - name: DataUpdated
+        description: "Emitted when data is updated"
+        input:
+          - name: data
+            datatype: union<int32, float, Position>
+
+    properties:
+      - name: CurrentValue
+        description: "Current value as variant"
+        datatype: variant<int32, float, string>
+
+      - name: LastReading
+        description: "Last sensor reading"
+        datatype: union<int32, float, Position>

@@ -1,0 +1,33 @@
+name: MixedContentService
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Mixed
+    structs:
+      - name: MixedStruct
+        members:
+          - name: id
+            datatype: uint32
+    enumerations:
+      - name: MixedEnum
+        datatype: uint32
+        options:
+          - name: OPTION_A
+            value: 1
+          - name: OPTION_B
+            value: 2
+    methods:
+      - name: MixedMethod
+        input: []
+        output:
+          - name: result
+            datatype: boolean
+    events:
+      - name: MixedEvent
+        input:
+          - name: data
+            datatype: uint32
+    properties:
+      - name: MixedProperty
+        datatype: string

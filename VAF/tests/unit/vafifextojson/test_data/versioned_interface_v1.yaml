@@ -1,0 +1,14 @@
+name: VersionedService
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: API
+    methods:
+      - name: Process
+        input:
+          - name: data
+            datatype: string
+        output:
+          - name: result
+            datatype: string

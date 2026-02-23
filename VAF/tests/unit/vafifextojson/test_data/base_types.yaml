@@ -1,0 +1,35 @@
+name: BaseTypes
+description: "Base type definitions for layering test"
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Common.Types
+    description: "Common type definitions"
+
+    structs:
+      - name: Timestamp
+        description: "Unix timestamp"
+        members:
+          - name: seconds
+            datatype: uint64
+          - name: nanoseconds
+            datatype: uint32
+
+      - name: Position
+        description: "2D position"
+        members:
+          - name: x
+            datatype: double
+          - name: y
+            datatype: double
+
+    enumerations:
+      - name: Status
+        description: "Generic status codes"
+        datatype: uint8
+        options:
+          - name: OK
+            value: 0
+          - name: ERROR
+            value: 1

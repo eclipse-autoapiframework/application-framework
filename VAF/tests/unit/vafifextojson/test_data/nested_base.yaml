@@ -1,0 +1,27 @@
+name: NestedBaseTypes
+description: "Base types with nested namespaces"
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Common.Geometry
+    description: "Geometry types"
+
+    structs:
+      - name: Point2D
+        description: "2D point"
+        members:
+          - name: x
+            datatype: float
+          - name: y
+            datatype: float
+
+      - name: Point3D
+        description: "3D point"
+        members:
+          - name: x
+            datatype: float
+          - name: y
+            datatype: float
+          - name: z
+            datatype: float

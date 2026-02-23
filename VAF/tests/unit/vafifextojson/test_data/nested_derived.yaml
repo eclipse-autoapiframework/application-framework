@@ -1,0 +1,23 @@
+name: NestedDerivedTypes
+description: "Types that use nested namespace references"
+major_version: 1
+minor_version: 0
+
+includes:
+  - file: nested_base.yaml
+    description: "Import base geometry types"
+
+namespaces:
+  - name: Vehicle.Position
+    description: "Vehicle positioning"
+
+    structs:
+      - name: Location
+        description: "Vehicle location with array of points"
+        members:
+          - name: currentPosition
+            datatype: Common.Geometry.Point3D
+          - name: trajectory
+            datatype: Common.Geometry.Point2D[]
+          - name: waypoints
+            datatype: map<string, Common.Geometry.Point3D>

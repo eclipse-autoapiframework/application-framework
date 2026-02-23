@@ -1,0 +1,15 @@
+name: MultiParamEventService
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Events
+    events:
+      - name: StatusChanged
+        input:
+          - name: oldStatus
+            datatype: uint32
+          - name: newStatus
+            datatype: uint32
+          - name: timestamp
+            datatype: uint64

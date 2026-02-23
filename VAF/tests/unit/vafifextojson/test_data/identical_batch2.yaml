@@ -1,0 +1,14 @@
+name: IdenticalBatchService
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Common
+    methods:
+      - name: Execute
+        input:
+          - name: command
+            datatype: string
+        output:
+          - name: result
+            datatype: boolean

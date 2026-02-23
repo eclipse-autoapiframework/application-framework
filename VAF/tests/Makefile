@@ -2,7 +2,7 @@ PYTHON_VERSION ?= 3.12
 
 # GENERAL UNIT TESTS
 
-UNIT_TESTS = core vafgeneration vafmodel vafvssimport
+UNIT_TESTS = core vafgeneration vafmodel vafvssimport vafifextojson
 define make-unit-test-target
   	test-unit-$(subst _,-,$1):
 		uv run --python ${PYTHON_VERSION} pytest --junitxml=tests/unit/results/$1_report.xml \

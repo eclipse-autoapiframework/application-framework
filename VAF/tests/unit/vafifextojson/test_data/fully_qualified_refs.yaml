@@ -1,0 +1,24 @@
+name: FullyQualifiedService
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Common
+    namespaces:
+      - name: Types
+        structs:
+          - name: Position
+            members:
+              - name: x
+                datatype: float
+              - name: y
+                datatype: float
+  - name: Services
+    methods:
+      - name: SetPosition
+        input:
+          - name: pos
+            datatype: Common.Types.Position
+        output:
+          - name: success
+            datatype: boolean

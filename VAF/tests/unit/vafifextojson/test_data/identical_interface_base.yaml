@@ -1,0 +1,17 @@
+name: IdenticalInterfaceBase
+description: "Base types for identical interface test"
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Common
+    description: "Common types"
+
+    structs:
+      - name: Result
+        description: "Operation result"
+        members:
+          - name: success
+            datatype: boolean
+          - name: message
+            datatype: string

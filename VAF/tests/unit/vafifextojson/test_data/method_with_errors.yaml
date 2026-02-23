@@ -1,0 +1,24 @@
+name: ErrorHandlingService
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Services
+    structs:
+      - name: ErrorInfo
+        members:
+          - name: code
+            datatype: uint32
+          - name: message
+            datatype: string
+    methods:
+      - name: RiskyOperation
+        input:
+          - name: data
+            datatype: string
+        output:
+          - name: result
+            datatype: boolean
+        error:
+          - name: error
+            datatype: ErrorInfo

@@ -1,0 +1,17 @@
+name: ExtendedService
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Services
+    methods:
+      - name: StartExtended
+        input: []
+        output:
+          - name: success
+            datatype: boolean
+      - name: Stop
+        input: []
+        output:
+          - name: success
+            datatype: boolean

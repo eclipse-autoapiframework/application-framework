@@ -1,0 +1,13 @@
+name: ConfigService2
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Settings
+    structs:
+      - name: Config
+        members:
+          - name: timeout
+            datatype: uint32
+          - name: enabled
+            datatype: boolean

@@ -1,0 +1,14 @@
+name: IncludingService
+major_version: 1
+minor_version: 0
+
+includes:
+  - file: base_no_layering.yaml
+
+namespaces:
+  - name: Extended
+    structs:
+      - name: ExtendedStruct
+        members:
+          - name: value
+            datatype: uint32

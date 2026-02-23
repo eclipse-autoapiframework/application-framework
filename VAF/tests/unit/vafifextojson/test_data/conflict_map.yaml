@@ -1,0 +1,34 @@
+name: MapService
+description: "Service with map typedef in Common namespace"
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Common
+    description: "Common types namespace"
+
+    # Map typedef with SAME NAME as array in other file
+    typedefs:
+      - name: DataCollection
+        datatype: map<string, float>
+        description: "Map of string keys to float values"
+
+    # Struct using the map
+    structs:
+      - name: DeviceRegistry
+        description: "Registry of devices with data"
+        members:
+          - name: deviceId
+            datatype: string
+          - name: dataMap
+            datatype: DataCollection
+
+    # Method using the map type
+    methods:
+      - name: StoreData
+        input:
+          - name: collection
+            datatype: DataCollection
+        output:
+          - name: itemCount
+            datatype: uint32

@@ -1,0 +1,11 @@
+name: BaseService
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Base
+    structs:
+      - name: BaseStruct
+        members:
+          - name: id
+            datatype: uint32

@@ -1,0 +1,15 @@
+name: ComplexStructService
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Data
+    structs:
+      - name: ComplexData
+        members:
+          - name: values
+            datatype: float[]
+          - name: metadata
+            datatype: map<string, string>
+          - name: flags
+            datatype: boolean[]

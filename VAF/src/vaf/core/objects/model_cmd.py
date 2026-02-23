@@ -24,6 +24,7 @@ from vaf.core.common.utils import (
 from vaf.core.objects.project_cmd import ProjectCmd
 from vaf.core.state_manager.tracker import tracking_context
 from vaf.vafgeneration import generate_cac_support
+from vaf.vafifextojson.converter import ifex_batch_to_json
 from vaf.vafpy.model_runtime import ModelRuntime
 from vaf.vafvssimport import vss_import
 
@@ -85,6 +86,38 @@ class ModelCmd:  # pylint: disable=too-few-public-methods
             )
         else:
             print("Importing VSS fail! Define -m or --model-dir!")
+
+    def import_ifex(
+        self, input_files: list[str], model_dir: str, model_name: str = "ifex", enable_layering: bool = True
+    ) -> None:
+        """
+        Import one or more IFEX models and convert/merge them into a VAF model.
+
+        :param input_files: List of YAML file(s) of the input IFEX model(s). Can be a single file or multiple files to merge. # pylint: disable = line-too-long
+        :param model_dir: Output directory to generate the resulting artifacts.
+        :param model_name: Name prefix for the generated model files (default: "ifex").
+        :param enable_layering: If True, recursively load and merge included IFEX files (default: True).
+        """
+        if model_dir is None or model_dir == "":
+            # check if it's there is any vaf_config
+            if hasattr(self, "_vaf_config") and self._vaf_config is not None:
+                model_dir = Path(self._vaf_config["vaf-artifacts"]["vaf-init-model"]).as_posix()
+
+        if model_dir is not None:
+            output_json_name = f"{model_name}-derived-model.json"
+            output_file = Path(model_dir) / output_json_name
+            input_paths = [Path(f) for f in input_files]
+            ifex_batch_to_json(input_paths, output_file, enable_layering=enable_layering)
+            # Generate the initial model Python helper
+            generate_cac_support(
+                Path(model_dir),
+                output_json_name,
+                model_name,
+                Path(model_dir),
+                project_type=ProjectType.INTERFACE,
+            )
+        else:
+            print("Importing IFEX fail! Define -m or --model-dir!")
 
     def import_model(  # pylint: disable = too-many-arguments, too-many-positional-arguments, too-many-locals, too-many-branches, too-many-statements
         self,

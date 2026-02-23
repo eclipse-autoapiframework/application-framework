@@ -1,0 +1,21 @@
+name: DeeplyNestedService
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Level1
+    namespaces:
+      - name: Level2
+        namespaces:
+          - name: Level3
+            structs:
+              - name: DeepStruct
+                members:
+                  - name: value
+                    datatype: int32
+            methods:
+              - name: DeepMethod
+                input: []
+                output:
+                  - name: result
+                    datatype: DeepStruct

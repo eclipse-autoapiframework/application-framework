@@ -1,0 +1,14 @@
+name: InvalidYAML
+description: "This file has invalid YAML syntax"
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Test
+    structs:
+      - name: InvalidStruct
+        members:
+          - name: field1
+            datatype: string
+          - name: field2
+            # Missing datatype - this is invalid

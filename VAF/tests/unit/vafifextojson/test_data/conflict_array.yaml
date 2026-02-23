@@ -1,0 +1,34 @@
+name: ArrayService
+description: "Service with array typedef in Common namespace"
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Common
+    description: "Common types namespace"
+
+    # Array typedef
+    typedefs:
+      - name: DataCollection
+        datatype: float[]
+        description: "Array of floats"
+
+    # Struct using the array
+    structs:
+      - name: SensorReading
+        description: "Sensor reading with data array"
+        members:
+          - name: timestamp
+            datatype: uint64
+          - name: values
+            datatype: DataCollection
+
+    # Method using the array type
+    methods:
+      - name: ProcessData
+        input:
+          - name: data
+            datatype: DataCollection
+        output:
+          - name: success
+            datatype: boolean

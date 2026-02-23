@@ -1,0 +1,18 @@
+name: SameNameDifferentNamespace1
+description: "Status in namespace App.Core"
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: App.Core
+    description: "Core application types"
+
+    enumerations:
+      - name: Status
+        description: "Application status"
+        datatype: uint8
+        options:
+          - name: RUNNING
+            value: 0
+          - name: STOPPED
+            value: 1

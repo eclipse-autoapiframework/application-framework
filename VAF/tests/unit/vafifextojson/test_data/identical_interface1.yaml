@@ -1,0 +1,34 @@
+name: SharedService
+description: "First file defining SharedService - identical to second file"
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Shared
+    description: "Shared service namespace"
+
+    structs:
+      - name: Data
+        description: "Shared data structure"
+        members:
+          - name: value
+            datatype: float
+          - name: timestamp
+            datatype: uint64
+
+    methods:
+      - name: GetData
+        description: "Get data"
+        input: []
+        output:
+          - name: data
+            datatype: Data
+
+      - name: SetData
+        description: "Set data"
+        input:
+          - name: data
+            datatype: Data
+        output:
+          - name: success
+            datatype: boolean

@@ -1,0 +1,14 @@
+name: StatusService2
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: System
+    enumerations:
+      - name: Status
+        datatype: uint8
+        options:
+          - name: Idle
+            value: 0
+          - name: Running
+            value: 1

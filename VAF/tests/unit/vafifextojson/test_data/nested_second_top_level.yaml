@@ -1,0 +1,54 @@
+name: NestedSecondTopLevel
+description: "Another top-level service that uses vehicle position types"
+major_version: 1
+minor_version: 0
+
+includes:
+  - file: nested_derived.yaml
+    description: "Import vehicle position types"
+
+namespaces:
+  - name: Fleet.Management
+    description: "Fleet management using position tracking"
+
+    structs:
+      - name: Vehicle
+        description: "Fleet vehicle"
+        members:
+          - name: vehicleId
+            datatype: string
+          - name: currentLocation
+            datatype: Vehicle.Position.Location
+          - name: destinationLocation
+            datatype: Vehicle.Position.Location
+
+      - name: Fleet
+        description: "Fleet of vehicles"
+        members:
+          - name: fleetId
+            datatype: string
+          - name: vehicles
+            datatype: Vehicle[]
+          - name: baseLocation
+            datatype: Common.Geometry.Point3D
+
+    methods:
+      - name: TrackVehicle
+        description: "Track vehicle location"
+        input:
+          - name: vehicleId
+            datatype: string
+        output:
+          - name: location
+            datatype: Vehicle.Position.Location
+
+      - name: UpdateVehicleLocation
+        description: "Update vehicle location"
+        input:
+          - name: vehicleId
+            datatype: string
+          - name: location
+            datatype: Vehicle.Position.Location
+        output:
+          - name: success
+            datatype: boolean

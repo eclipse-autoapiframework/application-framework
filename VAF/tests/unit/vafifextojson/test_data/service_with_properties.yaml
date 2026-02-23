@@ -1,0 +1,11 @@
+name: PropertyService
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Config
+    properties:
+      - name: MaxSpeed
+        datatype: uint32
+      - name: EnableLogging
+        datatype: boolean

@@ -1,0 +1,22 @@
+name: BaseService
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Services
+    methods:
+      - name: Start
+        input: []
+        output:
+          - name: success
+            datatype: boolean
+      - name: Stop
+        input: []
+        output:
+          - name: success
+            datatype: boolean
+      - name: GetStatus
+        input: []
+        output:
+          - name: status
+            datatype: string

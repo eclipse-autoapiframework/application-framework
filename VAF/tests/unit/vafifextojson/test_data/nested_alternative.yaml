@@ -1,0 +1,54 @@
+name: NestedAlternative
+description: "Alternative service that also uses base types independently"
+major_version: 1
+minor_version: 0
+
+includes:
+  - file: nested_base.yaml
+    description: "Import base geometry types directly"
+
+namespaces:
+  - name: Mapping.Service
+    description: "Mapping service using geometry types"
+
+    structs:
+      - name: MapRegion
+        description: "Map region definition"
+        members:
+          - name: topLeft
+            datatype: Common.Geometry.Point2D
+          - name: bottomRight
+            datatype: Common.Geometry.Point2D
+          - name: center
+            datatype: Common.Geometry.Point2D
+
+      - name: Landmark
+        description: "3D landmark"
+        members:
+          - name: position
+            datatype: Common.Geometry.Point3D
+          - name: name
+            datatype: string
+          - name: altitude
+            datatype: float
+
+    methods:
+      - name: GetMapRegion
+        description: "Get map region"
+        input:
+          - name: center
+            datatype: Common.Geometry.Point2D
+          - name: radius
+            datatype: float
+        output:
+          - name: region
+            datatype: MapRegion
+
+      - name: AddLandmark
+        description: "Add a landmark"
+        input:
+          - name: landmark
+            datatype: Landmark
+        output:
+          - name: success
+            datatype: boolean

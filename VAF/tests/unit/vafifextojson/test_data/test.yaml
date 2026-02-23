@@ -1,0 +1,82 @@
+
+name: VehicleControlService
+description: "IFEX service for controlling and monitoring vehicle state"
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: VehicleControl
+    description: "Vehicle control namespace"
+
+    structs:
+      - name: Position
+        description: "Geographic position"
+        members:
+          - name: latitude
+            datatype: double
+            description: "Latitude coordinate"
+          - name: longitude
+            datatype: double
+            description: "Longitude coordinate"
+          - name: altitude
+            datatype: double
+            description: "Altitude in meters"
+
+      - name: SpeedInfo
+        description: "Speed information"
+        members:
+          - name: speed
+            datatype: float
+            description: "Speed value"
+          - name: unit
+            datatype: SpeedUnit
+            description: "Speed unit"
+
+    enumerations:
+      - name: SpeedUnit
+        description: "Speed measurement units"
+        datatype: uint8
+        options:
+          - name: KPH
+            value: 0
+            description: "Kilometers per hour"
+          - name: MPH
+            value: 1
+            description: "Miles per hour"
+          - name: MPS
+            value: 2
+            description: "Meters per second"
+
+    typedefs:
+      - name: route_name_t
+        datatype: string
+        description: "Route name type"
+
+    methods:
+      - name: SetSpeed
+        description: "Set the target speed of the vehicle"
+        input:
+          - name: targetSpeed
+            datatype: SpeedInfo
+        output:
+          - name: success
+            datatype: boolean
+
+      - name: GetPosition
+        description: "Retrieve the current position"
+        output:
+          - name: position
+            datatype: Position
+
+    events:
+      - name: SpeedChanged
+        description: "Triggered when speed changes"
+        input:
+          - name: newSpeed
+            datatype: SpeedInfo
+
+      - name: PositionUpdated
+        description: "Triggered when position updates"
+        input:
+          - name: position
+            datatype: Position

@@ -1,0 +1,18 @@
+name: SameNameDifferentNamespace2
+description: "Status in namespace Network.Protocol"
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Network.Protocol
+    description: "Network protocol types"
+
+    enumerations:
+      - name: Status
+        description: "Network status"
+        datatype: uint8
+        options:
+          - name: CONNECTED
+            value: 0
+          - name: DISCONNECTED
+            value: 1

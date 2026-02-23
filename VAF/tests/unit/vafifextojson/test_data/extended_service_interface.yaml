@@ -1,0 +1,25 @@
+name: ExtendedServiceInterface
+major_version: 1
+minor_version: 0
+
+includes:
+  - file: base_service_interface.yaml
+
+namespaces:
+  - name: Services
+    methods:
+      - name: Start
+        input: []
+        output:
+          - name: success
+            datatype: boolean
+      - name: Stop
+        input: []
+        output:
+          - name: success
+            datatype: boolean
+      - name: GetStatus
+        input: []
+        output:
+          - name: status
+            datatype: string

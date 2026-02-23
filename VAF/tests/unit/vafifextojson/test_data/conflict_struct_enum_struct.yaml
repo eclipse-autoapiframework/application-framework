@@ -1,0 +1,17 @@
+name: StructEnumConflictStruct
+description: "File defining DataPoint as a struct"
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Sensors
+    description: "Sensor data types"
+
+    structs:
+      - name: DataPoint
+        description: "Data point as a struct"
+        members:
+          - name: value
+            datatype: float
+          - name: timestamp
+            datatype: uint64

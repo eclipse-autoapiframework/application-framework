@@ -1,0 +1,149 @@
+name: UltimateInterfaceService
+description: "Demonstrates all IFEX features including arrays, maps, and properties"
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: UltimateInterface
+    description: "Complete interface with all supported features"
+
+    # Enumerations
+    enumerations:
+      - name: SpeedUnit
+        description: "Speed measurement units"
+        datatype: uint8
+        options:
+          - name: KPH
+            value: 0
+          - name: MPH
+            value: 1
+          - name: MPS
+            value: 2
+
+      - name: StatusCode
+        description: "Operation status codes"
+        datatype: uint8
+        options:
+          - name: OK
+            value: 0
+          - name: ERROR
+            value: 1
+          - name: TIMEOUT
+            value: 2
+
+    # Structs
+    structs:
+      - name: Coordinates
+        description: "GPS coordinates"
+        members:
+          - name: latitude
+            datatype: double
+          - name: longitude
+            datatype: double
+          - name: altitude
+            datatype: double
+
+      - name: SpeedInfo
+        description: "Speed with unit"
+        members:
+          - name: speed
+            datatype: float
+          - name: unit
+            datatype: SpeedUnit
+
+      - name: ComplexTelemetry
+        description: "Complex telemetry data structure"
+        members:
+          - name: timestamp
+            datatype: uint64
+          - name: temperature
+            datatype: float
+          - name: pressure
+            datatype: float
+
+    # Typedefs for arrays and complex types
+    typedefs:
+      - name: FloatVector
+        datatype: float[]
+        description: "Array of floats"
+
+      - name: CoordinatesArray
+        datatype: Coordinates[]
+        description: "Array of coordinates"
+
+      - name: SensorDataMap
+        datatype: map<string, float>
+        description: "Map of sensor names to readings"
+
+    # Properties (mapped to DataElements)
+    properties:
+      - name: CurrentSpeed
+        datatype: SpeedInfo
+        description: "Current speed of the vehicle"
+
+      - name: CurrentPosition
+        datatype: Coordinates
+        description: "Current GPS position"
+
+      - name: TelemetryBuffer
+        datatype: ComplexTelemetry
+        description: "Buffer storing telemetry data"
+
+    # Methods
+    methods:
+      - name: SetSpeed
+        description: "Set the target speed"
+        input:
+          - name: targetSpeed
+            datatype: SpeedInfo
+        output:
+          - name: status
+            datatype: StatusCode
+
+      - name: GetPosition
+        description: "Retrieve current position"
+        output:
+          - name: position
+            datatype: Coordinates
+
+      - name: UploadTelemetry
+        description: "Upload complex telemetry data"
+        input:
+          - name: telemetry
+            datatype: ComplexTelemetry
+        output:
+          - name: status
+            datatype: StatusCode
+
+      - name: GetMultipleReadings
+        description: "Get multiple sensor readings"
+        input:
+          - name: sensorIds
+            datatype: string[]
+        output:
+          - name: readings
+            datatype: float[]
+
+    # Events
+    events:
+      - name: SpeedChanged
+        description: "Triggered when speed changes"
+        input:
+          - name: newSpeed
+            datatype: SpeedInfo
+
+      - name: PositionUpdated
+        description: "Triggered when position updates"
+        input:
+          - name: position
+            datatype: Coordinates
+
+      - name: TelemetryAlert
+        description: "Triggered when telemetry exceeds threshold"
+        input:
+          - name: telemetry
+            datatype: ComplexTelemetry
+
+      - name: EmergencyStop
+        description: "Emergency stop signal with no parameters"
+        input: []

@@ -1,0 +1,12 @@
+name: BaseServiceInterface
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Services
+    methods:
+      - name: Start
+        input: []
+        output:
+          - name: success
+            datatype: boolean

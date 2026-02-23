@@ -1,0 +1,20 @@
+name: StructEnumConflictEnum
+description: "File defining DataPoint as an enum"
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Sensors
+    description: "Sensor data types"
+
+    enumerations:
+      - name: DataPoint
+        description: "Data point as an enum"
+        datatype: uint8
+        options:
+          - name: LOW
+            value: 0
+          - name: MEDIUM
+            value: 1
+          - name: HIGH
+            value: 2

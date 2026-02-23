@@ -1,0 +1,26 @@
+name: DescriptiveService
+description: "A service with detailed descriptions"
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Docs
+    description: "Documentation namespace"
+    structs:
+      - name: Config
+        description: "Configuration structure"
+        members:
+          - name: timeout
+            datatype: uint32
+            description: "Timeout in milliseconds"
+    methods:
+      - name: Initialize
+        description: "Initialize the service"
+        input:
+          - name: config
+            datatype: Config
+            description: "Initial configuration"
+        output:
+          - name: success
+            datatype: boolean
+            description: "True if initialization succeeded"

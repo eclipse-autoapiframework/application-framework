@@ -1,0 +1,17 @@
+name: StatusAsStruct
+description: "Defines Status as a struct"
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Common
+    description: "Common types"
+
+    structs:
+      - name: Status
+        description: "Status as a struct"
+        members:
+          - name: code
+            datatype: uint32
+          - name: message
+            datatype: string

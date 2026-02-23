@@ -1,0 +1,33 @@
+name: VehicleInterface
+description: "Vehicle interface that includes base types"
+major_version: 1
+minor_version: 0
+
+includes:
+  - file: base_types.yaml
+    description: "Include common base types"
+
+namespaces:
+  - name: Vehicle.Chassis
+    description: "Vehicle chassis interface"
+
+    structs:
+      - name: WheelData
+        description: "Wheel sensor data"
+        members:
+          - name: position
+            datatype: Common.Types.Position
+          - name: rotation_speed
+            datatype: float
+          - name: timestamp
+            datatype: Common.Types.Timestamp
+
+    methods:
+      - name: GetWheelData
+        description: "Get wheel sensor data"
+        input:
+          - name: wheel_id
+            datatype: uint8
+        output:
+          - name: data
+            datatype: WheelData

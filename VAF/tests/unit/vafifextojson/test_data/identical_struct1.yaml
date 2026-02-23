@@ -1,0 +1,14 @@
+name: PointService
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Geometry
+    structs:
+      - name: Point
+        description: "2D point"
+        members:
+          - name: x
+            datatype: float
+          - name: y
+            datatype: float

@@ -1,0 +1,19 @@
+name: TypedefTestService
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: Types
+    typedefs:
+      # Simple typedef (alias)
+      - name: Counter
+        datatype: uint32
+      # Array typedef
+      - name: CounterArray
+        datatype: uint32[]
+      # Map typedef
+      - name: CounterMap
+        datatype: map<string, uint32>
+      # Nested array of strings
+      - name: StringMatrix
+        datatype: string[]
