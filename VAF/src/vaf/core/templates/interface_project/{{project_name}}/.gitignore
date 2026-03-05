@@ -13,3 +13,4 @@ __pycache__/
 .env
 .vscode/
 .DS_Store
+.quoordinator
