@@ -8,8 +8,10 @@ external/vaf-generator/common
 implementation/**/*.h~
 implementation/**/*.cpp~
 src-gen
+test-gen
 __pycache__/
 *.pyc
 .env
 .vscode/
 .DS_Store
+.quoordinator
