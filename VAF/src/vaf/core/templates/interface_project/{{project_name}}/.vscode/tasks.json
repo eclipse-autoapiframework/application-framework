@@ -1,0 +1,53 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Model: ⬇️ Import VSS catalogue",
+      "type": "shell",
+      "command": "${workspaceFolder}/.vscode/scripts/set_cwd.sh vaf model import vss",
+      "options": {
+        "cwd": "${fileDirname}",
+        "projectTypes": [
+          "applicationModule",
+          "integration",
+          "interface"
+        ]
+      },
+      "presentation": {
+        "clear": true
+      }
+    },
+    {
+      "label": "Model: ⬇️ Import from IFEX",
+      "type": "shell",
+      "command": "${workspaceFolder}/.vscode/scripts/set_cwd.sh vaf model import ifex",
+      "options": {
+        "cwd": "${fileDirname}",
+        "projectTypes": [
+          "applicationModule",
+          "integration",
+          "interface"
+        ]
+      },
+      "presentation": {
+        "clear": true
+      }
+    },
+    {
+      "label": "Model: ⚡ Generate data exchange format",
+      "type": "shell",
+      "command": "${workspaceFolder}/.vscode/scripts/set_cwd.sh vaf model generate --mode PRJ",
+      "options": {
+        "cwd": "${fileDirname}",
+        "projectTypes": [
+          "applicationModule",
+          "integration",
+          "interface"
+        ]
+      },
+      "presentation": {
+        "clear": true
+      }
+    }
+  ]
+}

@@ -71,13 +71,13 @@ def model_import_vss(project_dir: str, input_file: str) -> None:  # pylint: disa
     help="Path to the project root directory",
     show_default=True,
 )
-@click.option(
+@filepath_option(
     "-i",
-    "--input-files",
-    multiple=True,
+    "--input-path",
+    help="Path to an IFEX file or folder that contains multiple of them to import.",
     required=True,
-    type=click.Path(exists=True, dir_okay=False),
-    help="YAML files to import (specify multiple times for batch import, or once for single file).",
+    type=click.Path(exists=True, dir_okay=True, file_okay=True),
+    prompt="Enter the path to an IFEX file in YAML format or a folder that contains multiple IFEX files",
 )
 @click.option(
     "-n",
@@ -93,7 +93,7 @@ def model_import_vss(project_dir: str, input_file: str) -> None:  # pylint: disa
     help="Disable automatic loading and merging of included IFEX files",
 )
 def model_import_ifex(  # pylint: disable=missing-param-doc
-    project_dir: str, input_files: tuple[str, ...], model_name: str, no_layering: bool
+    project_dir: str, input_path: str, model_name: str, no_layering: bool
 ) -> None:
     """Import one or more IFEX input files into a VAF model (merges multiple files if specified)."""
     # Look for project type in VAF_CFG_FILE in the project directory
@@ -105,12 +105,22 @@ def model_import_ifex(  # pylint: disable=missing-param-doc
         click.echo("\nNo valid VAF project found!")
     else:
         layering_status = "without" if no_layering else "with"
-        file_word = "file" if len(input_files) == 1 else "files"
-        click.echo(
-            f"Importing {len(input_files)} IFEX {file_word} into model '{model_name}' ({layering_status} layering)."
-        )
-        cmd = ModelCmd()
-        cmd.import_ifex(list(input_files), model_dir, model_name, enable_layering=not no_layering)
+        path = Path(input_path)
+        files = []
+        if path.is_file():
+            if path.suffix == ".yaml":
+                files.append(path)
+        if path.is_dir():
+            files = [f for f in path.iterdir() if f.is_file() and f.suffix == ".yaml"]
+        file_word = "file" if len(files) == 1 else "files"
+        if len(files) == 0:
+            click.echo("No IFEX file(s) provided.")
+        else:
+            click.echo(
+                f"Importing {len(files)} IFEX {file_word} into model '{model_name}' ({layering_status} layering)."
+            )
+            cmd = ModelCmd()
+            cmd.import_ifex(list(files), model_dir, model_name, enable_layering=not no_layering)
 
 
 # vaf model update #

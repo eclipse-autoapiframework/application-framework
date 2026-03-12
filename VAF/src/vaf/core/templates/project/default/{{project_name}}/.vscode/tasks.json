@@ -34,13 +34,12 @@
       }
     },
     {
-      "label": "Model: 🔄 Update interfaces/application modules",
+      "label": "Model: 🔄 Update application modules",
       "type": "shell",
       "command": "${workspaceFolder}/.vscode/scripts/set_cwd.sh vaf model update",
       "options": {
         "cwd": "${fileDirname}",
         "projectTypes": [
-          "applicationModule",
           "integration"
         ]
       },
@@ -72,34 +71,6 @@
         "cwd": "${fileDirname}",
         "projectTypes": [
           "integration"
-        ]
-      },
-      "presentation": {
-        "clear": true
-      }
-    },
-    {
-      "label": "Project: ⬇️ Import interfaces",
-      "type": "shell",
-      "command": "${workspaceFolder}/.vscode/scripts/set_cwd.sh vaf project import",
-      "options": {
-        "cwd": "${fileDirname}",
-        "projectTypes": [
-          "applicationModule"
-        ]
-      },
-      "presentation": {
-        "clear": true
-      }
-    },
-    {
-      "label": "Project: ⚡ Generate application module project",
-      "type": "shell",
-      "command": "${workspaceFolder}/.vscode/scripts/set_cwd.sh vaf project generate",
-      "options": {
-        "cwd": "${fileDirname}",
-        "projectTypes": [
-          "applicationModule"
         ]
       },
       "presentation": {
@@ -215,95 +186,6 @@
         "projectTypes": [
           "applicationModule",
           "integration"
-        ]
-      },
-      "presentation": {
-        "clear": true
-      }
-    },
-    {
-      "label": "VAF: 🏷️ New workspace",
-      "type": "shell",
-      "command": "vaf workspace init",
-      "options": {
-        "cwd": "${workspaceFolder}",
-        "projectTypes": [
-          "default"
-        ]
-      },
-      "presentation": {
-        "clear": true
-      }
-    },
-    {
-      "label": "VAF: 🏷️ New interface project",
-      "type": "shell",
-      "command": "vaf project init interface",
-      "options": {
-        "cwd": "${workspaceFolder}",
-        "projectTypes": [
-          "workspace",
-          "default"
-        ]
-      },
-      "presentation": {
-        "clear": true
-      }
-    },
-    {
-      "label": "VAF: 🏷️ New app-module project",
-      "type": "shell",
-      "command": "vaf project init app-module",
-      "options": {
-        "cwd": "${workspaceFolder}",
-        "projectTypes": [
-          "workspace",
-          "default"
-        ]
-      },
-      "presentation": {
-        "clear": true
-      }
-    },
-    {
-      "label": "VAF: 🏷️ New integration project",
-      "type": "shell",
-      "command": "vaf project init integration",
-      "options": {
-        "cwd": "${workspaceFolder}",
-        "projectTypes": [
-          "workspace",
-          "default"
-        ]
-      },
-      "presentation": {
-        "clear": true
-      }
-    },
-    {
-      "label": "VAF: 🏷️ Version",
-      "type": "shell",
-      "command": "vaf --version",
-      "options": {
-        "cwd": "${workspaceFolder}",
-        "projectTypes": [
-          "workspace",
-          "default"
-        ]
-      },
-      "presentation": {
-        "clear": true
-      }
-    },
-    {
-      "label": "VAF: 🙋 Help",
-      "type": "shell",
-      "command": "vaf --help",
-      "options": {
-        "cwd": "${workspaceFolder}",
-        "projectTypes": [
-          "workspace",
-          "default"
         ]
       },
       "presentation": {

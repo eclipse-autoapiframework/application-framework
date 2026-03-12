@@ -88,7 +88,7 @@ class ModelCmd:  # pylint: disable=too-few-public-methods
             print("Importing VSS fail! Define -m or --model-dir!")
 
     def import_ifex(
-        self, input_files: list[str], model_dir: str, model_name: str = "ifex", enable_layering: bool = True
+        self, input_files: list[Path], model_dir: str, model_name: str = "ifex", enable_layering: bool = True
     ) -> None:
         """
         Import one or more IFEX models and convert/merge them into a VAF model.
