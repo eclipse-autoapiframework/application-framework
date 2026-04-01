@@ -75,7 +75,7 @@ class TestBasic:
         assert len(model.ModuleInterfaces) == 1, "Expected 1 module interface"
         module_interface = model.ModuleInterfaces[0]
         assert module_interface.Name == "VehicleControlService"  # Name comes from AST
-        assert module_interface.Namespace == "VehicleControl"  # Namespace comes from namespace
+        assert module_interface.Namespace == "vehiclecontrol"  # Namespace comes from namespace
 
         # Verify operations (methods)
         assert len(module_interface.Operations) == 2, "Expected 2 operations"
@@ -126,7 +126,7 @@ class TestBasic:
         assert len(model.ModuleInterfaces) == 1, "Expected 1 module interface"
         module_interface = model.ModuleInterfaces[0]
         assert module_interface.Name == "UltimateInterfaceService"  # Uses AST name
-        assert module_interface.Namespace == "UltimateInterface"  # Namespace from YAML
+        assert module_interface.Namespace == "ultimateinterface"  # Namespace from YAML
 
         # Verify operations (methods + property getters/setters)
         # Should have 4 methods + 6 property operations (3 properties × 2 operations each) = 10 total
@@ -195,11 +195,11 @@ class TestBasic:
         # Verify typedef-created vectors have the correct namespace
         float_vector = next((v for v in model.DataTypeDefinitions.Vectors if v.Name == "FloatVector"), None)
         assert float_vector is not None
-        assert float_vector.Namespace == "UltimateInterface"
+        assert float_vector.Namespace == "ultimateinterface"
 
         coords_array = next((v for v in model.DataTypeDefinitions.Vectors if v.Name == "CoordinatesArray"), None)
         assert coords_array is not None
-        assert coords_array.Namespace == "UltimateInterface"
+        assert coords_array.Namespace == "ultimateinterface"
 
         # Inline vectors should have "ifex_to_vaf" namespace
         string_array = next((v for v in model.DataTypeDefinitions.Vectors if v.Name == "StringArray"), None)
@@ -221,7 +221,7 @@ class TestBasic:
         assert "SensorDataMap" in map_names
         # Verify the map structure and namespace
         sensor_map = model.DataTypeDefinitions.Maps[0]
-        assert sensor_map.Namespace == "UltimateInterface"
+        assert sensor_map.Namespace == "ultimateinterface"
         assert sensor_map.MapKeyTypeRef.Name == "String"
         assert sensor_map.MapKeyTypeRef.Namespace == "vaf"
         assert sensor_map.MapValueTypeRef.Name == "float"
@@ -253,12 +253,12 @@ class TestBasic:
         # Timestamp should be in Common.Types namespace (converted to Common::Types)
         timestamp_struct = next((s for s in model.DataTypeDefinitions.Structs if s.Name == "Timestamp"), None)
         assert timestamp_struct is not None
-        assert timestamp_struct.Namespace == "Common::Types"
+        assert timestamp_struct.Namespace == "common::types"
 
         # WheelData should be in Vehicle.Chassis namespace (converted to Vehicle::Chassis)
         wheel_data_struct = next((s for s in model.DataTypeDefinitions.Structs if s.Name == "WheelData"), None)
         assert wheel_data_struct is not None
-        assert wheel_data_struct.Namespace == "Vehicle::Chassis"
+        assert wheel_data_struct.Namespace == "vehicle::chassis"
 
         # Should have enum from base_types.yaml
         assert model.DataTypeDefinitions.Enums is not None
@@ -269,7 +269,7 @@ class TestBasic:
         # Verify Status enum has correct namespace
         status_enum = next((e for e in model.DataTypeDefinitions.Enums if e.Name == "Status"), None)
         assert status_enum is not None
-        assert status_enum.Namespace == "Common::Types"
+        assert status_enum.Namespace == "common::types"
 
         # Should have module interface from vehicle_layered.yaml
         assert model.ModuleInterfaces is not None
@@ -350,11 +350,11 @@ class TestBasic:
         # Verify namespaces are set correctly
         vehicle_interface = next((i for i in model.ModuleInterfaces if i.Name == "VehicleControlService"), None)
         assert vehicle_interface is not None
-        assert vehicle_interface.Namespace == "VehicleControl"
+        assert vehicle_interface.Namespace == "vehiclecontrol"
 
         ultimate_interface = next((i for i in model.ModuleInterfaces if i.Name == "UltimateInterfaceService"), None)
         assert ultimate_interface is not None
-        assert ultimate_interface.Namespace == "UltimateInterface"
+        assert ultimate_interface.Namespace == "ultimateinterface"
 
         # Verify operations from both interfaces are present
         operations = []
@@ -401,7 +401,7 @@ class TestBasic:
         error_msg = str(exc_info.value)
         assert "Type name conflicts detected" in error_msg
         assert "DataCollection" in error_msg
-        assert "Common::DataCollection" in error_msg
+        assert "common::DataCollection" in error_msg
         assert "Vector" in error_msg
         assert "Map" in error_msg
 
@@ -476,79 +476,79 @@ class TestBasic:
         # Verify base types exist (should be deduplicated, not duplicated)
         point2d = next((s for s in structs if s["Name"] == "Point2D"), None)
         assert point2d is not None
-        assert point2d["Namespace"] == "Common::Geometry"
+        assert point2d["Namespace"] == "common::geometry"
 
         point3d = next((s for s in structs if s["Name"] == "Point3D"), None)
         assert point3d is not None
-        assert point3d["Namespace"] == "Common::Geometry"
+        assert point3d["Namespace"] == "common::geometry"
 
         # Verify Location struct from nested_derived.yaml
         location_struct = next((s for s in structs if s["Name"] == "Location"), None)
         assert location_struct is not None
-        assert location_struct["Namespace"] == "Vehicle::Position"
+        assert location_struct["Namespace"] == "vehicle::position"
 
         # Check that the struct member uses :: notation
         current_pos = next((m for m in location_struct["SubElements"] if m["Name"] == "currentPosition"), None)
         assert current_pos is not None
         # TypeRef is just a string in the JSON, not a dict
-        assert current_pos["TypeRef"] == "Common::Geometry::Point3D"
+        assert current_pos["TypeRef"] == "common::geometry::Point3D"
 
         # Verify Route struct from nested_top_level.yaml
         route_struct = next((s for s in structs if s["Name"] == "Route"), None)
         assert route_struct is not None
-        assert route_struct["Namespace"] == "Navigation::Service"
+        assert route_struct["Namespace"] == "navigation::service"
 
         # Check that Route references Location correctly
         start_loc = next((m for m in route_struct["SubElements"] if m["Name"] == "startLocation"), None)
         assert start_loc is not None
-        assert start_loc["TypeRef"] == "Vehicle::Position::Location"
+        assert start_loc["TypeRef"] == "vehicle::position::Location"
 
         # Verify MapRegion struct from nested_alternative.yaml
         map_region = next((s for s in structs if s["Name"] == "MapRegion"), None)
         assert map_region is not None
-        assert map_region["Namespace"] == "Mapping::Service"
+        assert map_region["Namespace"] == "mapping::service"
 
         # Check that MapRegion uses Point2D correctly with :: notation
         top_left = next((m for m in map_region["SubElements"] if m["Name"] == "topLeft"), None)
         assert top_left is not None
-        assert top_left["TypeRef"] == "Common::Geometry::Point2D"
+        assert top_left["TypeRef"] == "common::geometry::Point2D"
 
         # Verify Vehicle struct from nested_second_top_level.yaml
         vehicle_struct = next((s for s in structs if s["Name"] == "Vehicle"), None)
         assert vehicle_struct is not None
-        assert vehicle_struct["Namespace"] == "Fleet::Management"
+        assert vehicle_struct["Namespace"] == "fleet::management"
 
         # Check that Vehicle also uses Location correctly (nested_derived included again)
         current_loc = next((m for m in vehicle_struct["SubElements"] if m["Name"] == "currentLocation"), None)
         assert current_loc is not None
-        assert current_loc["TypeRef"] == "Vehicle::Position::Location"
+        assert current_loc["TypeRef"] == "vehicle::position::Location"
 
         # Verify Fleet struct which uses both Vehicle array and Point3D
         fleet_struct = next((s for s in structs if s["Name"] == "Fleet"), None)
         assert fleet_struct is not None
-        assert fleet_struct["Namespace"] == "Fleet::Management"
+        assert fleet_struct["Namespace"] == "fleet::management"
 
         base_loc = next((m for m in fleet_struct["SubElements"] if m["Name"] == "baseLocation"), None)
         assert base_loc is not None
-        assert base_loc["TypeRef"] == "Common::Geometry::Point3D"
+        assert base_loc["TypeRef"] == "common::geometry::Point3D"
 
         # Check that arrays of nested types are correctly created with :: notation
         vectors = model["DataTypeDefinitions"]["Vectors"]
         point2d_array = next((v for v in vectors if "Commongeometrypoint2D" in v["Name"]), None)
         assert point2d_array is not None
-        assert point2d_array["TypeRef"] == "Common::Geometry::Point2D"
+        assert point2d_array["TypeRef"] == "common::geometry::Point2D"
 
         # Check that maps with nested types are correctly created with :: notation
         maps = model["DataTypeDefinitions"]["Maps"]
         assert len(maps) > 0
         waypoints_map = next((m for m in maps if "Commongeometrypoint3D" in m["Name"]), None)
         assert waypoints_map is not None
-        assert waypoints_map["MapValueTypeRef"] == "Common::Geometry::Point3D"
+        assert waypoints_map["MapValueTypeRef"] == "common::geometry::Point3D"
 
         # Verify deduplication worked - count how many times each base type appears
         # Even though nested_base.yaml was included through three different paths, types should appear only once
-        point2d_count = sum(1 for s in structs if s["Name"] == "Point2D" and s["Namespace"] == "Common::Geometry")
-        point3d_count = sum(1 for s in structs if s["Name"] == "Point3D" and s["Namespace"] == "Common::Geometry")
+        point2d_count = sum(1 for s in structs if s["Name"] == "Point2D" and s["Namespace"] == "common::geometry")
+        point3d_count = sum(1 for s in structs if s["Name"] == "Point3D" and s["Namespace"] == "common::geometry")
         assert point2d_count == 1, (
             f"Point2D should be deduplicated to appear exactly once, but appears {point2d_count} times"
         )
@@ -558,7 +558,7 @@ class TestBasic:
 
         # Verify that nested_derived.yaml types (Location) are also deduplicated
         # nested_derived is included by both nested_top_level and nested_second_top_level
-        location_count = sum(1 for s in structs if s["Name"] == "Location" and s["Namespace"] == "Vehicle::Position")
+        location_count = sum(1 for s in structs if s["Name"] == "Location" and s["Namespace"] == "vehicle::position")
         assert location_count == 1, (
             f"Location should be deduplicated to appear exactly once, but appears {location_count} times"
         )
@@ -586,7 +586,7 @@ class TestBasic:
         error_msg = str(exc_info.value)
         assert "Type name conflicts detected" in error_msg
         assert "DataPoint" in error_msg
-        assert "Sensors::DataPoint" in error_msg
+        assert "sensors::DataPoint" in error_msg
         assert "Struct" in error_msg
         assert "Enum" in error_msg
 
@@ -615,8 +615,8 @@ class TestBasic:
         assert len(status_enums) == 2, "Should have two Status enums in different namespaces"
 
         namespaces = {e["Namespace"] for e in status_enums}
-        assert "App::Core" in namespaces
-        assert "Network::Protocol" in namespaces
+        assert "app::core" in namespaces
+        assert "network::protocol" in namespaces
 
     def test_ifex_batch_identical_interfaces_deduplicated(self, tmp_path) -> None:
         """Test batch import accepts and deduplicates identical interface definitions
@@ -651,7 +651,7 @@ class TestBasic:
 
         # Verify the interface has expected content
         service = shared_service[0]
-        assert service["Namespace"] == "Shared"
+        assert service["Namespace"] == "shared"
 
         # Verify operations exist (GetData and SetData)
         operations = service["Operations"]
@@ -662,7 +662,7 @@ class TestBasic:
 
         # Verify Data struct exists and is deduplicated
         structs = model["DataTypeDefinitions"]["Structs"]
-        data_structs = [s for s in structs if s["Name"] == "Data" and s["Namespace"] == "Shared"]
+        data_structs = [s for s in structs if s["Name"] == "Data" and s["Namespace"] == "shared"]
         assert len(data_structs) == 1, "Data struct should be deduplicated to appear exactly once"
 
     def test_ifex_batch_struct_content_conflict(self, tmp_path) -> None:
@@ -714,7 +714,7 @@ namespaces:
         error_msg = str(exc_info.value)
         assert "Conflicting Struct" in error_msg
         assert "Config" in error_msg
-        assert "Settings::Config" in error_msg
+        assert "settings::Config" in error_msg
         assert "defined differently in batch files" in error_msg
 
     def test_ifex_batch_enum_content_conflict(self, tmp_path) -> None:
@@ -768,7 +768,7 @@ namespaces:
         error_msg = str(exc_info.value)
         assert "Conflicting Enum" in error_msg
         assert "Status" in error_msg
-        assert "System::Status" in error_msg
+        assert "system::Status" in error_msg
         assert "defined differently in batch files" in error_msg
 
     def test_ifex_batch_identical_structs_deduplicated(self, tmp_path) -> None:
@@ -810,7 +810,7 @@ namespaces:
             model = json.load(f)
 
         structs = model["DataTypeDefinitions"]["Structs"]
-        point_structs = [s for s in structs if s["Name"] == "Point" and s["Namespace"] == "Geometry"]
+        point_structs = [s for s in structs if s["Name"] == "Point" and s["Namespace"] == "geometry"]
         assert len(point_structs) == 1, "Point should be deduplicated to appear exactly once"
 
     def test_ifex_batch_interface_override_within_file(self, tmp_path) -> None:
@@ -917,7 +917,7 @@ namespaces:
             model = json.load(f)
 
         interfaces = model["ModuleInterfaces"]
-        common_services = [i for i in interfaces if i["Namespace"] == "Common"]
+        common_services = [i for i in interfaces if i["Namespace"] == "common"]
         assert len(common_services) == 1, "Identical interfaces across files should be deduplicated"
 
     def test_ifex_batch_interface_extension(self, tmp_path) -> None:
@@ -1138,13 +1138,13 @@ namespaces:
         assert len(model.DataTypeDefinitions.Structs) == 1
         deep_struct = model.DataTypeDefinitions.Structs[0]
         assert deep_struct.Name == "DeepStruct"
-        assert deep_struct.Namespace == "Level1::Level2::Level3"
+        assert deep_struct.Namespace == "level1::level2::level3"
 
         # Verify interface has correct namespace (parent of the methods/level)
         assert len(model.ModuleInterfaces) == 1
         interface = model.ModuleInterfaces[0]
         # Interface namespace is the parent namespace where methods are defined
-        assert "Level1::Level2" in interface.Namespace
+        assert "level1::level2" in interface.Namespace
 
     def test_ifex_method_with_error_attribute(self, tmp_path) -> None:
         """Test that methods with error attributes are converted correctly"""
@@ -1543,7 +1543,7 @@ namespaces:
         assert len(model.DataTypeDefinitions.Structs) == 1
         position = model.DataTypeDefinitions.Structs[0]
         assert position.Name == "Position"
-        assert position.Namespace == "Common::Types"
+        assert position.Namespace == "common::types"
 
         # Verify method uses :: in type reference
         assert len(model.ModuleInterfaces) >= 1
@@ -1694,7 +1694,7 @@ namespaces:
 
         error_msg = str(exc_info.value)
         assert "Vector" in error_msg
-        assert "Types::DataList" in error_msg
+        assert "types::DataList" in error_msg
         assert "defined differently in batch files" in error_msg
 
     def test_ifex_batch_map_typedef_conflict_between_files(self, tmp_path) -> None:
@@ -1732,7 +1732,7 @@ namespaces:
 
         error_msg = str(exc_info.value)
         assert "Map" in error_msg
-        assert "Types::Registry" in error_msg
+        assert "types::Registry" in error_msg
         assert "defined differently in batch files" in error_msg
 
     def test_ifex_batch_typeref_conflict_between_files(self, tmp_path) -> None:
@@ -1770,7 +1770,7 @@ namespaces:
 
         error_msg = str(exc_info.value)
         assert "TypeRef" in error_msg
-        assert "Types::Counter" in error_msg
+        assert "types::Counter" in error_msg
         assert "defined differently in batch files" in error_msg
 
     def test_ifex_typedef_layering_within_file(self, tmp_path) -> None:

@@ -95,10 +95,10 @@ def _create_vector_type(base_type: str, vector_name: str, namespace: str) -> vaf
 
     vector = vafmodel.Vector(
         Name=vector_name,
-        Namespace=namespace,
-        TypeRef=vafmodel.DataType(Name=name, Namespace=ns),
+        Namespace=namespace.lower(),
+        TypeRef=vafmodel.DataType(Name=name, Namespace=ns.lower()),
     )
-    print(f"Created Vector type: {vector_name} with element type {base_type} in namespace '{namespace}'")
+    print(f"Created Vector type: {vector_name} with element type {base_type} in namespace '{namespace.lower()}'")
     return vector
 
 
@@ -120,12 +120,15 @@ def _create_map_type(key_type: str, value_type: str, map_name: str, namespace: s
 
     map_obj = vafmodel.Map(
         Name=map_name,
-        Namespace=namespace,
-        MapKeyTypeRef=vafmodel.DataType(Name=key_name, Namespace=key_ns),
-        MapValueTypeRef=vafmodel.DataType(Name=value_name, Namespace=value_ns),
+        Namespace=namespace.lower(),
+        MapKeyTypeRef=vafmodel.DataType(Name=key_name, Namespace=key_ns.lower()),
+        MapValueTypeRef=vafmodel.DataType(Name=value_name, Namespace=value_ns.lower()),
     )
     print(
-        f"Created Map type: {map_name} with key type {key_type} and value type {value_type} in namespace '{namespace}'"
+        f"Created Map type: {map_name} "
+        + f"with key type {key_type} "
+        + f"and value type {value_type} "
+        + f"in namespace '{namespace.lower()}'"
     )
     return map_obj
 
@@ -145,15 +148,15 @@ def _create_variant_type(variant_types: list[str], variant_name: str, namespace:
     variant_type_refs = []
     for vtype in variant_types:
         name, ns = _split_type_name(vtype)
-        variant_type_refs.append(vafmodel.DataType(Name=name, Namespace=ns))
+        variant_type_refs.append(vafmodel.DataType(Name=name, Namespace=ns.lower()))
 
     variant_obj = vafmodel.Variant(
         Name=variant_name,
-        Namespace=namespace,
+        Namespace=namespace.lower(),
         VariantTypeRefs=variant_type_refs,
     )
     types_str = ", ".join(variant_types)
-    print(f"Created Variant type: {variant_name} with types [{types_str}] in namespace '{namespace}'")
+    print(f"Created Variant type: {variant_name} with types [{types_str}] in namespace '{namespace.lower()}'")
     return variant_obj
 
 
@@ -367,7 +370,7 @@ def _convert_ifex_struct_to_vaf(
                 member.datatype, namespace, local_strings, local_vectors, local_maps, local_variants
             )
             name, ns = _split_type_name(vaf_type)
-            type_ref = vafmodel.DataType(Name=name, Namespace=ns)
+            type_ref = vafmodel.DataType(Name=name, Namespace=ns.lower())
             members.append(
                 vafmodel.SubElement(
                     Name=member.name,
@@ -378,7 +381,7 @@ def _convert_ifex_struct_to_vaf(
 
     return vafmodel.Struct(
         Name=ifex_struct.name,
-        Namespace=namespace,
+        Namespace=namespace.lower(),
         SubElements=members,
     )
 
@@ -404,7 +407,7 @@ def _convert_ifex_enum_to_vaf(ifex_enum: Enumeration, namespace: str) -> vafmode
 
     return vafmodel.VafEnum(
         Name=ifex_enum.name,
-        Namespace=namespace,
+        Namespace=namespace.lower(),
         Literals=literals,
     )
 
@@ -462,7 +465,7 @@ def _convert_ifex_typedef_to_vaf(
         # Create vector with typedef name directly and namespace
         vector_tuple = _create_vector_type(base_type, typedef_name, namespace)
         local_vectors[typedef_name] = vector_tuple
-        print(f"Converted typedef (vector): {typedef_name} -> Vector of {base_type} in namespace '{namespace}'")
+        print(f"Converted typedef (vector): {typedef_name} -> Vector of {base_type} in namespace '{namespace.lower()}'")
         return f"{namespace}::{typedef_name}"
 
     # Special handling for map typedefs: create the Map directly with the typedef name
@@ -500,7 +503,8 @@ def _convert_ifex_typedef_to_vaf(
             map_tuple = _create_map_type(key_type, value_type, typedef_name, namespace)
             local_maps[typedef_name] = map_tuple
             print(
-                f"Converted typedef (map): {typedef_name} -> Map<{key_type}, {value_type}> in namespace '{namespace}'"
+                f"Converted typedef (map): {typedef_name} -> Map<{key_type}, {value_type}> "
+                + f"in namespace '{namespace.lower()}'"
             )
             return f"{namespace}::{typedef_name}"
 
@@ -529,7 +533,10 @@ def _convert_ifex_typedef_to_vaf(
             variant_tuple = _create_variant_type(variant_types, typedef_name, namespace)
             local_variants[typedef_name] = variant_tuple
             types_str = ", ".join(variant_types)
-            print(f"Converted typedef (variant): {typedef_name} -> Variant<{types_str}> in namespace '{namespace}'")
+            print(
+                f"Converted typedef (variant): {typedef_name} -> Variant<{types_str}> "
+                + f"in namespace '{namespace.lower()}'"
+            )
             return f"{namespace}::{typedef_name}"
 
         print(f"Warning: Could not parse variant type '{ifex_typedef.datatype}' in typedef '{typedef_name}'")
@@ -542,11 +549,11 @@ def _convert_ifex_typedef_to_vaf(
     name, ns = _split_type_name(target_type)
     typeref_obj = vafmodel.TypeRef(
         Name=typedef_name,
-        Namespace=namespace,
-        TypeRef=vafmodel.DataType(Name=name, Namespace=ns),
+        Namespace=namespace.lower(),
+        TypeRef=vafmodel.DataType(Name=name, Namespace=ns.lower()),
     )
     local_typerefs[typedef_name] = typeref_obj
-    print(f"Converted typedef (typeref): {typedef_name} -> {target_type} in namespace '{namespace}'")
+    print(f"Converted typedef (typeref): {typedef_name} -> {target_type} in namespace '{namespace.lower()}'")
     return f"{namespace}::{typedef_name}"
 
 
@@ -581,7 +588,7 @@ def _convert_ifex_method_to_vaf_operation(
                 param.datatype, namespace, local_strings, local_vectors, local_maps, local_variants
             )
             name, ns = _split_type_name(vaf_type)
-            type_ref = vafmodel.DataType(Name=name, Namespace=ns)
+            type_ref = vafmodel.DataType(Name=name, Namespace=ns.lower())
             parameters.append(
                 vafmodel.Parameter(
                     Name=param.name,
@@ -597,7 +604,7 @@ def _convert_ifex_method_to_vaf_operation(
                 param.datatype, namespace, local_strings, local_vectors, local_maps, local_variants
             )
             name, ns = _split_type_name(vaf_type)
-            type_ref = vafmodel.DataType(Name=name, Namespace=ns)
+            type_ref = vafmodel.DataType(Name=name, Namespace=ns.lower())
             parameters.append(
                 vafmodel.Parameter(
                     Name=param.name,
@@ -646,7 +653,7 @@ def _convert_ifex_event_to_vaf_data_element(
             first_param.datatype, namespace, local_strings, local_vectors, local_maps, local_variants
         )
         name, ns = _split_type_name(vaf_type)
-        type_ref = vafmodel.DataType(Name=name, Namespace=ns)
+        type_ref = vafmodel.DataType(Name=name, Namespace=ns.lower())
     else:
         # Event with no parameters - use bool as placeholder
         type_ref = vafmodel.DataType(Name="bool", Namespace="")
@@ -683,7 +690,7 @@ def _convert_ifex_property_to_vaf_data_element(
         ifex_property.datatype, namespace, local_strings, local_vectors, local_maps, local_variants
     )
     name, ns = _split_type_name(vaf_type)
-    type_ref = vafmodel.DataType(Name=name, Namespace=ns)
+    type_ref = vafmodel.DataType(Name=name, Namespace=ns.lower())
 
     return vafmodel.DataElement(
         Name=ifex_property.name,
@@ -717,7 +724,7 @@ def _convert_ifex_property_to_vaf_operations(
         ifex_property.datatype, namespace, local_strings, local_vectors, local_maps, local_variants
     )
     name, ns = _split_type_name(vaf_type)
-    type_ref = vafmodel.DataType(Name=name, Namespace=ns)
+    type_ref = vafmodel.DataType(Name=name, Namespace=ns.lower())
 
     # Create getter operation: Get<PropertyName>() -> value
     getter = vafmodel.Operation(
@@ -921,7 +928,7 @@ def _extract_module_interfaces_from_namespace(  # pylint: disable=too-many-argum
         interface_namespace = namespace_name if not namespace_path else namespace_path
         module_interface = vafmodel.ModuleInterface(
             Name=interface_name,
-            Namespace=interface_namespace,
+            Namespace=interface_namespace.lower(),
             Operations=operations,
             DataElements=data_elements,
         )
@@ -993,7 +1000,7 @@ def _extract_module_interfaces_from_namespace(  # pylint: disable=too-many-argum
         if operations or data_elements:
             module_interface = vafmodel.ModuleInterface(
                 Name=interface.name,
-                Namespace=current_namespace,
+                Namespace=current_namespace.lower(),
                 Operations=operations,
                 DataElements=data_elements,
             )
