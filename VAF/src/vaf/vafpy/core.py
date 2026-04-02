@@ -162,7 +162,7 @@ class VafpyAbstractModelRuntime(metaclass=_ABCSingletonMeta):
         Raises:
             NotImplementedError
         """
-        raise NotImplementedError("remove_element is not implemented.")
+        raise NotImplementedError("remove_element() is not implemented.")
 
     @abstractmethod
     def replace_element(self, element: VafpyAbstractBase) -> None:

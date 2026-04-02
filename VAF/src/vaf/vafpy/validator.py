@@ -109,36 +109,9 @@ class _ModelCleaner:
                 module_interface_identifier = create_name_namespace_full_name(
                     module_interface.Name, module_interface.Namespace
                 )
-                # ignore if already listed as used module interfaces
-                # only check if not listed as used module interfaces and identifier not in used_namespaces
-                if (
-                    module_interface_identifier not in self.__model.used_module_interfaces
-                    and module_interface_identifier not in used_namespaces
-                ):
-                    # check if module interface is not used (possibility as needed parents or grandparents)
-                    # get used module interface data elements
-                    # first data element also needed as it's for itself
-                    used_data_elements = module_interface.DataElements[0:1] + [
-                        data_element
-                        for data_element in module_interface.DataElements
-                        if (data_element.Name == data_element.TypeRef.Name)
-                        and (
-                            create_name_namespace_full_name(
-                                data_element.TypeRef.Name,
-                                data_element.TypeRef.Namespace,
-                            )
-                            in used_namespaces
-                        )
-                    ]
-
-                    # if found used data element == itself/empty then it's unused
-                    if len(used_data_elements) <= 1:
-                        # remove module interface
-                        self.__model.remove_element(module_interface)
-                    # if data elements differ then replace
-                    elif len(used_data_elements) != len(module_interface.DataElements):
-                        module_interface.DataElements = used_data_elements
-                        self.__model.replace_element(module_interface)
+                # Remove if not listed as used module interfaces
+                if module_interface_identifier not in self.__model.used_module_interfaces:
+                    self.__model.remove_element(module_interface)
 
     def __get_all_nested_namespaces_references(self, model: VafpyAbstractModelRuntime) -> Tuple[nx.DiGraph, List[str]]:
         """Get all namespaces references
