@@ -33,7 +33,6 @@ vaf workspace init
 
 Enter your workspace name: <your-workspace-name>
 ? Enter the directory to store your workspace in .
-bash
 ```
 
 Next, switch folders to this workspace. Ideally, you open this folder directly in VS Code and select
